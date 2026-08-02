@@ -1,0 +1,25 @@
+name: com
+channels:
+  - defaults
+dependencies:
+  - python=3.8.20
+  - pip=24.2
+  - setuptools=75.1.0
+  - wheel=0.44.0
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu116
+      - torch==1.12.1+cu116
+      - transformers==3.4.0
+      - tokenizers==0.9.2
+      - fastNLP==0.7.0
+      - numpy==1.23.5
+      - h5py==3.11.0
+      - tensorboard==2.13.0
+      - pytest==7.4.4
+      - tqdm==4.66.5
+      - PyYAML==6.0.2
+      - sentencepiece==0.2.0
+      # Transformers 3.4 imports six without declaring it.
+      - six==1.15.0
+      # Transformers 3.4 bundles protobuf code incompatible with protobuf 4+.
+      - protobuf==3.20.3

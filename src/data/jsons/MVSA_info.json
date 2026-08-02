@@ -1,0 +1,9 @@
+{
+  "text_dir": "/home/whj/reproject/mvsa/data_new",
+  "img_region_dir": "/home/whj/reproject/mvsa/photo_region",
+  "senti_dir": "/home/whj/reproject/mvsa/sentiment.json",
+  "ANP_dir": "/home/whj/reproject/mvsa/mvsa_photo_path.json",
+  "ANP_class_dir": "/home/whj/reproject/mvsa/classes.json",
+  "opinion_span_path": "/home/whj/reproject/mvsa/opinion_spans_sentiwordnet.json",
+  "aspect_span_path": "/home/whj/reproject/mvsa/aspect_spans.json"
+}
