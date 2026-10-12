@@ -18,3 +18,27 @@
 已有 `text/fusion/evidence` 三个代码分支为历史实现；本 baseline 的正式配置为 `fusion`。保留旧分支有利于已有单元测试与 checkpoint 兼容，不表示 evidence 差分机制已参与这些成绩。
 
 不要在新模块实验中覆盖 `reference/`。模型比较应使用相同数据、训练预算、种子集合和 Dev 选模方式，分别保存输出。
+
+## B：方面情感辅助监督
+
+配置：`configs/aspect_sentiment_aux.json`，仅比 `base.json` 多
+`model.aspect_sentiment_weight = 0.1`。默认值为 0，关闭时不创建辅助参数，
+保留原模型初始化、前向、CRF 损失与解码；旧 checkpoint 缺少此字段时按 0 加载。
+
+辅助头平均池化每个真实训练方面的 `word_projection` 输出（256 维文本表示），
+再用 `Linear(256, 3)` 预测 NEG/NEU/POS。该分支增加 771 个参数。
+方面范围和情感从已有五标签训练序列恢复，不枚举候选，不引入外部标注。
+O、特殊 token 和 padding 不参与方面池化。相邻 B 标签分别代表两个方面。
+
+每句目标为 `CRF_NLL + 0.1 * mean(aspect_cross_entropy)`；无方面句子的辅助损失为零。
+再沿用 baseline 的句子均值梯度累积。因此多个方面不会直接把整句辅助权重成倍放大。
+辅助分支只监督共享文本表示，不改变视觉融合、标签定义或 CRF。
+推理不传入真实标签，不计算辅助头，仍一次性解码方面和情感。
+
+`history.json` 中 `sentence_loss` 是总目标，`sentence_nll` 是原 CRF NLL，
+`aspect_sentiment_loss` 是未乘权重、包含无方面句子零值的句均辅助 CE。
+每个 epoch 的可读日志同时显示三个量，`log_every=0` 保持不打印逐 step 日志。
+
+首次试验固定 seed 42、两套数据各 35 epochs、lambda=0.1，仅 Dev 选模与比较。
+使用 `scripts/train.py --train-only`，避免开发阶段反复查看 Test。结果需要训练完成后判断，
+单种子结果不能视为稳定提升；有效后再以预先固定的共同种子集合验证。

@@ -1,0 +1,28 @@
+{
+  "seed": 42,
+  "epochs": 35,
+  "batch_size": 1,
+  "eval_batch_size": 1,
+  "accumulation": 8,
+  "learning_rate": 2e-05,
+  "head_learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.1,
+  "gradient_clip": 1.0,
+  "max_length": 256,
+  "device": "cuda:0",
+  "num_workers": 0,
+  "num_threads": 4,
+  "log_every": 0,
+  "text_model": "assets/models/deberta-v3-base",
+  "vision_model": "assets/models/siglip2",
+  "model": {
+    "mode": "fusion",
+    "hidden_size": 256,
+    "attention_heads": 4,
+    "visual_size": 768,
+    "dropout": 0.1,
+    "visual_dropout": 0.15,
+    "aspect_sentiment_weight": 0.1
+  }
+}

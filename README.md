@@ -97,3 +97,15 @@ PYTHONPATH=src .runtime/bin/python -m unittest discover -s tests -v
 ## 在 baseline 上增加模块
 
 见 `docs/extending.md`。Git 的 `baseline-v1` 固定经验证版本；新模块从该版本创建分支，并使用新的配置及输出目录。不要改变原有官方 Train/Dev/Test，也不要将 Test 用于 epoch 选择。
+
+已添加 B（方面级情感辅助监督），默认关闭。专用配置只开启权重为 `0.1` 的辅助损失：
+
+```bash
+CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train.py \
+  --config configs/aspect_sentiment_aux.json --dataset twitter2015 --seed 42 \
+  --output outputs/aspect_sentiment_aux/twitter2015/seed42 --train-only
+```
+
+Twitter2017 使用相同配置，将 `--dataset` 和输出路径改为 `twitter2017`。
+训练后仍按 Dev 选 checkpoint 并重载核对预测；这里的 `--train-only` 省略 Test。
+模型结构、损失归一化与日志字段见 `docs/extending.md` 的 B 节。

@@ -121,7 +121,12 @@ def run_training(raw, output):
                 'head_learning_rate', 'warmup_ratio', 'device'):
         logger.info(f'{key}: {cfg[key]}')
     logger.info(f"model: {cfg['model']['mode']}; selection: Dev Joint F1; metrics: percent")
-    logger.info('Step counts training mini-batches; Loss is mean CRF NLL per sentence.')
+    auxiliary_weight = cfg['model']['aspect_sentiment_weight']
+    if auxiliary_weight > 0:
+        logger.info(f'Loss = CRF NLL + {auxiliary_weight:g} * Aspect CE; sentence mean.')
+        logger.info('Aspect CE: mean over gold training aspects per sentence; zero for empty sentences.')
+    else:
+        logger.info('Step counts training mini-batches; Loss is mean CRF NLL per sentence.')
     logger.info(f'Train examples: {len(train)} | Dev examples: {len(dev)} | Optimizer updates: {planned}')
     write_json(output / 'config.json', cfg)
     tokenizer.save_pretrained(output / 'tokenizer')
@@ -139,6 +144,12 @@ def run_training(raw, output):
         'cache_features_sha256': cache_meta['features_sha256'] if cache_meta else None,
         'source_sha256': {str(p.relative_to(source)): file_hash(p) for p in sorted(source.rglob('*.py'))},
     }
+    if auxiliary_weight > 0:
+        provenance.update(objective='sentence_mean_crf_nll_plus_aspect_sentiment_ce',
+                          aspect_sentiment_weight=auxiliary_weight,
+                          aspect_pooling='mean_projected_text_words',
+                          aspect_loss_reduction='mean_aspects_per_sentence_empty_zero',
+                          auxiliary_labels='train_only', decoding='five_tag_crf')
     write_json(output / 'provenance.json', provenance)
     initial_head = model.text_head.weight.detach().clone()
     history, best, updates = [], -1., 0
@@ -159,7 +170,11 @@ def run_training(raw, output):
         history.append(record)
         write_json(output / 'history.json', history)
         logger.event({'event': 'epoch', **record})
-        logger.info(f"Epoch [{epoch}/{cfg['epochs']}], Mean Loss: {result['sentence_nll']:.4f}")
+        if auxiliary_weight > 0:
+            logger.info(f"Epoch [{epoch}/{cfg['epochs']}], Mean Loss: {result['sentence_loss']:.4f}, "
+                        f"CRF NLL: {result['sentence_nll']:.4f}, Aspect CE: {result['aspect_sentiment_loss']:.4f}")
+        else:
+            logger.info(f"Epoch [{epoch}/{cfg['epochs']}], Mean Loss: {result['sentence_nll']:.4f}")
         logger.joint_metrics('DEV', metrics['joint'])
         logger.info(f"DEV AE  ae_p:{metrics['mate']['precision'] * 100:.2f} "
                     f"ae_r:{metrics['mate']['recall'] * 100:.2f} ae_f:{metrics['mate']['f1'] * 100:.2f}")

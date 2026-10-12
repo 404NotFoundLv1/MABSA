@@ -1,4 +1,4 @@
-"""Sentence-mean CRF training, exact tuple evaluation, and portable checkpoints."""
+"""Sentence-mean training, exact tuple evaluation, and portable checkpoints."""
 
 import itertools
 import json
@@ -34,20 +34,26 @@ def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=
     model.train()
     iterator = iter(loader)
     updates, examples, total_loss = 0, 0, 0.
+    total_nll, total_aspect_ce, auxiliary = 0., 0., False
     batch_step = 0
     while window := list(itertools.islice(iterator, accumulation)):
         count = sum(len(b['input_ids']) for b in window)
         optimizer.zero_grad(set_to_none=True)
         for batch in window:
-            losses = model(**model_inputs(batch, device, include_tags=True))['losses']
+            output = model(**model_inputs(batch, device, include_tags=True))
+            losses = output['losses']
             if not torch.isfinite(losses).all():
-                raise FloatingPointError('nonfinite CRF loss; no update performed')
+                raise FloatingPointError('nonfinite training loss; no update performed')
             batch_step += 1
             if logger is not None and log_every and (batch_step % log_every == 0 or batch_step == len(loader)):
                 logger.info(f'Epoch [{epoch}/{epochs}], Step [{batch_step}/{len(loader)}], '
                             f'Loss: {float(losses.detach().mean()):.4f}')
             (losses.sum() / count).backward()
             total_loss += float(losses.detach().sum())
+            if 'aspect_sentiment_losses' in output:
+                auxiliary = True
+                total_nll += float(output['crf_losses'].detach().sum())
+                total_aspect_ce += float(output['aspect_sentiment_losses'].detach().sum())
         parameters = [p for p in model.parameters() if p.grad is not None]
         torch.nn.utils.clip_grad_norm_(parameters, gradient_clip or float('inf'), error_if_nonfinite=True)
         optimizer.step()
@@ -57,10 +63,14 @@ def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=
         examples += count
         if logger is None and log_every and updates % log_every == 0:
             print(json.dumps({'event': 'train_progress', 'updates': updates, 'examples': examples,
-                              'mean_sentence_nll': total_loss / examples}), flush=True)
+                              ('mean_sentence_loss' if auxiliary else 'mean_sentence_nll'): total_loss / examples}), flush=True)
         if max_updates is not None and updates >= max_updates:
             break
-    return {'sentence_nll': total_loss / examples if examples else 0., 'examples': examples, 'updates': updates}
+    result = {'sentence_nll': total_loss / examples if examples else 0., 'examples': examples, 'updates': updates}
+    if auxiliary:
+        result.update(sentence_loss=total_loss / examples, sentence_nll=total_nll / examples,
+                      aspect_sentiment_loss=total_aspect_ce / examples)
+    return result
 
 
 @torch.no_grad()
