@@ -19,6 +19,8 @@ class ModelConfig:
     dropout: float = .1
     visual_dropout: float = .15
     aspect_sentiment_weight: float = 0.
+    visual_gate: bool = False
+    visual_gate_init: float = .9
 
     def __post_init__(self):
         if self.mode not in ('text', 'fusion', 'evidence'):
@@ -32,6 +34,11 @@ class ModelConfig:
                 or not math.isfinite(self.aspect_sentiment_weight)
                 or self.aspect_sentiment_weight < 0):
             raise ValueError('aspect_sentiment_weight must be finite and nonnegative')
+        if type(self.visual_gate) is not bool or (self.visual_gate and self.mode != 'fusion'):
+            raise ValueError('visual_gate must be boolean and requires fusion mode')
+        if (type(self.visual_gate_init) not in (int, float)
+                or not math.isfinite(self.visual_gate_init) or not 0 < self.visual_gate_init < 1):
+            raise ValueError('visual_gate_init must be finite and strictly between 0 and 1')
 
 
 def pool_words(tokens, word_ids, word_mask):
@@ -98,6 +105,10 @@ class SequenceModel(nn.Module):
         # original parameter set and initialization RNG consumption exactly.
         if config.aspect_sentiment_weight > 0:
             self.aspect_sentiment_head = AspectSentimentHead(h)
+        if config.visual_gate:
+            self.visual_gate = nn.Linear(h * 2, 1)
+            nn.init.zeros_(self.visual_gate.weight)
+            nn.init.constant_(self.visual_gate.bias, math.log(config.visual_gate_init / (1 - config.visual_gate_init)))
 
     def forward(self, input_ids, attention_mask, word_ids, word_mask,
                 visual_features=None, tags=None, force_null=False):
@@ -122,17 +133,26 @@ class SequenceModel(nn.Module):
             query = self.query(torch.cat([words, context[:, None].expand_as(words)], dim=-1))
             actual = self.attention(query, memory, memory, key_padding_mask=mask, need_weights=False)[0]
             actual_score = self.visual_head(torch.cat([words, actual], dim=-1))
-            if self.config.mode == 'evidence':
+            if self.config.mode == 'evidence' or self.config.visual_gate:
                 # Same padded memory layout and scoring function, only the mask differs.
                 null_mask = torch.ones_like(mask)
                 null_mask[:, -1] = False
                 reference = self.attention(query, memory, memory, key_padding_mask=null_mask, need_weights=False)[0]
                 null_score = self.visual_head(torch.cat([words, reference], dim=-1))
-                # Group subtraction before adding text preserves exact force-null identity.
-                emissions = text_emissions + (actual_score - null_score)
+                if self.config.visual_gate:
+                    # One scalar per word controls the image-dependent increment.
+                    # The null path retains the text-dependent visual head.
+                    gate = self.visual_gate(torch.cat([words, actual - reference], dim=-1)).sigmoid()
+                    null_emissions = text_emissions + null_score
+                    emissions = null_emissions + gate * (actual_score - null_score)
+                else:
+                    # Group subtraction before adding text preserves exact force-null identity.
+                    emissions = text_emissions + (actual_score - null_score)
             else:
                 emissions = text_emissions + actual_score
         output = {'emissions': emissions, 'text_emissions': text_emissions}
+        if self.config.visual_gate:
+            output.update(visual_gate=gate, null_emissions=null_emissions)
         if tags is not None:
             output['losses'] = self.crf(emissions, tags, word_mask)
             if self.config.aspect_sentiment_weight > 0:

@@ -42,3 +42,26 @@ O、特殊 token 和 padding 不参与方面池化。相邻 B 标签分别代表
 首次试验固定 seed 42、两套数据各 35 epochs、lambda=0.1，仅 Dev 选模与比较。
 使用 `scripts/train.py --train-only`，避免开发阶段反复查看 Test。结果需要训练完成后判断，
 单种子结果不能视为稳定提升；有效后再以预先固定的共同种子集合验证。
+
+## C：以空视觉为参照的逐词门控
+
+配置：`configs/visual_gate.json`，`visual_gate=true`、`visual_gate_init=0.9`，
+`aspect_sentiment_weight=0`。从原 baseline 的预训练骨干重新训练，不从 B checkpoint 继续。
+B 的实现和结果完整保留，baseline 配置也不变；C 关闭时不创建门控参数。
+
+同一次 forward 共用文本词表示、attention 和 visual_head，分别计算正常图像与仅保留
+null token 的分数。对于每个词，`g = sigmoid(Linear([word, attention_image-attention_null]))`，
+输出为 `E_null + g * (E_image-E_null)`。门值对该词的五类标签共用。
+门控权重初始为零、bias 为 logit(0.9)，故初始门值固定为 0.9。
+新增参数为 `512+1=513`，训练目标仍只有原 CRF NLL，不增加辅助标签或门控损失。
+
+门值为 0 时保留完整空视觉路径中的文本计算，为 1 时恢复原 fusion（浮点运算允许微小舍入差）。
+`force_null` 和原有的 15% 按样本视觉 dropout 同样作用于 C；实际视觉与空视觉路径相同时，
+修正量为零。C 只适用于 `fusion` 模式，旧 checkpoint 缺少新配置字段时默认关闭 C。
+
+每个 epoch 记录 `train.visual_gate` 的有效词数、均值、标准差及门值低于 0.1／高于 0.9 的比例，
+忽略 padding；可读日志只增加一行 `TRAIN Gate ...`。这些统计包括视觉 dropout 的样本，
+门值大小本身不等于图像对结果的实际贡献。Dev 指标定义及 checkpoint 选择规则保持原样。
+
+首轮固定两套数据的共同种子 42、43、44，各 35 epochs，先运行 `--train-only` 比较 Dev，
+不根据中途结果修改配置或剔除种子。源码通过 Git 和 SHA256 固定，输出另存。

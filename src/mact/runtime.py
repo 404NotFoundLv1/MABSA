@@ -2,6 +2,7 @@
 
 import itertools
 import json
+import math
 from dataclasses import asdict
 from pathlib import Path
 
@@ -35,6 +36,7 @@ def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=
     iterator = iter(loader)
     updates, examples, total_loss = 0, 0, 0.
     total_nll, total_aspect_ce, auxiliary = 0., 0., False
+    gate_words, gate_sum, gate_sum_sq, gate_low, gate_high = 0, 0., 0., 0, 0
     batch_step = 0
     while window := list(itertools.islice(iterator, accumulation)):
         count = sum(len(b['input_ids']) for b in window)
@@ -54,6 +56,13 @@ def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=
                 auxiliary = True
                 total_nll += float(output['crf_losses'].detach().sum())
                 total_aspect_ce += float(output['aspect_sentiment_losses'].detach().sum())
+            if 'visual_gate' in output:
+                gates = output['visual_gate'].detach().squeeze(-1).cpu().double()[batch['word_mask'].cpu()]
+                gate_words += gates.numel()
+                gate_sum += float(gates.sum())
+                gate_sum_sq += float(gates.square().sum())
+                gate_low += int((gates < .1).sum())
+                gate_high += int((gates > .9).sum())
         parameters = [p for p in model.parameters() if p.grad is not None]
         torch.nn.utils.clip_grad_norm_(parameters, gradient_clip or float('inf'), error_if_nonfinite=True)
         optimizer.step()
@@ -70,6 +79,11 @@ def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=
     if auxiliary:
         result.update(sentence_loss=total_loss / examples, sentence_nll=total_nll / examples,
                       aspect_sentiment_loss=total_aspect_ce / examples)
+    if gate_words:
+        mean = gate_sum / gate_words
+        result['visual_gate'] = dict(words=gate_words, mean=mean,
+            std=math.sqrt(max(0., gate_sum_sq / gate_words - mean * mean)),
+            fraction_below_0_1=gate_low / gate_words, fraction_above_0_9=gate_high / gate_words)
     return result
 
 

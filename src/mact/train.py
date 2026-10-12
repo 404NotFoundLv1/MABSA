@@ -121,6 +121,8 @@ def run_training(raw, output):
                 'head_learning_rate', 'warmup_ratio', 'device'):
         logger.info(f'{key}: {cfg[key]}')
     logger.info(f"model: {cfg['model']['mode']}; selection: Dev Joint F1; metrics: percent")
+    if cfg['model']['visual_gate']:
+        logger.info(f"Visual gate: per-word null-anchored residual; initial gate: {cfg['model']['visual_gate_init']:g}")
     auxiliary_weight = cfg['model']['aspect_sentiment_weight']
     if auxiliary_weight > 0:
         logger.info(f'Loss = CRF NLL + {auxiliary_weight:g} * Aspect CE; sentence mean.')
@@ -150,6 +152,10 @@ def run_training(raw, output):
                           aspect_pooling='mean_projected_text_words',
                           aspect_loss_reduction='mean_aspects_per_sentence_empty_zero',
                           auxiliary_labels='train_only', decoding='five_tag_crf')
+    if cfg['model']['visual_gate']:
+        provenance['visual_gate'] = dict(formula='E_null + sigmoid(linear([word, attention_image-attention_null])) * (E_image-E_null)',
+            initial_value=cfg['model']['visual_gate_init'], shared_text_and_visual_head=True,
+            supervision='existing_crf_objective', uses_gold_inputs=False)
     write_json(output / 'provenance.json', provenance)
     initial_head = model.text_head.weight.detach().clone()
     history, best, updates = [], -1., 0
@@ -175,6 +181,11 @@ def run_training(raw, output):
                         f"CRF NLL: {result['sentence_nll']:.4f}, Aspect CE: {result['aspect_sentiment_loss']:.4f}")
         else:
             logger.info(f"Epoch [{epoch}/{cfg['epochs']}], Mean Loss: {result['sentence_nll']:.4f}")
+        if 'visual_gate' in result:
+            stats = result['visual_gate']
+            logger.info(f"TRAIN Gate mean:{stats['mean']:.4f} std:{stats['std']:.4f} "
+                        f"below_0.1:{stats['fraction_below_0_1'] * 100:.2f}% "
+                        f"above_0.9:{stats['fraction_above_0_9'] * 100:.2f}%")
         logger.joint_metrics('DEV', metrics['joint'])
         logger.info(f"DEV AE  ae_p:{metrics['mate']['precision'] * 100:.2f} "
                     f"ae_r:{metrics['mate']['recall'] * 100:.2f} ae_f:{metrics['mate']['f1'] * 100:.2f}")

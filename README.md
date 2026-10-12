@@ -109,3 +109,14 @@ CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train.py \
 Twitter2017 使用相同配置，将 `--dataset` 和输出路径改为 `twitter2017`。
 训练后仍按 Dev 选 checkpoint 并重载核对预测；这里的 `--train-only` 省略 Test。
 模型结构、损失归一化与日志字段见 `docs/extending.md` 的 B 节。
+
+C（以空视觉为参照的逐词门控）使用独立配置，B 关闭：
+
+```bash
+CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train.py \
+  --config configs/visual_gate.json --dataset twitter2015 --seed 42 \
+  --output outputs/visual_gate/twitter2015/seed42 --train-only
+```
+
+C 从原预训练骨干重新训练，保留原 CRF 目标、35 epochs 和每 epoch 日志；
+详细公式、初始化与门控统计见 `docs/extending.md` 的 C 节。
