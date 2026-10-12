@@ -1,0 +1,10 @@
+.runtime/
+assets/
+reference/runs/
+reference/import_manifest.json
+reference/*original.json
+outputs/
+verification/
+__pycache__/
+*.pyc
+*.egg-info/

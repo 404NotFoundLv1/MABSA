@@ -1,0 +1,8 @@
+{
+  "train_data": "assets/data/twitter2017/train.json",
+  "dev_data": "assets/data/twitter2017/dev.json",
+  "test_data": "assets/data/twitter2017/test.json",
+  "image_root": "assets/images/twitter2017",
+  "visual_cache": "assets/cache/twitter2017/train_dev",
+  "test_visual_cache": "assets/cache/twitter2017/test"
+}

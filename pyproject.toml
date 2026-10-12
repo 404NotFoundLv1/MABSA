@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mact-baseline"
+version = "1.0.0"
+description = "Multimodal Attention CRF Tagger: isolated five-tag MABSA baseline"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]

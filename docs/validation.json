@@ -1,0 +1,181 @@
+{
+  "unit_and_integration_tests": 25,
+  "reference_evaluation": {
+    "status": "passed",
+    "runs": [
+      {
+        "dataset": "twitter2015",
+        "seed": 24,
+        "metrics_exact": true,
+        "predictions_exact": true,
+        "examples": 674,
+        "metrics": {
+          "joint": {
+            "precision": 0.6755218216318786,
+            "recall": 0.686595949855352,
+            "f1": 0.681013868962219,
+            "tp": 712,
+            "predicted": 1054,
+            "gold": 1037
+          },
+          "mate": {
+            "precision": 0.8624288425047438,
+            "recall": 0.8765670202507232,
+            "f1": 0.8694404591104734,
+            "tp": 909,
+            "predicted": 1054,
+            "gold": 1037
+          },
+          "sentiment_on_matched": {
+            "accuracy": 0.7832783278327833,
+            "count": 909,
+            "correct": 712
+          }
+        }
+      },
+      {
+        "dataset": "twitter2015",
+        "seed": 25,
+        "metrics_exact": true,
+        "predictions_exact": true,
+        "examples": 674,
+        "metrics": {
+          "joint": {
+            "precision": 0.6967680608365019,
+            "recall": 0.7068466730954677,
+            "f1": 0.7017711823839157,
+            "tp": 733,
+            "predicted": 1052,
+            "gold": 1037
+          },
+          "mate": {
+            "precision": 0.8621673003802282,
+            "recall": 0.8746383799421408,
+            "f1": 0.868358066060316,
+            "tp": 907,
+            "predicted": 1052,
+            "gold": 1037
+          },
+          "sentiment_on_matched": {
+            "accuracy": 0.8081587651598677,
+            "count": 907,
+            "correct": 733
+          }
+        }
+      },
+      {
+        "dataset": "twitter2017",
+        "seed": 24,
+        "metrics_exact": true,
+        "predictions_exact": true,
+        "examples": 587,
+        "metrics": {
+          "joint": {
+            "precision": 0.701853344077357,
+            "recall": 0.7058346839546191,
+            "f1": 0.7038383838383839,
+            "tp": 871,
+            "predicted": 1241,
+            "gold": 1234
+          },
+          "mate": {
+            "precision": 0.935535858178888,
+            "recall": 0.9408427876823339,
+            "f1": 0.9381818181818182,
+            "tp": 1161,
+            "predicted": 1241,
+            "gold": 1234
+          },
+          "sentiment_on_matched": {
+            "accuracy": 0.7502153316106804,
+            "count": 1161,
+            "correct": 871
+          }
+        }
+      },
+      {
+        "dataset": "twitter2017",
+        "seed": 25,
+        "metrics_exact": true,
+        "predictions_exact": true,
+        "examples": 587,
+        "metrics": {
+          "joint": {
+            "precision": 0.6787687450670876,
+            "recall": 0.6969205834683955,
+            "f1": 0.6877249100359856,
+            "tp": 860,
+            "predicted": 1267,
+            "gold": 1234
+          },
+          "mate": {
+            "precision": 0.9234411996842936,
+            "recall": 0.9481361426256077,
+            "f1": 0.9356257497001199,
+            "tp": 1170,
+            "predicted": 1267,
+            "gold": 1234
+          },
+          "sentiment_on_matched": {
+            "accuracy": 0.7350427350427351,
+            "count": 1170,
+            "correct": 860
+          }
+        }
+      }
+    ]
+  },
+  "deterministic_training_probe": {
+    "status": "passed",
+    "deterministic_probe": true,
+    "seed": 25,
+    "train_examples": 8,
+    "dev_examples": 4,
+    "optimizer_updates": 1,
+    "parameter_tensors": 224,
+    "parameters_bitwise_equal": true,
+    "losses_equal": true,
+    "dev_predictions_equal": true,
+    "note": "Short real-backbone training equivalence; not a new full 35-epoch result."
+  },
+  "default_gpu_probe": {
+    "parameters_bitwise_equal": false,
+    "max_parameter_abs_diff": 1.3690441846847534e-07,
+    "differing_tensors": 141,
+    "train_loss_equal": true,
+    "dev_predictions_equal": true,
+    "note": "Original training settings preserved. Controlled deterministic diagnostic is recorded separately in training-equivalence.json."
+  },
+  "isolation": {
+    "status": "passed",
+    "original_files_checked": 14093,
+    "originals_unchanged": true,
+    "original_core_files_identical": [
+      "__init__.py",
+      "audit.py",
+      "common/__init__.py",
+      "common/backbones.py",
+      "common/data.py",
+      "common/metrics.py",
+      "crf.py",
+      "data.py",
+      "labels.py",
+      "logging.py",
+      "model.py",
+      "runtime.py",
+      "smoke.py",
+      "train.py"
+    ],
+    "resource_only_changes": [
+      "evaluate.py",
+      "common/cache.py"
+    ],
+    "nonpath_hyperparameters_identical": true,
+    "local_assets_checked": 14078
+  },
+  "limitations": [
+    "Full 35-epoch training was not repeated during migration.",
+    "Original GPU nondeterminism settings were preserved; bitwise equality is established for the deterministic diagnostic only.",
+    "The local runtime is Linux-host specific and still requires compatible system/GPU drivers."
+  ]
+}

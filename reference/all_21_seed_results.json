@@ -1,0 +1,1414 @@
+{
+  "seed_count_per_dataset": 21,
+  "rows": [
+    {
+      "dataset": "twitter2015",
+      "seed": 15,
+      "best_epoch": 16,
+      "dev_joint_f1": 0.6757230499561787,
+      "test_joint_f1": 0.6596958174904943,
+      "test_mate_f1": 0.8650190114068441,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6504217432052484,
+          "recall": 0.6692381870781099,
+          "f1": 0.6596958174904943,
+          "tp": 694,
+          "predicted": 1067,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8528584817244611,
+          "recall": 0.8775313404050145,
+          "f1": 0.8650190114068441,
+          "tp": 910,
+          "predicted": 1067,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7626373626373626,
+          "count": 910,
+          "correct": 694
+        }
+      },
+      "run": "reference/runs/twitter2015/seed15",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_near17/runs/twitter2015-fusion-s15"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 16,
+      "best_epoch": 34,
+      "dev_joint_f1": 0.6725820763087843,
+      "test_joint_f1": 0.6880689985625299,
+      "test_mate_f1": 0.8691902252036416,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6838095238095238,
+          "recall": 0.6923818707810994,
+          "f1": 0.6880689985625299,
+          "tp": 718,
+          "predicted": 1050,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8638095238095238,
+          "recall": 0.8746383799421408,
+          "f1": 0.8691902252036416,
+          "tp": 907,
+          "predicted": 1050,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7916207276736494,
+          "count": 907,
+          "correct": 718
+        }
+      },
+      "run": "reference/runs/twitter2015/seed16",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_near17/runs/twitter2015-fusion-s16"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 17,
+      "best_epoch": 23,
+      "dev_joint_f1": 0.6767317939609235,
+      "test_joint_f1": 0.6721153846153846,
+      "test_mate_f1": 0.8625,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6701821668264621,
+          "recall": 0.6740597878495661,
+          "f1": 0.6721153846153846,
+          "tp": 699,
+          "predicted": 1043,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8600191754554171,
+          "recall": 0.8649951783992286,
+          "f1": 0.8625,
+          "tp": 897,
+          "predicted": 1043,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7792642140468228,
+          "count": 897,
+          "correct": 699
+        }
+      },
+      "run": "reference/runs/twitter2015/seed17",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_multiseed/runs/twitter2015-fusion-s17"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 18,
+      "best_epoch": 20,
+      "dev_joint_f1": 0.6740971912617031,
+      "test_joint_f1": 0.6621816434406534,
+      "test_mate_f1": 0.8601633829889476,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6599616858237548,
+          "recall": 0.6644165863066538,
+          "f1": 0.6621816434406534,
+          "tp": 689,
+          "predicted": 1044,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.85727969348659,
+          "recall": 0.863066538090646,
+          "f1": 0.8601633829889476,
+          "tp": 895,
+          "predicted": 1044,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7698324022346369,
+          "count": 895,
+          "correct": 689
+        }
+      },
+      "run": "reference/runs/twitter2015/seed18",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_near17/runs/twitter2015-fusion-s18"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 19,
+      "best_epoch": 23,
+      "dev_joint_f1": 0.673951048951049,
+      "test_joint_f1": 0.683937823834197,
+      "test_mate_f1": 0.8657560056523786,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6685082872928176,
+          "recall": 0.7000964320154291,
+          "f1": 0.683937823834197,
+          "tp": 726,
+          "predicted": 1086,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8462246777163904,
+          "recall": 0.8862102217936355,
+          "f1": 0.8657560056523786,
+          "tp": 919,
+          "predicted": 1086,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7899891186071817,
+          "count": 919,
+          "correct": 726
+        }
+      },
+      "run": "reference/runs/twitter2015/seed19",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_near17/runs/twitter2015-fusion-s19"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 42,
+      "best_epoch": 27,
+      "dev_joint_f1": 0.6770462633451958,
+      "test_joint_f1": 0.6762728146013448,
+      "test_mate_f1": 0.8741594620557156,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6736842105263158,
+          "recall": 0.6788813886210222,
+          "f1": 0.6762728146013448,
+          "tp": 704,
+          "predicted": 1045,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8708133971291866,
+          "recall": 0.8775313404050145,
+          "f1": 0.8741594620557156,
+          "tp": 910,
+          "predicted": 1045,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7736263736263737,
+          "count": 910,
+          "correct": 704
+        }
+      },
+      "run": "reference/runs/twitter2015/seed42",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep/runs/twitter2015-fusion-s42"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 43,
+      "best_epoch": 31,
+      "dev_joint_f1": 0.6637246248896734,
+      "test_joint_f1": 0.6774346793349167,
+      "test_mate_f1": 0.8665083135391923,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6676029962546817,
+          "recall": 0.6875602700096431,
+          "f1": 0.6774346793349167,
+          "tp": 713,
+          "predicted": 1068,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8539325842696629,
+          "recall": 0.8794599807135969,
+          "f1": 0.8665083135391923,
+          "tp": 912,
+          "predicted": 1068,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7817982456140351,
+          "count": 912,
+          "correct": 713
+        }
+      },
+      "run": "reference/runs/twitter2015/seed43",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_multiseed/runs/twitter2015-fusion-s43"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 44,
+      "best_epoch": 21,
+      "dev_joint_f1": 0.6836917562724014,
+      "test_joint_f1": 0.6820365033621518,
+      "test_mate_f1": 0.8607108549471661,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6794258373205742,
+          "recall": 0.6846673095467696,
+          "f1": 0.6820365033621518,
+          "tp": 710,
+          "predicted": 1045,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8574162679425837,
+          "recall": 0.8640308582449373,
+          "f1": 0.8607108549471661,
+          "tp": 896,
+          "predicted": 1045,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7924107142857143,
+          "count": 896,
+          "correct": 710
+        }
+      },
+      "run": "reference/runs/twitter2015/seed44",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_multiseed/runs/twitter2015-fusion-s44"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 97,
+      "best_epoch": 11,
+      "dev_joint_f1": 0.6658019887591873,
+      "test_joint_f1": 0.6567441860465115,
+      "test_mate_f1": 0.8604651162790697,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6343216531895777,
+          "recall": 0.6808100289296046,
+          "f1": 0.6567441860465115,
+          "tp": 706,
+          "predicted": 1113,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8310871518418689,
+          "recall": 0.8919961427193829,
+          "f1": 0.8604651162790697,
+          "tp": 925,
+          "predicted": 1113,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7632432432432432,
+          "count": 925,
+          "correct": 706
+        }
+      },
+      "run": "reference/runs/twitter2015/seed97",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_multiseed/runs/twitter2015-fusion-s97"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 15,
+      "best_epoch": 15,
+      "dev_joint_f1": 0.6669470142977292,
+      "test_joint_f1": 0.6879289463060153,
+      "test_mate_f1": 0.9333871618893822,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6854384553499597,
+          "recall": 0.6904376012965965,
+          "f1": 0.6879289463060153,
+          "tp": 852,
+          "predicted": 1243,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9300080450522928,
+          "recall": 0.9367909238249594,
+          "f1": 0.9333871618893822,
+          "tp": 1156,
+          "predicted": 1243,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7370242214532872,
+          "count": 1156,
+          "correct": 852
+        }
+      },
+      "run": "reference/runs/twitter2017/seed15",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_near17/runs/twitter2017-fusion-s15"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 16,
+      "best_epoch": 23,
+      "dev_joint_f1": 0.6675052410901468,
+      "test_joint_f1": 0.6956872228939943,
+      "test_mate_f1": 0.9359129383313181,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6920609462710505,
+          "recall": 0.6993517017828201,
+          "f1": 0.6956872228939943,
+          "tp": 863,
+          "predicted": 1247,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9310344827586207,
+          "recall": 0.9408427876823339,
+          "f1": 0.9359129383313181,
+          "tp": 1161,
+          "predicted": 1247,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7433247200689062,
+          "count": 1161,
+          "correct": 863
+        }
+      },
+      "run": "reference/runs/twitter2017/seed16",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_near17/runs/twitter2017-fusion-s16"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 17,
+      "best_epoch": 30,
+      "dev_joint_f1": 0.676396997497915,
+      "test_joint_f1": 0.6999597261377366,
+      "test_mate_f1": 0.9343536045106726,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6957566052842273,
+          "recall": 0.7042139384116693,
+          "f1": 0.6999597261377366,
+          "tp": 869,
+          "predicted": 1249,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9287429943955164,
+          "recall": 0.940032414910859,
+          "f1": 0.9343536045106726,
+          "tp": 1160,
+          "predicted": 1249,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7491379310344828,
+          "count": 1160,
+          "correct": 869
+        }
+      },
+      "run": "reference/runs/twitter2017/seed17",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_multiseed/runs/twitter2017-fusion-s17"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 18,
+      "best_epoch": 10,
+      "dev_joint_f1": 0.668609492089925,
+      "test_joint_f1": 0.688683044703987,
+      "test_mate_f1": 0.9254933548127267,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6845476381104884,
+          "recall": 0.692868719611021,
+          "f1": 0.688683044703987,
+          "tp": 855,
+          "predicted": 1249,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9199359487590072,
+          "recall": 0.9311183144246353,
+          "f1": 0.9254933548127267,
+          "tp": 1149,
+          "predicted": 1249,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7441253263707572,
+          "count": 1149,
+          "correct": 855
+        }
+      },
+      "run": "reference/runs/twitter2017/seed18",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_near17/runs/twitter2017-fusion-s18"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 19,
+      "best_epoch": 14,
+      "dev_joint_f1": 0.6641666666666667,
+      "test_joint_f1": 0.6816179415298358,
+      "test_mate_f1": 0.933119743692431,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6737925574030087,
+          "recall": 0.6896272285251216,
+          "f1": 0.6816179415298358,
+          "tp": 851,
+          "predicted": 1263,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9224069675376089,
+          "recall": 0.9440842787682334,
+          "f1": 0.933119743692431,
+          "tp": 1165,
+          "predicted": 1263,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7304721030042919,
+          "count": 1165,
+          "correct": 851
+        }
+      },
+      "run": "reference/runs/twitter2017/seed19",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_near17/runs/twitter2017-fusion-s19"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 42,
+      "best_epoch": 12,
+      "dev_joint_f1": 0.6734607218683651,
+      "test_joint_f1": 0.6855268552685527,
+      "test_mate_f1": 0.930709307093071,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6937759336099585,
+          "recall": 0.6774716369529984,
+          "f1": 0.6855268552685527,
+          "tp": 836,
+          "predicted": 1205,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.941908713692946,
+          "recall": 0.919773095623987,
+          "f1": 0.930709307093071,
+          "tp": 1135,
+          "predicted": 1205,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7365638766519824,
+          "count": 1135,
+          "correct": 836
+        }
+      },
+      "run": "reference/runs/twitter2017/seed42",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep/runs/twitter2017-fusion-s42"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 43,
+      "best_epoch": 17,
+      "dev_joint_f1": 0.6705539358600583,
+      "test_joint_f1": 0.6829073482428115,
+      "test_mate_f1": 0.9305111821086263,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6732283464566929,
+          "recall": 0.692868719611021,
+          "f1": 0.6829073482428115,
+          "tp": 855,
+          "predicted": 1270,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9173228346456693,
+          "recall": 0.9440842787682334,
+          "f1": 0.9305111821086263,
+          "tp": 1165,
+          "predicted": 1270,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7339055793991416,
+          "count": 1165,
+          "correct": 855
+        }
+      },
+      "run": "reference/runs/twitter2017/seed43",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_multiseed/runs/twitter2017-fusion-s43"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 44,
+      "best_epoch": 12,
+      "dev_joint_f1": 0.6750629722921915,
+      "test_joint_f1": 0.6857603872529247,
+      "test_mate_f1": 0.9310205728116177,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6827309236947792,
+          "recall": 0.6888168557536467,
+          "f1": 0.6857603872529247,
+          "tp": 850,
+          "predicted": 1245,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9269076305220884,
+          "recall": 0.9351701782820098,
+          "f1": 0.9310205728116177,
+          "tp": 1154,
+          "predicted": 1245,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7365684575389948,
+          "count": 1154,
+          "correct": 850
+        }
+      },
+      "run": "reference/runs/twitter2017/seed44",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_multiseed/runs/twitter2017-fusion-s44"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 97,
+      "best_epoch": 5,
+      "dev_joint_f1": 0.6613712374581939,
+      "test_joint_f1": 0.6787585650947199,
+      "test_mate_f1": 0.9334945586457074,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6752205292702486,
+          "recall": 0.6823338735818476,
+          "f1": 0.6787585650947199,
+          "tp": 842,
+          "predicted": 1247,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9286287089013633,
+          "recall": 0.9384116693679092,
+          "f1": 0.9334945586457074,
+          "tp": 1158,
+          "predicted": 1247,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7271157167530224,
+          "count": 1158,
+          "correct": 842
+        }
+      },
+      "run": "reference/runs/twitter2017/seed97",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261011_sequence_crf_35ep_multiseed/runs/twitter2017-fusion-s97"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 20,
+      "best_epoch": 25,
+      "dev_joint_f1": 0.6675651392632526,
+      "test_joint_f1": 0.6721470019342359,
+      "test_mate_f1": 0.8539651837524178,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6741028128031038,
+          "recall": 0.6702025072324012,
+          "f1": 0.6721470019342359,
+          "tp": 695,
+          "predicted": 1031,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8564500484966052,
+          "recall": 0.8514946962391514,
+          "f1": 0.8539651837524178,
+          "tp": 883,
+          "predicted": 1031,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7870894677236693,
+          "count": 883,
+          "correct": 695
+        }
+      },
+      "run": "reference/runs/twitter2015/seed20",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group1/runs/twitter2015-fusion-s20"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 21,
+      "best_epoch": 15,
+      "dev_joint_f1": 0.6743261157755192,
+      "test_joint_f1": 0.6749167063303189,
+      "test_mate_f1": 0.8567348881485006,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6663533834586466,
+          "recall": 0.6837029893924783,
+          "f1": 0.6749167063303189,
+          "tp": 709,
+          "predicted": 1064,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8458646616541353,
+          "recall": 0.8678881388621023,
+          "f1": 0.8567348881485006,
+          "tp": 900,
+          "predicted": 1064,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7877777777777778,
+          "count": 900,
+          "correct": 709
+        }
+      },
+      "run": "reference/runs/twitter2015/seed21",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group1/runs/twitter2015-fusion-s21"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 22,
+      "best_epoch": 32,
+      "dev_joint_f1": 0.6731107205623901,
+      "test_joint_f1": 0.688773093320701,
+      "test_mate_f1": 0.8649928943628612,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6769087523277467,
+          "recall": 0.7010607521697203,
+          "f1": 0.688773093320701,
+          "tp": 727,
+          "predicted": 1074,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8500931098696461,
+          "recall": 0.8804243008678881,
+          "f1": 0.8649928943628612,
+          "tp": 913,
+          "predicted": 1074,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7962760131434831,
+          "count": 913,
+          "correct": 727
+        }
+      },
+      "run": "reference/runs/twitter2015/seed22",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group1/runs/twitter2015-fusion-s22"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 23,
+      "best_epoch": 20,
+      "dev_joint_f1": 0.6766388033435988,
+      "test_joint_f1": 0.676470588235294,
+      "test_mate_f1": 0.8662239089184061,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6657329598506069,
+          "recall": 0.6875602700096431,
+          "f1": 0.676470588235294,
+          "tp": 713,
+          "predicted": 1071,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8524743230625583,
+          "recall": 0.8804243008678881,
+          "f1": 0.8662239089184061,
+          "tp": 913,
+          "predicted": 1071,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7809419496166484,
+          "count": 913,
+          "correct": 713
+        }
+      },
+      "run": "reference/runs/twitter2015/seed23",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group1/runs/twitter2015-fusion-s23"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 20,
+      "best_epoch": 33,
+      "dev_joint_f1": 0.6714225765841376,
+      "test_joint_f1": 0.6909090909090909,
+      "test_mate_f1": 0.9389898989898989,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6889605157131345,
+          "recall": 0.692868719611021,
+          "f1": 0.6909090909090909,
+          "tp": 855,
+          "predicted": 1241,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9363416599516519,
+          "recall": 0.9416531604538088,
+          "f1": 0.9389898989898989,
+          "tp": 1162,
+          "predicted": 1241,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7358003442340791,
+          "count": 1162,
+          "correct": 855
+        }
+      },
+      "run": "reference/runs/twitter2017/seed20",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group1/runs/twitter2017-fusion-s20"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 21,
+      "best_epoch": 5,
+      "dev_joint_f1": 0.6711979609175871,
+      "test_joint_f1": 0.6688364524003254,
+      "test_mate_f1": 0.9316517493897477,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6715686274509803,
+          "recall": 0.6661264181523501,
+          "f1": 0.6688364524003254,
+          "tp": 822,
+          "predicted": 1224,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9354575163398693,
+          "recall": 0.9278768233387358,
+          "f1": 0.9316517493897477,
+          "tp": 1145,
+          "predicted": 1224,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7179039301310044,
+          "count": 1145,
+          "correct": 822
+        }
+      },
+      "run": "reference/runs/twitter2017/seed21",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group1/runs/twitter2017-fusion-s21"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 22,
+      "best_epoch": 10,
+      "dev_joint_f1": 0.6816479400749064,
+      "test_joint_f1": 0.6848655158570855,
+      "test_mate_f1": 0.9361702127659575,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6785998408910103,
+          "recall": 0.6912479740680713,
+          "f1": 0.6848655158570855,
+          "tp": 853,
+          "predicted": 1257,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9276054097056484,
+          "recall": 0.9448946515397083,
+          "f1": 0.9361702127659575,
+          "tp": 1166,
+          "predicted": 1257,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7315608919382505,
+          "count": 1166,
+          "correct": 853
+        }
+      },
+      "run": "reference/runs/twitter2017/seed22",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group1/runs/twitter2017-fusion-s22"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 23,
+      "best_epoch": 9,
+      "dev_joint_f1": 0.6708333333333333,
+      "test_joint_f1": 0.6712109061748195,
+      "test_mate_f1": 0.9326383319967922,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6642857142857143,
+          "recall": 0.6782820097244733,
+          "f1": 0.6712109061748195,
+          "tp": 837,
+          "predicted": 1260,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9230158730158731,
+          "recall": 0.9424635332252836,
+          "f1": 0.9326383319967922,
+          "tp": 1163,
+          "predicted": 1260,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7196904557179707,
+          "count": 1163,
+          "correct": 837
+        }
+      },
+      "run": "reference/runs/twitter2017/seed23",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group1/runs/twitter2017-fusion-s23"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 24,
+      "best_epoch": 30,
+      "dev_joint_f1": 0.6722763507528787,
+      "test_joint_f1": 0.681013868962219,
+      "test_mate_f1": 0.8694404591104734,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6755218216318786,
+          "recall": 0.686595949855352,
+          "f1": 0.681013868962219,
+          "tp": 712,
+          "predicted": 1054,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8624288425047438,
+          "recall": 0.8765670202507232,
+          "f1": 0.8694404591104734,
+          "tp": 909,
+          "predicted": 1054,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7832783278327833,
+          "count": 909,
+          "correct": 712
+        }
+      },
+      "run": "reference/runs/twitter2015/seed24",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group2/runs/twitter2015-fusion-s24"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 25,
+      "best_epoch": 31,
+      "dev_joint_f1": 0.6716814159292036,
+      "test_joint_f1": 0.7017711823839157,
+      "test_mate_f1": 0.868358066060316,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6967680608365019,
+          "recall": 0.7068466730954677,
+          "f1": 0.7017711823839157,
+          "tp": 733,
+          "predicted": 1052,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8621673003802282,
+          "recall": 0.8746383799421408,
+          "f1": 0.868358066060316,
+          "tp": 907,
+          "predicted": 1052,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.8081587651598677,
+          "count": 907,
+          "correct": 733
+        }
+      },
+      "run": "reference/runs/twitter2015/seed25",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group2/runs/twitter2015-fusion-s25"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 26,
+      "best_epoch": 20,
+      "dev_joint_f1": 0.666077738515901,
+      "test_joint_f1": 0.6838340486409156,
+      "test_mate_f1": 0.8745827372436813,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6764150943396227,
+          "recall": 0.6914175506268081,
+          "f1": 0.6838340486409156,
+          "tp": 717,
+          "predicted": 1060,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8650943396226415,
+          "recall": 0.8842815814850531,
+          "f1": 0.8745827372436813,
+          "tp": 917,
+          "predicted": 1060,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.781897491821156,
+          "count": 917,
+          "correct": 717
+        }
+      },
+      "run": "reference/runs/twitter2015/seed26",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group2/runs/twitter2015-fusion-s26"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 27,
+      "best_epoch": 26,
+      "dev_joint_f1": 0.678793256433008,
+      "test_joint_f1": 0.6835081029551954,
+      "test_mate_f1": 0.8598665395614873,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6757775683317625,
+          "recall": 0.6914175506268081,
+          "f1": 0.6835081029551954,
+          "tp": 717,
+          "predicted": 1061,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8501413760603205,
+          "recall": 0.8698167791706847,
+          "f1": 0.8598665395614873,
+          "tp": 902,
+          "predicted": 1061,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.79490022172949,
+          "count": 902,
+          "correct": 717
+        }
+      },
+      "run": "reference/runs/twitter2015/seed27",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group2/runs/twitter2015-fusion-s27"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 24,
+      "best_epoch": 29,
+      "dev_joint_f1": 0.6596726814939152,
+      "test_joint_f1": 0.7038383838383839,
+      "test_mate_f1": 0.9381818181818182,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.701853344077357,
+          "recall": 0.7058346839546191,
+          "f1": 0.7038383838383839,
+          "tp": 871,
+          "predicted": 1241,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.935535858178888,
+          "recall": 0.9408427876823339,
+          "f1": 0.9381818181818182,
+          "tp": 1161,
+          "predicted": 1241,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7502153316106804,
+          "count": 1161,
+          "correct": 871
+        }
+      },
+      "run": "reference/runs/twitter2017/seed24",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group2/runs/twitter2017-fusion-s24"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 25,
+      "best_epoch": 5,
+      "dev_joint_f1": 0.6758218893050354,
+      "test_joint_f1": 0.6877249100359856,
+      "test_mate_f1": 0.9356257497001199,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6787687450670876,
+          "recall": 0.6969205834683955,
+          "f1": 0.6877249100359856,
+          "tp": 860,
+          "predicted": 1267,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9234411996842936,
+          "recall": 0.9481361426256077,
+          "f1": 0.9356257497001199,
+          "tp": 1170,
+          "predicted": 1267,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7350427350427351,
+          "count": 1170,
+          "correct": 860
+        }
+      },
+      "run": "reference/runs/twitter2017/seed25",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group2/runs/twitter2017-fusion-s25"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 26,
+      "best_epoch": 22,
+      "dev_joint_f1": 0.675652906486942,
+      "test_joint_f1": 0.6895993524888709,
+      "test_mate_f1": 0.9364629704573046,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6887631366208569,
+          "recall": 0.6904376012965965,
+          "f1": 0.6895993524888709,
+          "tp": 852,
+          "predicted": 1237,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9353274050121261,
+          "recall": 0.9376012965964343,
+          "f1": 0.9364629704573046,
+          "tp": 1157,
+          "predicted": 1237,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7363872082973206,
+          "count": 1157,
+          "correct": 852
+        }
+      },
+      "run": "reference/runs/twitter2017/seed26",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group2/runs/twitter2017-fusion-s26"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 27,
+      "best_epoch": 23,
+      "dev_joint_f1": 0.6810308407266582,
+      "test_joint_f1": 0.6820388349514563,
+      "test_mate_f1": 0.9328478964401294,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6809369951534734,
+          "recall": 0.6831442463533225,
+          "f1": 0.6820388349514563,
+          "tp": 843,
+          "predicted": 1238,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.931340872374798,
+          "recall": 0.9343598055105349,
+          "f1": 0.9328478964401294,
+          "tp": 1153,
+          "predicted": 1238,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7311361665221162,
+          "count": 1153,
+          "correct": 843
+        }
+      },
+      "run": "reference/runs/twitter2017/seed27",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group2/runs/twitter2017-fusion-s27"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 28,
+      "best_epoch": 25,
+      "dev_joint_f1": 0.67825311942959,
+      "test_joint_f1": 0.6779497098646035,
+      "test_mate_f1": 0.8597678916827853,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6799224054316197,
+          "recall": 0.6759884281581485,
+          "f1": 0.6779497098646035,
+          "tp": 701,
+          "predicted": 1031,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8622696411251213,
+          "recall": 0.8572806171648988,
+          "f1": 0.8597678916827853,
+          "tp": 889,
+          "predicted": 1031,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7885264341957255,
+          "count": 889,
+          "correct": 701
+        }
+      },
+      "run": "reference/runs/twitter2015/seed28",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group3/runs/twitter2015-fusion-s28"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 29,
+      "best_epoch": 15,
+      "dev_joint_f1": 0.674087266251113,
+      "test_joint_f1": 0.6614785992217899,
+      "test_mate_f1": 0.8599221789883268,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6673209028459274,
+          "recall": 0.6557377049180327,
+          "f1": 0.6614785992217899,
+          "tp": 680,
+          "predicted": 1019,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8675171736997056,
+          "recall": 0.8524590163934426,
+          "f1": 0.8599221789883268,
+          "tp": 884,
+          "predicted": 1019,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7692307692307693,
+          "count": 884,
+          "correct": 680
+        }
+      },
+      "run": "reference/runs/twitter2015/seed29",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group3/runs/twitter2015-fusion-s29"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 30,
+      "best_epoch": 32,
+      "dev_joint_f1": 0.6755083996463306,
+      "test_joint_f1": 0.6866952789699571,
+      "test_mate_f1": 0.865999046256557,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6792452830188679,
+          "recall": 0.6943105110896818,
+          "f1": 0.6866952789699571,
+          "tp": 720,
+          "predicted": 1060,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8566037735849057,
+          "recall": 0.875602700096432,
+          "f1": 0.865999046256557,
+          "tp": 908,
+          "predicted": 1060,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7929515418502202,
+          "count": 908,
+          "correct": 720
+        }
+      },
+      "run": "reference/runs/twitter2015/seed30",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group3/runs/twitter2015-fusion-s30"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 31,
+      "best_epoch": 34,
+      "dev_joint_f1": 0.6746666666666667,
+      "test_joint_f1": 0.6932309169467115,
+      "test_mate_f1": 0.8689390302448392,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6902485659655831,
+          "recall": 0.6962391513982642,
+          "f1": 0.6932309169467115,
+          "tp": 722,
+          "predicted": 1046,
+          "gold": 1037
+        },
+        "mate": {
+          "precision": 0.8652007648183556,
+          "recall": 0.8727097396335584,
+          "f1": 0.8689390302448392,
+          "tp": 905,
+          "predicted": 1046,
+          "gold": 1037
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7977900552486188,
+          "count": 905,
+          "correct": 722
+        }
+      },
+      "run": "reference/runs/twitter2015/seed31",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group3/runs/twitter2015-fusion-s31"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 28,
+      "best_epoch": 32,
+      "dev_joint_f1": 0.6672261854804868,
+      "test_joint_f1": 0.6806620912394025,
+      "test_mate_f1": 0.9350020185708519,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6781979082864039,
+          "recall": 0.6831442463533225,
+          "f1": 0.6806620912394025,
+          "tp": 843,
+          "predicted": 1243,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9316170555108608,
+          "recall": 0.9384116693679092,
+          "f1": 0.9350020185708519,
+          "tp": 1158,
+          "predicted": 1243,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.727979274611399,
+          "count": 1158,
+          "correct": 843
+        }
+      },
+      "run": "reference/runs/twitter2017/seed28",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group3/runs/twitter2017-fusion-s28"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 29,
+      "best_epoch": 19,
+      "dev_joint_f1": 0.6716479867164799,
+      "test_joint_f1": 0.6781701444622793,
+      "test_mate_f1": 0.9357945425361156,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6717011128775835,
+          "recall": 0.6847649918962723,
+          "f1": 0.6781701444622793,
+          "tp": 845,
+          "predicted": 1258,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9268680445151033,
+          "recall": 0.9448946515397083,
+          "f1": 0.9357945425361156,
+          "tp": 1166,
+          "predicted": 1258,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7246998284734134,
+          "count": 1166,
+          "correct": 845
+        }
+      },
+      "run": "reference/runs/twitter2017/seed29",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group3/runs/twitter2017-fusion-s29"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 30,
+      "best_epoch": 28,
+      "dev_joint_f1": 0.6610808546292418,
+      "test_joint_f1": 0.6886564762670957,
+      "test_mate_f1": 0.9364440868865647,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6837060702875399,
+          "recall": 0.6936790923824959,
+          "f1": 0.6886564762670957,
+          "tp": 856,
+          "predicted": 1252,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9297124600638977,
+          "recall": 0.9432739059967585,
+          "f1": 0.9364440868865647,
+          "tp": 1164,
+          "predicted": 1252,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7353951890034365,
+          "count": 1164,
+          "correct": 856
+        }
+      },
+      "run": "reference/runs/twitter2017/seed30",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group3/runs/twitter2017-fusion-s30"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 31,
+      "best_epoch": 29,
+      "dev_joint_f1": 0.6791666666666666,
+      "test_joint_f1": 0.6856913183279743,
+      "test_mate_f1": 0.9356913183279743,
+      "test_metrics": {
+        "joint": {
+          "precision": 0.6802232854864434,
+          "recall": 0.6912479740680713,
+          "f1": 0.6856913183279743,
+          "tp": 853,
+          "predicted": 1254,
+          "gold": 1234
+        },
+        "mate": {
+          "precision": 0.9282296650717703,
+          "recall": 0.9432739059967585,
+          "f1": 0.9356913183279743,
+          "tp": 1164,
+          "predicted": 1254,
+          "gold": 1234
+        },
+        "sentiment_on_matched": {
+          "accuracy": 0.7328178694158075,
+          "count": 1164,
+          "correct": 853
+        }
+      },
+      "run": "reference/runs/twitter2017/seed31",
+      "original_run": "/home/whj/reproject/mabsa_evidence/experiments/20261012_sequence_crf_35ep_s20_31/group3/runs/twitter2017-fusion-s31"
+    }
+  ],
+  "summary": {
+    "twitter2015": {
+      "test_joint_f1": {
+        "mean": 0.6781084261454305,
+        "sample_std": 0.011421322673396062
+      },
+      "test_mate_f1": {
+        "mean": 0.8644411998287432,
+        "sample_std": 0.005370168130420448
+      }
+    },
+    "twitter2017": {
+      "test_joint_f1": {
+        "mean": 0.6856682625896833,
+        "sample_std": 0.008259187971543416
+      },
+      "test_mate_f1": {
+        "mean": 0.933976334197087,
+        "sample_std": 0.0030576062473588444
+      }
+    }
+  },
+  "note": "All 21 evaluated seeds retained. Additional seed experiments followed inspection of earlier Test results."
+}

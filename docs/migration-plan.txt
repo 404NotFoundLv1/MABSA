@@ -1,0 +1,8 @@
+MACT standalone baseline migration
+User constraints: preserve all original code/results; one shared source tree; configurations distinguish experiments; maintain exact baseline computation and official splits.
+1. Copy group2 source to src/mact, preserve model/CRF/training math and parameters. Add resource-path portability only outside model calculations.
+2. Copy pretrained weights, four visual caches, images, official split files and key checkpoints. Archive all 21 seed metrics/predictions and provenance. Verify byte hashes. Originals read-only.
+3. Isolate Python runtime and effective package versions from inherited old environments; lock versions and validate import origins.
+4. Provide base/dataset configs, single train/evaluate commands, sequential seed-group runner, complete-seed aggregation and run identity.
+5. Test config merging, relocated resources, existing model tests, scheduling. Re-evaluate four seed24/25 checkpoints on full Test using only local assets; require predictions/metrics equality. Run short training equivalence check against frozen original code if resources allow.
+6. Document module extension points and baseline results; initialize local Git baseline tag after verification. Large immutable assets remain outside Git with SHA256 inventory.
