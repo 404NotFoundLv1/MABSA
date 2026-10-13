@@ -10,7 +10,7 @@ import torch
 
 from .common.backbones import text_from_config
 from .common.metrics import evaluate_predictions
-from .labels import TAGS, tags_to_aspects
+from .labels import get_tags, tags_to_aspects
 from .model import SequenceModel, ModelConfig
 
 
@@ -99,13 +99,15 @@ def evaluate_model(model, loader, device, force_null=False):
             if example.id in gold:
                 raise ValueError('duplicate example ID in evaluation')
             gold[example.id] = example.aspects
-            predictions[example.id] = tags_to_aspects(tags)
+            predictions[example.id] = tags_to_aspects(tags, model.config.label_scheme)
     return evaluate_predictions(gold, predictions), predictions
 
 
 def save_checkpoint(path, model, run_config, epoch, metrics):
+    label_scheme = model.config.label_scheme
     content = {
-        'format': 'mabsa_sequence_crf_v1', 'tags': list(TAGS),
+        'format': 'mabsa_sequence_crf_v1' if label_scheme == 'five' else 'mabsa_sequence_crf_v2',
+        'tags': list(get_tags(label_scheme)),
         'model_config': asdict(model.config), 'run_config': run_config,
         'text_config': model.text_encoder.config.to_dict(),
         'text_attention': model.text_encoder.config._attn_implementation,
@@ -120,7 +122,10 @@ def save_checkpoint(path, model, run_config, epoch, metrics):
 
 def load_checkpoint(path, device='cpu'):
     content = torch.load(path, map_location='cpu', weights_only=True)
-    if content.get('format') != 'mabsa_sequence_crf_v1' or content.get('tags') != list(TAGS):
+    label_scheme = content['model_config'].get('label_scheme', 'five')
+    formats = {'five': 'mabsa_sequence_crf_v1', 'seven': 'mabsa_sequence_crf_v2'}
+    if (label_scheme not in ('five', 'seven') or content.get('format') != formats[label_scheme]
+            or content.get('tags') != list(get_tags(label_scheme))):
         raise ValueError('unsupported checkpoint or tag schema')
     text = text_from_config(content['text_config'], content.get('text_attention', 'eager'))
     model = SequenceModel(text, ModelConfig(**content['model_config']))

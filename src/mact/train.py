@@ -1,4 +1,4 @@
-"""Train five-tag MABSA; select exclusively by Dev exact joint F1."""
+"""Train word-tag MABSA; select exclusively by Dev exact joint F1."""
 
 import argparse
 import json
@@ -17,7 +17,7 @@ from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 from .common.backbones import load_text
 from .common.cache import CachedVisionDataset, open_cache, file_hash, model_hashes
 from .data import SequenceDataset, SequenceCollator, load_labeled
-from .labels import TAGS
+from .labels import get_tags
 from .logging import TrainingLogger
 from .model import SequenceModel, ModelConfig
 from .runtime import train_epoch, evaluate_model, save_checkpoint, write_json
@@ -57,7 +57,8 @@ def resolve_config(raw):
 
 
 def make_dataset(examples, tokenizer, cfg, features):
-    dataset = SequenceDataset(examples, tokenizer, max_length=cfg['max_length'])
+    dataset = SequenceDataset(examples, tokenizer, max_length=cfg['max_length'],
+                              label_scheme=cfg.get('model', {}).get('label_scheme', 'five'))
     return CachedVisionDataset(dataset, features) if features is not None else dataset
 
 
@@ -116,7 +117,8 @@ def run_training(raw, output):
     scheduler = get_linear_schedule_with_warmup(optimizer, int(planned * cfg['warmup_ratio']), planned)
     output.mkdir(parents=True, exist_ok=True)
     logger = TrainingLogger(output)
-    logger.info(f"MABSA five-tag CRF | {Path(cfg['train_data']).parent.name}", pad=True)
+    label_scheme = model.config.label_scheme
+    logger.info(f"MABSA {label_scheme}-tag CRF | {Path(cfg['train_data']).parent.name}", pad=True)
     for key in ('seed', 'epochs', 'batch_size', 'accumulation', 'learning_rate',
                 'head_learning_rate', 'warmup_ratio', 'device'):
         logger.info(f'{key}: {cfg[key]}')
@@ -135,7 +137,7 @@ def run_training(raw, output):
     source = Path(__file__).parent
     is_smoke = any(cfg[k] is not None for k in ('train_limit', 'dev_limit', 'max_updates'))
     provenance = {
-        'is_smoke': is_smoke, 'tags': list(TAGS), 'selection_metric': 'dev_joint_f1',
+        'is_smoke': is_smoke, 'tags': list(get_tags(label_scheme)), 'selection_metric': 'dev_joint_f1',
         'precision': 'fp32', 'objective': 'sentence_mean_crf_nll', 'vision_frozen': True,
         'torch': str(torch.__version__), 'transformers': transformers.__version__,
         'train_sha256': file_hash(cfg['train_data']), 'dev_sha256': file_hash(cfg['dev_data']),
@@ -146,12 +148,15 @@ def run_training(raw, output):
         'cache_features_sha256': cache_meta['features_sha256'] if cache_meta else None,
         'source_sha256': {str(p.relative_to(source)): file_hash(p) for p in sorted(source.rglob('*.py'))},
     }
+    if label_scheme == 'seven':
+        provenance.update(label_scheme=label_scheme,
+                          initialization_strategy='five_tag_inside_parameter_expansion')
     if auxiliary_weight > 0:
         provenance.update(objective='sentence_mean_crf_nll_plus_aspect_sentiment_ce',
                           aspect_sentiment_weight=auxiliary_weight,
                           aspect_pooling='mean_projected_text_words',
                           aspect_loss_reduction='mean_aspects_per_sentence_empty_zero',
-                          auxiliary_labels='train_only', decoding='five_tag_crf')
+                          auxiliary_labels='train_only', decoding=f'{label_scheme}_tag_crf')
     if cfg['model']['visual_gate']:
         provenance['visual_gate'] = dict(formula='E_null + sigmoid(linear([word, attention_image-attention_null])) * (E_image-E_null)',
             initial_value=cfg['model']['visual_gate_init'], shared_text_and_visual_head=True,

@@ -120,3 +120,15 @@ CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train.py \
 
 C 从原预训练骨干重新训练，保留原 CRF 目标、35 epochs 和每 epoch 日志；
 详细公式、初始化与门控统计见 `docs/extending.md` 的 C 节。
+
+七标签 CRF 对照使用 `configs/seven_tag.json`，B、C 均关闭：
+
+```bash
+CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train.py \
+  --config configs/seven_tag.json --dataset twitter2015 --seed 42 \
+  --output outputs/seven_tag/twitter2015/seed42 --train-only
+```
+
+`model.label_scheme="seven"` 将共享 `I` 拆为 `I-POS/I-NEU/I-NEG`，
+CRF 只允许同一方面内部延续相同情感。默认仍为 `"five"`，原 baseline 与历史权重保留。
+七标签由官方方面三元组在内存中转换，数据文件和评估三元组定义不变。

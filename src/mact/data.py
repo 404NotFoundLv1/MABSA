@@ -6,7 +6,7 @@ from pathlib import Path
 import torch
 
 from .common.data import SpanDataset, load_examples
-from .labels import aspects_to_tags
+from .labels import aspects_to_tags, get_tags
 
 
 def load_labeled(path):
@@ -21,6 +21,12 @@ def load_labeled(path):
 class SequenceDataset(SpanDataset):
     # Reuse only lazy image I/O and the constructor; override all tokenization
     # and annotation behavior, so the base never enumerates spans.
+    def __init__(self, examples, tokenizer, image_root=None, image_processor=None,
+                 max_length=256, label_scheme='five'):
+        get_tags(label_scheme)
+        self.label_scheme = label_scheme
+        super().__init__(examples, tokenizer, image_root, image_processor, max_length)
+
     def _tokenize(self, example):
         if example.ignored_spans:
             raise ValueError("sequence labeling does not permit ignored/conflicting spans")
@@ -36,7 +42,8 @@ class SequenceDataset(SpanDataset):
             'input_ids': torch.tensor(encoded['input_ids'], dtype=torch.long),
             'attention_mask': torch.tensor(encoded['attention_mask'], dtype=torch.long),
             'word_ids': torch.tensor([-1 if i is None else i for i in word_ids], dtype=torch.long),
-            'tags': torch.tensor(aspects_to_tags(len(example.words), example.aspects), dtype=torch.long),
+            'tags': torch.tensor(aspects_to_tags(len(example.words), example.aspects, self.label_scheme),
+                                 dtype=torch.long),
             'example': example,
         }
 

@@ -10,7 +10,7 @@ from transformers import AutoTokenizer
 from .common.cache import open_cache, file_hash
 from .common.data import load_examples
 from .data import load_labeled, SequenceCollator
-from .labels import TAGS, aspects_to_tags
+from .labels import get_tags, aspects_to_tags
 from .runtime import load_checkpoint, evaluate_model, write_json
 from .train import make_dataset
 
@@ -22,6 +22,9 @@ def run_evaluation(checkpoint, data, output, device='cpu', batch_size=1,
         raise ValueError('evaluation output must be fresh')
     model, metadata = load_checkpoint(checkpoint, device)
     cfg = dict(metadata['run_config'])
+    label_scheme = model.config.label_scheme
+    tags = get_tags(label_scheme)
+    cfg['model'] = {**cfg.get('model', {}), 'label_scheme': label_scheme}
     if resource_paths:
         if set(resource_paths) - {'vision_model', 'image_root'}:
             raise ValueError('only vision_model and image_root may be relocated')
@@ -40,19 +43,22 @@ def run_evaluation(checkpoint, data, output, device='cpu', batch_size=1,
     metrics, predictions = evaluate_model(model, loader, device, force_null=force_null)
     output.mkdir(parents=True, exist_ok=True)
     source = Path(__file__).parent
-    write_json(output / 'provenance.json', {
+    provenance = {
         'checkpoint': str(Path(checkpoint).resolve()), 'checkpoint_sha256': file_hash(checkpoint),
         'data': str(Path(data).resolve()), 'data_sha256': file_hash(data),
-        'force_null': force_null, 'predict_only': predict_only, 'tags': list(TAGS),
+        'force_null': force_null, 'predict_only': predict_only, 'tags': list(tags),
         'resource_paths': {key: str(cfg.get(key)) for key in ('vision_model', 'image_root')},
         'examples': len(examples), 'device': str(device), 'batch_size': batch_size,
         'cache_manifest_sha256': file_hash(Path(cache_path) / 'manifest.json') if cache_meta else None,
         'source_sha256': {str(p.relative_to(source)): file_hash(p) for p in sorted(source.rglob('*.py'))},
-    })
+    }
+    if label_scheme == 'seven':
+        provenance['label_scheme'] = label_scheme
+    write_json(output / 'provenance.json', provenance)
     write_json(output / 'predictions.json', predictions)
     write_json(output / 'word_tags.json', [
         {'id': ex.id, 'words': ex.words,
-         'tags': [TAGS[t] for t in aspects_to_tags(len(ex.words), predictions[ex.id])],
+         'tags': [tags[t] for t in aspects_to_tags(len(ex.words), predictions[ex.id], label_scheme)],
          'aspects': predictions[ex.id]} for ex in examples])
     if not predict_only:
         write_json(output / 'metrics.json', metrics)

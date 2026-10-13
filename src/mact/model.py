@@ -21,8 +21,11 @@ class ModelConfig:
     aspect_sentiment_weight: float = 0.
     visual_gate: bool = False
     visual_gate_init: float = .9
+    label_scheme: str = 'five'
 
     def __post_init__(self):
+        if type(self.label_scheme) is not str or self.label_scheme not in ('five', 'seven'):
+            raise ValueError('label_scheme must be five or seven')
         if self.mode not in ('text', 'fusion', 'evidence'):
             raise ValueError('mode must be text, fusion, or evidence')
         if (self.hidden_size < 1 or self.attention_heads < 1 or self.visual_size < 1
@@ -65,7 +68,7 @@ class AspectSentimentHead(nn.Module):
 
     def forward(self, words, tags, word_mask):
         begins = (tags >= 1) & (tags <= 3) & word_mask
-        members = (begins | (tags == 4)) & word_mask
+        members = (begins | (tags >= 4)) & word_mask
         indices = begins.long().cumsum(dim=1)
         batch, length, hidden = words.shape
         # Slot zero is the prefix before the first aspect. Mask O and padding
@@ -109,6 +112,19 @@ class SequenceModel(nn.Module):
             self.visual_gate = nn.Linear(h * 2, 1)
             nn.init.zeros_(self.visual_gate.weight)
             nn.init.constant_(self.visual_gate.bias, math.log(config.visual_gate_init / (1 - config.visual_gate_init)))
+        if config.label_scheme == 'seven':
+            # Construct the original five-label model first, then untie its I
+            # state. Common weights AND the post-init RNG state are preserved.
+            self.text_head = expand_inside_emissions(self.text_head)
+            if config.mode != 'text':
+                self.visual_head[-1] = expand_inside_emissions(self.visual_head[-1])
+            expanded = ConstrainedCRF('seven')
+            mapping = torch.tensor([0, 1, 2, 3, 4, 4, 4])
+            with torch.no_grad():
+                expanded.start_transitions.copy_(self.crf.start_transitions[mapping])
+                expanded.end_transitions.copy_(self.crf.end_transitions[mapping])
+                expanded.transitions.copy_(self.crf.transitions[mapping][:, mapping])
+            self.crf = expanded
 
     def forward(self, input_ids, attention_mask, word_ids, word_mask,
                 visual_features=None, tags=None, force_null=False):
@@ -161,3 +177,17 @@ class SequenceModel(nn.Module):
                 output['losses'] = (output['crf_losses']
                                     + self.config.aspect_sentiment_weight * output['aspect_sentiment_losses'])
         return output
+
+
+def expand_inside_emissions(layer):
+    """Copy the shared I row into three independently trainable polarity rows."""
+    devices = [layer.weight.device.index] if layer.weight.is_cuda else []
+    with torch.random.fork_rng(devices=devices):
+        expanded = nn.Linear(layer.in_features, 7, bias=layer.bias is not None,
+                             device=layer.weight.device, dtype=layer.weight.dtype)
+    mapping = torch.tensor([0, 1, 2, 3, 4, 4, 4], device=layer.weight.device)
+    with torch.no_grad():
+        expanded.weight.copy_(layer.weight[mapping])
+        if layer.bias is not None:
+            expanded.bias.copy_(layer.bias[mapping])
+    return expanded

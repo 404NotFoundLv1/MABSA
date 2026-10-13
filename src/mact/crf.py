@@ -1,34 +1,46 @@
-"""Linear-chain CRF with exact hard five-tag constraints in NLL and Viterbi."""
+"""Linear-chain CRF with exact hard tag constraints in NLL and Viterbi."""
 
 import torch
 from torch import nn
 
+from .labels import get_tags
+
 
 class ConstrainedCRF(nn.Module):
-    def __init__(self):
+    def __init__(self, label_scheme="five"):
         super().__init__()
-        self.start_transitions = nn.Parameter(torch.zeros(5))
-        self.end_transitions = nn.Parameter(torch.zeros(5))
+        self.num_tags = len(get_tags(label_scheme))
+        self.label_scheme = label_scheme
+        self.start_transitions = nn.Parameter(torch.zeros(self.num_tags))
+        self.end_transitions = nn.Parameter(torch.zeros(self.num_tags))
         # [previous, next]
-        self.transitions = nn.Parameter(torch.zeros(5, 5))
-        allowed = torch.ones(5, 5, dtype=torch.bool)
-        allowed[0, 4] = False
+        self.transitions = nn.Parameter(torch.zeros(self.num_tags, self.num_tags))
+        allowed = torch.ones(self.num_tags, self.num_tags, dtype=torch.bool)
+        if label_scheme == "five":
+            allowed[0, 4] = False
+        else:
+            allowed[:, 4:] = False
+            for inside in range(4, self.num_tags):
+                allowed[inside - 3, inside] = True
+                allowed[inside, inside] = True
         self.register_buffer("allowed", allowed)
-        self.register_buffer("allowed_start", torch.tensor([1, 1, 1, 1, 0], dtype=torch.bool))
+        self.register_buffer("allowed_start", torch.arange(self.num_tags) < 4)
 
     def _validate(self, emissions, mask, tags=None):
-        if (emissions.ndim != 3 or emissions.shape[-1] != 5 or not emissions.is_floating_point()
+        if (emissions.ndim != 3 or emissions.shape[-1] != self.num_tags or not emissions.is_floating_point()
                 or mask.shape != emissions.shape[:2] or mask.dtype != torch.bool
                 or emissions.shape[0] == 0 or emissions.shape[1] == 0):
-            raise ValueError("expected emissions [B,W,5] and boolean mask [B,W]")
+            raise ValueError(f"expected emissions [B,W,{self.num_tags}] and boolean mask [B,W]")
         if not mask[:, 0].all() or (mask[:, 1:] & ~mask[:, :-1]).any():
             raise ValueError("mask must contain nonempty contiguous word prefixes")
         if tags is not None:
             if tags.shape != mask.shape or tags.dtype != torch.long:
                 raise ValueError("tags must be long [B,W]")
-            if ((tags[mask] < 0) | (tags[mask] >= 5)).any():
+            if ((tags[mask] < 0) | (tags[mask] >= self.num_tags)).any():
                 raise ValueError("invalid real-word tags")
-            if (tags[:, 0] == 4).any() or (((tags[:, :-1] == 0) & (tags[:, 1:] == 4)) & mask[:, 1:]).any():
+            safe_tags = tags.masked_fill(~mask, 0)
+            if ((~self.allowed_start[safe_tags[:, 0]]).any()
+                    or ((~self.allowed[safe_tags[:, :-1], safe_tags[:, 1:]]) & mask[:, 1:]).any()):
                 raise ValueError("illegal gold tag transition")
 
     def _scores(self):

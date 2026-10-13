@@ -65,3 +65,28 @@ null token 的分数。对于每个词，`g = sigmoid(Linear([word, attention_im
 
 首轮固定两套数据的共同种子 42、43、44，各 35 epochs，先运行 `--train-only` 比较 Dev，
 不根据中途结果修改配置或剔除种子。源码通过 Git 和 SHA256 固定，输出另存。
+
+## 七标签 CRF 对照
+
+配置：`configs/seven_tag.json`，`model.label_scheme="seven"`，B、C 关闭。
+标签顺序为 `O/B-POS/B-NEU/B-NEG/I-POS/I-NEU/I-NEG`。
+`I-p` 只能接在 `B-p` 或 `I-p` 后，开头和 O 后不能出现 I；
+相邻 B 仍可表示相邻的独立方面。训练与解码共同使用这些硬约束。
+
+同一种子先按原顺序初始化完整五标签模型，再把文本、视觉输出层的 I 行各复制为
+三个独立可训练行，CRF 的起止及转移参数也从相应五标签参数复制。
+扩展不消耗额外的全局随机数，公共参数与原 baseline 初始化相同。
+合法五标签路径和七标签路径一一对应，在初始化时序列分数及分区函数等价
+（数值计算允许浮点舍入差）；训练后 I 的三个极性参数独立更新。
+fusion 配置增加 1,056 个可训练参数。
+
+标签转换发生在读取官方方面三元组之后，原 Train/Dev/Test 文件不改写。
+推理仍一次 CRF 解码并还原为原 `(start,end,polarity)` 三元组，没有金标输入或额外分类阶段。
+五标签 checkpoint 继续使用 `mabsa_sequence_crf_v1`；七标签使用
+`mabsa_sequence_crf_v2`，加载时校验版本、标签表与模型配置一致，
+旧 v1 配置中缺少 `label_scheme` 时按五标签加载。
+
+首次对照固定种子 42、43、44，Twitter2015/Twitter2017 各 35 epochs，
+其余训练配置沿用 baseline。先比较 Dev JMASA、MATE，以及单词/多词方面的
+边界匹配后情感准确率；使用 Dev JMASA F1 选 checkpoint。
+多词方面重复累积情感分数可能改变边界偏好，需同时检查情感与抽取指标。
