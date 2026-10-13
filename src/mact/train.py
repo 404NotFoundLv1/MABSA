@@ -125,6 +125,10 @@ def run_training(raw, output):
     logger.info(f"model: {cfg['model']['mode']}; selection: Dev Joint F1; metrics: percent")
     if cfg['model']['visual_gate']:
         logger.info(f"Visual gate: per-word null-anchored residual; initial gate: {cfg['model']['visual_gate_init']:g}")
+    if cfg['model']['word_context']:
+        logger.info(f"Word context: fused-word attention; size:{cfg['model']['word_context_size']} "
+                    f"heads:{cfg['model']['word_context_heads']} distance:{cfg['model']['word_context_max_distance']}; "
+                    'zero-initialized five-score residual.')
     auxiliary_weight = cfg['model']['aspect_sentiment_weight']
     if auxiliary_weight > 0:
         logger.info(f'Loss = CRF NLL + {auxiliary_weight:g} * Aspect CE; sentence mean.')
@@ -161,6 +165,14 @@ def run_training(raw, output):
         provenance['visual_gate'] = dict(formula='E_null + sigmoid(linear([word, attention_image-attention_null])) * (E_image-E_null)',
             initial_value=cfg['model']['visual_gate_init'], shared_text_and_visual_head=True,
             supervision='existing_crf_objective', uses_gold_inputs=False)
+    if cfg['model']['word_context']:
+        provenance['word_context'] = dict(feature_source='visual_head_hidden',
+            size=cfg['model']['word_context_size'], heads=cfg['model']['word_context_heads'],
+            max_distance=cfg['model']['word_context_max_distance'],
+            relative_bias='learned_signed_clipped_key_minus_query',
+            relative_bias_initialization='-abs(clipped_distance)/max_distance',
+            output_initialization='zeros', initialization_preserves_baseline_rng=True,
+            supervision='existing_crf_objective', uses_gold_inputs=False, decoding='five_tag_crf')
     write_json(output / 'provenance.json', provenance)
     initial_head = model.text_head.weight.detach().clone()
     history, best, updates = [], -1., 0

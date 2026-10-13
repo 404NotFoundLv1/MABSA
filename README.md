@@ -132,3 +132,15 @@ CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train.py \
 `model.label_scheme="seven"` 将共享 `I` 拆为 `I-POS/I-NEU/I-NEG`，
 CRF 只允许同一方面内部延续相同情感。默认仍为 `"five"`，原 baseline 与历史权重保留。
 七标签由官方方面三元组在内存中转换，数据文件和评估三元组定义不变。
+
+融合后的词间上下文交互使用 `configs/word_context.json`，保留五标签，B、C 关闭：
+
+```bash
+CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train.py \
+  --config configs/word_context.json --dataset twitter2015 --seed 42 \
+  --output outputs/word_context/twitter2015/seed42 --train-only
+```
+
+该模块在原融合头的隐藏特征上加入一层 64 维、4 头词间注意力和可学习相对距离偏置，
+输出五标签分数的残差，仍由一次 CRF 解码。输出层零初始化，起始预测与 baseline 一致；
+默认 `word_context=false`，历史配置与 checkpoint 可继续使用。细节见 `docs/extending.md`。

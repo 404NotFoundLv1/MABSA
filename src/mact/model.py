@@ -22,6 +22,10 @@ class ModelConfig:
     visual_gate: bool = False
     visual_gate_init: float = .9
     label_scheme: str = 'five'
+    word_context: bool = False
+    word_context_size: int = 64
+    word_context_heads: int = 4
+    word_context_max_distance: int = 16
 
     def __post_init__(self):
         if type(self.label_scheme) is not str or self.label_scheme not in ('five', 'seven'):
@@ -42,6 +46,15 @@ class ModelConfig:
         if (type(self.visual_gate_init) not in (int, float)
                 or not math.isfinite(self.visual_gate_init) or not 0 < self.visual_gate_init < 1):
             raise ValueError('visual_gate_init must be finite and strictly between 0 and 1')
+        if type(self.word_context) is not bool:
+            raise ValueError('word_context must be boolean')
+        if (any(type(v) is not int or v < 1 for v in
+                (self.word_context_size, self.word_context_heads, self.word_context_max_distance))
+                or self.word_context_size % self.word_context_heads):
+            raise ValueError('invalid word context size, heads or distance')
+        if self.word_context and (self.mode != 'fusion' or self.label_scheme != 'five'
+                                  or self.visual_gate or self.aspect_sentiment_weight > 0):
+            raise ValueError('word_context requires five-label fusion with B and C disabled')
 
 
 def pool_words(tokens, word_ids, word_mask):
@@ -88,6 +101,45 @@ class AspectSentimentHead(nn.Module):
         return (ce * valid).sum(1) / valid.sum(1).clamp_min(1)
 
 
+class WordContextResidual(nn.Module):
+    """Read fused word features and return a zero-initialized five-score residual.
+
+    Relative distance is key position minus query position, clipped at the
+    configured radius. A mild local preference initializes a trainable bias
+    per head; all valid words, including the query itself, remain accessible.
+    No additional dropout is used, preserving the baseline's training RNG.
+    """
+
+    def __init__(self, hidden_size, context_size, heads, max_distance):
+        super().__init__()
+        self.heads, self.max_distance = heads, max_distance
+        self.head_size = context_size // heads
+        self.q = nn.Linear(hidden_size, context_size, bias=False)
+        self.k = nn.Linear(hidden_size, context_size, bias=False)
+        self.v = nn.Linear(hidden_size, context_size, bias=False)
+        distances = torch.arange(-max_distance, max_distance + 1, dtype=torch.float32)
+        self.relative_bias = nn.Parameter((-distances.abs() / max_distance).repeat(heads, 1))
+        self.output = nn.Linear(context_size, 5)
+        nn.init.zeros_(self.output.weight)
+        nn.init.zeros_(self.output.bias)
+
+    def forward(self, fused_words, word_mask):
+        if not word_mask.any(dim=1).all():
+            raise ValueError('word context requires at least one valid word per sentence')
+        batch, length, _ = fused_words.shape
+        def split(projected):
+            return projected.reshape(batch, length, self.heads, self.head_size).transpose(1, 2)
+        query, key, value = (split(layer(fused_words)) for layer in (self.q, self.k, self.v))
+        positions = torch.arange(length, device=fused_words.device)
+        distances = (positions[None, :] - positions[:, None]).clamp(
+            -self.max_distance, self.max_distance) + self.max_distance
+        scores = query @ key.transpose(-2, -1) / math.sqrt(self.head_size)
+        scores = scores + self.relative_bias[:, distances][None]
+        scores = scores.masked_fill(~word_mask[:, None, None, :], -torch.inf)
+        context = (scores.softmax(dim=-1) @ value).transpose(1, 2).reshape(batch, length, -1)
+        return self.output(context) * word_mask.unsqueeze(-1)
+
+
 class SequenceModel(nn.Module):
     def __init__(self, text_encoder, config):
         super().__init__()
@@ -125,6 +177,12 @@ class SequenceModel(nn.Module):
                 expanded.end_transitions.copy_(self.crf.end_transitions[mapping])
                 expanded.transitions.copy_(self.crf.transitions[mapping][:, mapping])
             self.crf = expanded
+        if config.word_context:
+            # Append without perturbing common initialization or the subsequent
+            # data/dropout RNG stream. All model parameters are constructed on CPU.
+            with torch.random.fork_rng(devices=[]):
+                self.word_context = WordContextResidual(h, config.word_context_size,
+                    config.word_context_heads, config.word_context_max_distance)
 
     def forward(self, input_ids, attention_mask, word_ids, word_mask,
                 visual_features=None, tags=None, force_null=False):
@@ -148,7 +206,12 @@ class SequenceModel(nn.Module):
             context = (words * word_mask.unsqueeze(-1)).sum(1) / word_mask.sum(1, keepdim=True)
             query = self.query(torch.cat([words, context[:, None].expand_as(words)], dim=-1))
             actual = self.attention(query, memory, memory, key_padding_mask=mask, need_weights=False)[0]
-            actual_score = self.visual_head(torch.cat([words, actual], dim=-1))
+            fused_input = torch.cat([words, actual], dim=-1)
+            if self.config.word_context:
+                fused_words = self.visual_head[1](self.visual_head[0](fused_input))
+                actual_score = self.visual_head[2](fused_words)
+            else:
+                actual_score = self.visual_head(fused_input)
             if self.config.mode == 'evidence' or self.config.visual_gate:
                 # Same padded memory layout and scoring function, only the mask differs.
                 null_mask = torch.ones_like(mask)
@@ -166,6 +229,8 @@ class SequenceModel(nn.Module):
                     emissions = text_emissions + (actual_score - null_score)
             else:
                 emissions = text_emissions + actual_score
+            if self.config.word_context:
+                emissions = emissions + self.word_context(fused_words, word_mask)
         output = {'emissions': emissions, 'text_emissions': text_emissions}
         if self.config.visual_gate:
             output.update(visual_gate=gate, null_emissions=null_emissions)

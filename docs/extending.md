@@ -90,3 +90,44 @@ fusion 配置增加 1,056 个可训练参数。
 其余训练配置沿用 baseline。先比较 Dev JMASA、MATE，以及单词/多词方面的
 边界匹配后情感准确率；使用 Dev JMASA F1 选 checkpoint。
 多词方面重复累积情感分数可能改变边界偏好，需同时检查情感与抽取指标。
+
+## 融合后的词间上下文交互
+
+配置：`configs/word_context.json`。从原预训练骨干重新训练，`label_scheme="five"`、
+`word_context=true`，B、C 关闭。所有历史模块和结果保留在共享源码中；本轮使用
+`word-context` 分支，并以 `baseline-v1` 的数值行为作为禁用新模块时的校验基准。
+首版只允许五标签 fusion 单独启用该模块，其他组合明确拒绝，以免混入未经验证的变量。
+
+DeBERTa 已提供文本上下文。本模块进一步交换跨模态融合后的词特征，既不使用真实方面
+位置，也不先解码方面。无观点标注，因此不能将注意力权重直接解释为正确的方面—观点配对。
+
+复用原 `visual_head` 的隐藏层 `u_i = GELU(W[word_i;visual_attention_i] + b)`，维度256。
+原有文本和视觉分数仍完整保留。在 `u` 上计算一次词间注意力：
+
+```text
+q, k, v = Linear(u)                       # 各 64 维，无 bias，4 个 head
+d_ij = clip(j - i, -16, 16)
+alpha_ij = softmax_j(q_i k_j / sqrt(16) + relative_bias[head, d_ij])
+context_i = concat_heads(sum_j alpha_ij v_j)
+delta_i = Linear(context_i)               # 64 -> 5，weight 和 bias 初始均为0
+emissions_i = original_emissions_i + delta_i
+loss = 原句子均值 CRF NLL
+prediction = 原五标签 CRF 的一次 Viterbi 解码
+```
+
+每个 head 的相对偏置初始化为 `-abs(d_ij)/16`，然后随任务训练；超过16词的距离
+仍可访问，只共享边缘桶。保留 self-attention。padding 不能作为被读取的 key，padding
+位置的输出修正为零；每句至少一个有效词。首版不增加新 dropout，避免改变原随机流。
+新增模块在局部 RNG 上下文中初始化，共享参数和之后的随机状态保持不变。
+零输出层使首步只有该层获得非零梯度，后续更新后 Q/K/V 和距离偏置也能学习。
+
+默认参数量增加49,609：Q/K/V为49,152，相对偏置132，输出层325。训练和推断都使用
+该分支，无辅助情感损失；原视觉 dropout 和 force-null 仍在融合特征形成前生效。
+关闭时不创建新参数，原前向、损失和梯度保持不变。模型配置随 checkpoint 保存；
+仍使用五标签 `mabsa_sequence_crf_v1`，旧 checkpoint 缺少字段时默认关闭。
+
+首轮固定两套数据、种子42/43/44、每组35 epochs，其余配置沿用 baseline。
+只按 Dev JMASA F1 选模，先不评估 Test。日志保留每 epoch 汇总，启动时记录模块设置。
+自动汇总包含 JMASA P/R/F1、MATE、匹配边界情感准确率、NEG/NEU/POS 混淆矩阵，
+以及新旧模型共同识别正确边界上的情感准确率。对照中的共同比较子集由同一 seed 的
+两套预测与 gold 边界交集确定，避免把边界集合变化误当作纯情感提升。
