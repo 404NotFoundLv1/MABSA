@@ -28,7 +28,7 @@ DEFAULTS = dict(seed=42, epochs=10, batch_size=1, eval_batch_size=1, accumulatio
                 warmup_ratio=.1, gradient_clip=1., max_length=256, device='cuda:0',
                 num_workers=0, num_threads=4, log_every=50, train_limit=None, dev_limit=None,
                 max_updates=None, text_model=None, vision_model=None, visual_cache=None,
-                train_data=None, dev_data=None, image_root=None, model={})
+                train_data=None, dev_data=None, image_root=None, model={}, rdrop_weight=0.)
 
 
 def resolve_config(raw):
@@ -48,11 +48,16 @@ def resolve_config(raw):
     for key in ('train_limit', 'dev_limit', 'max_updates'):
         if cfg[key] is not None and (type(cfg[key]) is not int or cfg[key] < 1):
             raise ValueError(f'{key} must be null or positive integer')
-    for key in ('learning_rate', 'head_learning_rate', 'weight_decay', 'gradient_clip', 'warmup_ratio'):
+    for key in ('learning_rate', 'head_learning_rate', 'weight_decay', 'gradient_clip', 'warmup_ratio', 'rdrop_weight'):
         if type(cfg[key]) not in (int, float) or not math.isfinite(cfg[key]) or cfg[key] < 0:
             raise ValueError(f'invalid {key}')
     if not 0 <= cfg['warmup_ratio'] < 1 or min(cfg['learning_rate'], cfg['head_learning_rate']) <= 0:
         raise ValueError('invalid learning rate or warmup ratio')
+    if cfg['rdrop_weight'] > 0:
+        m = cfg['model']
+        if (m['mode'] not in ('text', 'fusion') or m['label_scheme'] != 'five'
+                or m['aspect_sentiment_weight'] or m['visual_gate'] or m['word_context']):
+            raise ValueError('R-Drop must be an independent five-tag baseline training control')
     return cfg
 
 
@@ -130,7 +135,10 @@ def run_training(raw, output):
                     f"heads:{cfg['model']['word_context_heads']} distance:{cfg['model']['word_context_max_distance']}; "
                     'zero-initialized five-score residual.')
     auxiliary_weight = cfg['model']['aspect_sentiment_weight']
-    if auxiliary_weight > 0:
+    if cfg['rdrop_weight'] > 0:
+        logger.info(f"Loss = mean(two CRF NLLs) + {cfg['rdrop_weight']:g} * symmetric sequence KL; sentence mean.")
+        logger.info('R-Drop: shared whole-image dropout, independent neural dropout; two training passes, one inference pass.')
+    elif auxiliary_weight > 0:
         logger.info(f'Loss = CRF NLL + {auxiliary_weight:g} * Aspect CE; sentence mean.')
         logger.info('Aspect CE: mean over gold training aspects per sentence; zero for empty sentences.')
     else:
@@ -152,6 +160,12 @@ def run_training(raw, output):
         'cache_features_sha256': cache_meta['features_sha256'] if cache_meta else None,
         'source_sha256': {str(p.relative_to(source)): file_hash(p) for p in sorted(source.rglob('*.py'))},
     }
+    if cfg['rdrop_weight'] > 0:
+        provenance.update(objective='sentence_mean_two_pass_crf_nll_plus_symmetric_sequence_kl',
+            rdrop=dict(weight=cfg['rdrop_weight'], kl='0.5*(KL(P||Q)+KL(Q||P))',
+                distribution='constrained_crf_sequences', nll_reduction='mean_of_two_passes',
+                length_normalization=False, marginal_gradients=True, shared_visual_dropout=True,
+                neural_passes_per_train_batch=2, inference_passes=1, added_parameters=0))
     if label_scheme == 'seven':
         provenance.update(label_scheme=label_scheme,
                           initialization_strategy='five_tag_inside_parameter_expansion')
@@ -184,7 +198,7 @@ def run_training(raw, output):
         logger.info(f'Epoch {epoch}', pad=True)
         result = train_epoch(model, train_loader, optimizer, device, cfg['accumulation'], cfg['gradient_clip'],
                              scheduler, planned - updates, cfg['log_every'], logger=logger,
-                             epoch=epoch, epochs=cfg['epochs'])
+                             epoch=epoch, epochs=cfg['epochs'], rdrop_weight=cfg['rdrop_weight'])
         result['epoch_complete'] = result['examples'] == len(train)
         updates += result['updates']
         metrics, predictions = evaluate_model(model, dev_loader, device)
@@ -193,7 +207,11 @@ def run_training(raw, output):
         history.append(record)
         write_json(output / 'history.json', history)
         logger.event({'event': 'epoch', **record})
-        if auxiliary_weight > 0:
+        if cfg['rdrop_weight'] > 0:
+            logger.info(f"Epoch [{epoch}/{cfg['epochs']}], Mean Loss: {result['sentence_loss']:.4f}, "
+                        f"CRF NLL: {result['sentence_nll']:.4f}, Symmetric KL: {result['rdrop_symmetric_kl']:.4f}, "
+                        f"KL Weight: {cfg['rdrop_weight']:g}")
+        elif auxiliary_weight > 0:
             logger.info(f"Epoch [{epoch}/{cfg['epochs']}], Mean Loss: {result['sentence_loss']:.4f}, "
                         f"CRF NLL: {result['sentence_nll']:.4f}, Aspect CE: {result['aspect_sentiment_loss']:.4f}")
         else:

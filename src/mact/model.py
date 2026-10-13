@@ -185,7 +185,14 @@ class SequenceModel(nn.Module):
                     config.word_context_heads, config.word_context_max_distance)
 
     def forward(self, input_ids, attention_mask, word_ids, word_mask,
-                visual_features=None, tags=None, force_null=False):
+                visual_features=None, tags=None, force_null=False,
+                visual_drop_mask=None, return_visual_drop_mask=False):
+        if visual_drop_mask is not None:
+            if (self.config.mode == 'text' or force_null
+                    or visual_drop_mask.dtype != torch.bool
+                    or visual_drop_mask.shape != (input_ids.shape[0],)
+                    or visual_drop_mask.device != input_ids.device):
+                raise ValueError('visual_drop_mask must be boolean [B] on the input device; fusion only, without force_null')
         hidden = self.text_encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
         words = self.word_projection(pool_words(hidden, word_ids, word_mask))
         text_emissions = self.text_head(words)
@@ -200,6 +207,8 @@ class SequenceModel(nn.Module):
             drop = torch.zeros(words.shape[0], dtype=torch.bool, device=words.device)
             if force_null:
                 drop[:] = True
+            elif visual_drop_mask is not None:
+                drop = visual_drop_mask
             elif self.training and self.config.visual_dropout:
                 drop = torch.rand(words.shape[0], device=words.device) < self.config.visual_dropout
             mask[:, :-1] = drop[:, None]
@@ -232,6 +241,8 @@ class SequenceModel(nn.Module):
             if self.config.word_context:
                 emissions = emissions + self.word_context(fused_words, word_mask)
         output = {'emissions': emissions, 'text_emissions': text_emissions}
+        if return_visual_drop_mask and self.config.mode != 'text':
+            output['visual_drop_mask'] = drop
         if self.config.visual_gate:
             output.update(visual_gate=gate, null_emissions=null_emissions)
         if tags is not None:

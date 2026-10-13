@@ -144,3 +144,19 @@ CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train.py \
 该模块在原融合头的隐藏特征上加入一层 64 维、4 头词间注意力和可学习相对距离偏置，
 输出五标签分数的残差，仍由一次 CRF 解码。输出层零初始化，起始预测与 baseline 一致；
 默认 `word_context=false`，历史配置与 checkpoint 可继续使用。细节见 `docs/extending.md`。
+
+R-Drop 训练稳定性对照使用 `configs/rdrop.json`，从五标签 baseline 重新训练，其他实验模块关闭：
+
+```bash
+CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train.py \
+  --config configs/rdrop.json --dataset twitter2015 --seed 42 \
+  --output outputs/rdrop/twitter2015/seed42 --train-only
+```
+
+固定 `rdrop_weight=1.0`，目标为两次 CRF NLL 的平均值加对称序列 KL，均按句子平均，
+不再按词数归一化。两次前向共享整图 dropout，神经网络 dropout 独立采样。
+KL 使用完整的受约束 CRF 分布，保留两侧边缘概率的梯度，不是逐词 softmax KL。
+参数量和推断结构与 baseline 一致；训练需要两次前向，计算预算高于 baseline。
+默认权重为零，保持原训练路径；checkpoint 记录训练权重，但推断只做一次前向和 CRF 解码。
+参考 [R-Drop, NeurIPS 2021](https://proceedings.neurips.cc/paper/2021/hash/5a66b9200f29ac3fa0ae244cc2a51b39-Abstract.html)；
+此处为适配 CRF 的实现，收益需由固定种子 Dev 对照验证。

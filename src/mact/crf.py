@@ -66,6 +66,43 @@ class ConstrainedCRF(nn.Module):
         gold = gold + self.end_transitions[last]
         return torch.logsumexp(alpha + self.end_transitions, dim=1) - gold
 
+    def marginals(self, emissions, mask):
+        """Differentiable node marginals of the constrained sequence distribution."""
+        emissions = emissions.float() if emissions.dtype in (torch.float16, torch.bfloat16) else emissions
+        self._validate(emissions, mask)
+        start, transitions = self._scores()
+        alpha = emissions[:, 0] + start
+        alphas = [alpha]
+        for t in range(1, emissions.shape[1]):
+            next_alpha = torch.logsumexp(alpha.unsqueeze(2) + transitions, dim=1) + emissions[:, t]
+            alpha = torch.where(mask[:, t, None], next_alpha, alpha)
+            alphas.append(alpha)
+        log_z = torch.logsumexp(alpha + self.end_transitions, dim=1)
+        beta = self.end_transitions.expand_as(alpha)
+        betas = [beta]
+        for t in range(emissions.shape[1] - 2, -1, -1):
+            next_beta = torch.logsumexp(transitions + (emissions[:, t + 1] + beta).unsqueeze(1), dim=2)
+            beta = torch.where(mask[:, t + 1, None], next_beta, beta)
+            betas.append(beta)
+        log_marginals = (torch.stack(alphas, dim=1) + torch.stack(betas[::-1], dim=1)
+                         - log_z[:, None, None])
+        return log_marginals.exp().masked_fill(~mask.unsqueeze(-1), 0.)
+
+    def symmetric_kl(self, first, second, mask):
+        """Half of KL(P||Q)+KL(Q||P), one value per sentence.
+
+        P and Q share this CRF's transitions and hard support. Their transition
+        and log-partition terms cancel in the symmetric sum, leaving differences
+        of emissions weighted by differences of node marginals. Marginals stay
+        attached so gradients through BOTH distributions and transitions remain.
+        """
+        if first.shape != second.shape or first.device != second.device:
+            raise ValueError('paired emissions must have the same shape and device')
+        first = first.float() if first.dtype in (torch.float16, torch.bfloat16) else first
+        second = second.float() if second.dtype in (torch.float16, torch.bfloat16) else second
+        delta = (first - second).masked_fill(~mask.unsqueeze(-1), 0.)
+        return .5 * ((self.marginals(first, mask) - self.marginals(second, mask)) * delta).sum((1, 2))
+
     @torch.no_grad()
     def decode(self, emissions, mask):
         # One device transfer, not a synchronization per word during traceback.

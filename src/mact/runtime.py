@@ -28,21 +28,41 @@ def model_inputs(batch, device, include_tags=False):
     return {key: batch[key].to(device) for key in keys if key in batch}
 
 
+def training_output(model, inputs, rdrop_weight=0.):
+    """Training-only paired dropout; evaluation continues to call the model once."""
+    if not math.isfinite(rdrop_weight) or rdrop_weight < 0:
+        raise ValueError('rdrop_weight must be finite and nonnegative')
+    if not rdrop_weight:
+        return model(**inputs)
+    if not model.training:
+        raise ValueError('R-Drop requires training mode')
+    first = model(**inputs, return_visual_drop_mask=True)
+    paired = dict(inputs)
+    if 'visual_drop_mask' in first:
+        paired['visual_drop_mask'] = first['visual_drop_mask']
+    second = model(**paired, return_visual_drop_mask=True)
+    nll = .5 * (first['losses'] + second['losses'])
+    consistency = model.crf.symmetric_kl(first['emissions'], second['emissions'], inputs['word_mask'])
+    return dict(losses=nll + rdrop_weight * consistency, crf_losses=nll,
+                rdrop_losses=consistency)
+
+
 def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=1.,
-                scheduler=None, max_updates=None, log_every=50, logger=None, epoch=1, epochs=1):
+                scheduler=None, max_updates=None, log_every=50, logger=None, epoch=1, epochs=1, rdrop_weight=0.):
     if accumulation < 1:
         raise ValueError('accumulation must be positive')
     model.train()
     iterator = iter(loader)
     updates, examples, total_loss = 0, 0, 0.
     total_nll, total_aspect_ce, auxiliary = 0., 0., False
+    total_rdrop = 0.
     gate_words, gate_sum, gate_sum_sq, gate_low, gate_high = 0, 0., 0., 0, 0
     batch_step = 0
     while window := list(itertools.islice(iterator, accumulation)):
         count = sum(len(b['input_ids']) for b in window)
         optimizer.zero_grad(set_to_none=True)
         for batch in window:
-            output = model(**model_inputs(batch, device, include_tags=True))
+            output = training_output(model, model_inputs(batch, device, include_tags=True), rdrop_weight)
             losses = output['losses']
             if not torch.isfinite(losses).all():
                 raise FloatingPointError('nonfinite training loss; no update performed')
@@ -52,6 +72,9 @@ def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=
                             f'Loss: {float(losses.detach().mean()):.4f}')
             (losses.sum() / count).backward()
             total_loss += float(losses.detach().sum())
+            if 'rdrop_losses' in output:
+                total_nll += float(output['crf_losses'].detach().sum())
+                total_rdrop += float(output['rdrop_losses'].detach().sum())
             if 'aspect_sentiment_losses' in output:
                 auxiliary = True
                 total_nll += float(output['crf_losses'].detach().sum())
@@ -72,13 +95,16 @@ def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=
         examples += count
         if logger is None and log_every and updates % log_every == 0:
             print(json.dumps({'event': 'train_progress', 'updates': updates, 'examples': examples,
-                              ('mean_sentence_loss' if auxiliary else 'mean_sentence_nll'): total_loss / examples}), flush=True)
+                              ('mean_sentence_loss' if auxiliary or rdrop_weight else 'mean_sentence_nll'): total_loss / examples}), flush=True)
         if max_updates is not None and updates >= max_updates:
             break
     result = {'sentence_nll': total_loss / examples if examples else 0., 'examples': examples, 'updates': updates}
     if auxiliary:
         result.update(sentence_loss=total_loss / examples, sentence_nll=total_nll / examples,
                       aspect_sentiment_loss=total_aspect_ce / examples)
+    if rdrop_weight and examples:
+        result.update(sentence_loss=total_loss / examples, sentence_nll=total_nll / examples,
+                      rdrop_symmetric_kl=total_rdrop / examples, rdrop_weight=rdrop_weight)
     if gate_words:
         mean = gate_sum / gate_words
         result['visual_gate'] = dict(words=gate_words, mean=mean,
