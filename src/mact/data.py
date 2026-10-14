@@ -22,9 +22,12 @@ class SequenceDataset(SpanDataset):
     # Reuse only lazy image I/O and the constructor; override all tokenization
     # and annotation behavior, so the base never enumerates spans.
     def __init__(self, examples, tokenizer, image_root=None, image_processor=None,
-                 max_length=256, label_scheme='five'):
+                 max_length=256, label_scheme='five', ocr_texts=None, ocr_max_tokens=64):
         get_tags(label_scheme)
         self.label_scheme = label_scheme
+        if type(ocr_max_tokens) is not int or ocr_max_tokens < 1:
+            raise ValueError('ocr_max_tokens must be a positive integer')
+        self.ocr_texts, self.ocr_max_tokens = ocr_texts, ocr_max_tokens
         super().__init__(examples, tokenizer, image_root, image_processor, max_length)
 
     def _tokenize(self, example):
@@ -38,9 +41,23 @@ class SequenceDataset(SpanDataset):
             raise ValueError(f"example {example.id} tokenized length exceeds max_length")
         if {i for i in word_ids if i is not None} != set(range(len(example.words))):
             raise ValueError(f"example {example.id} lost words during tokenization")
+        ids, mask = list(encoded['input_ids']), list(encoded['attention_mask'])
+        if self.ocr_texts is not None:
+            if example.image_id not in self.ocr_texts:
+                raise ValueError(f'missing OCR image: {example.image_id}')
+            text = self.ocr_texts[example.image_id]
+            if not isinstance(text, str):
+                raise ValueError('OCR text must be a string')
+            if text.strip():
+                extra = self.tokenizer(text, add_special_tokens=False, truncation=False)['input_ids'][:self.ocr_max_tokens]
+                if extra:
+                    if self.tokenizer.sep_token_id is None:
+                        raise ValueError('OCR context requires a separator token')
+                    extra = extra + [self.tokenizer.sep_token_id]
+                    ids += extra; mask += [1] * len(extra); word_ids += [None] * len(extra)
         return {
-            'input_ids': torch.tensor(encoded['input_ids'], dtype=torch.long),
-            'attention_mask': torch.tensor(encoded['attention_mask'], dtype=torch.long),
+            'input_ids': torch.tensor(ids, dtype=torch.long),
+            'attention_mask': torch.tensor(mask, dtype=torch.long),
             'word_ids': torch.tensor([-1 if i is None else i for i in word_ids], dtype=torch.long),
             'tags': torch.tensor(aspects_to_tags(len(example.words), example.aspects, self.label_scheme),
                                  dtype=torch.long),

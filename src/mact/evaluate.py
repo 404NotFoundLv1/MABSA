@@ -54,6 +54,9 @@ def run_evaluation(checkpoint, data, output, device='cpu', batch_size=1,
     }
     if label_scheme == 'seven':
         provenance['label_scheme'] = label_scheme
+    if cfg.get('ocr_cache'):
+        provenance['ocr']=dict(cache=cfg['ocr_cache'],manifest_sha256=cfg['ocr_manifest_sha256'],
+                               max_tokens=cfg['ocr_max_tokens'],supervised_positions='original_words_only')
     write_json(output / 'provenance.json', provenance)
     write_json(output / 'predictions.json', predictions)
     write_json(output / 'word_tags.json', [

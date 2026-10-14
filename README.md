@@ -160,3 +160,12 @@ KL 使用完整的受约束 CRF 分布，保留两侧边缘概率的梯度，不
 默认权重为零，保持原训练路径；checkpoint 记录训练权重，但推断只做一次前向和 CRF 解码。
 参考 [R-Drop, NeurIPS 2021](https://proceedings.neurips.cc/paper/2021/hash/5a66b9200f29ac3fa0ae244cc2a51b39-Abstract.html)；
 此处为适配 CRF 的实现，收益需由固定种子 Dev 对照验证。
+# Optional OCR context experiment
+
+`configs/ocr_context.json` enables a separate five-tag baseline control: append up to 64 automatically recognized image-text subwords after the original text, then a separator. Only original words receive labels and CRF predictions. It adds no model parameters and does not combine R-Drop, auxiliary CE, visual gates, or word context. `configs/base.json` keeps the original path.
+
+OCR assets live in `assets/cache/ocr_v1/{dataset}`. They were exported from the frozen Train/Dev feasibility probe using confidence >=0.8 and at least two consecutive ASCII letters per line, with whitespace normalization and engine line order. No labels, target names, manual transcriptions or quality-review notes enter the cache. Missing records or mismatched image/content hashes fail explicitly. The raw official datasets are unchanged.
+
+The first experiment uses seeds 42/43/44, 35 epochs, epoch-only logs, and Dev-only selection/comparison. Its detached launcher is `verification/ocr_context/launch.py`; audits and GPU checks are in the same directory. Outputs are `outputs/ocr_context_s42_43_44_20261014`. This is an exploratory comparison on previously examined seeds.
+
+Current OCR caches and evaluation support cover Train/Dev only. A future Test evaluation requires an explicit new cache entry point validating identical OCR weights/configuration/filtering; do not edit the archived cache or checkpoint to add Test. `force_null` disables the visual patch branch but leaves OCR visible, so that setting is not a text-only ablation.

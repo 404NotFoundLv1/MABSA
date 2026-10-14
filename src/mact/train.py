@@ -20,6 +20,7 @@ from .data import SequenceDataset, SequenceCollator, load_labeled
 from .labels import get_tags
 from .logging import TrainingLogger
 from .model import SequenceModel, ModelConfig
+from .ocr import open_ocr
 from .runtime import train_epoch, evaluate_model, save_checkpoint, write_json
 
 
@@ -28,7 +29,8 @@ DEFAULTS = dict(seed=42, epochs=10, batch_size=1, eval_batch_size=1, accumulatio
                 warmup_ratio=.1, gradient_clip=1., max_length=256, device='cuda:0',
                 num_workers=0, num_threads=4, log_every=50, train_limit=None, dev_limit=None,
                 max_updates=None, text_model=None, vision_model=None, visual_cache=None,
-                train_data=None, dev_data=None, image_root=None, model={}, rdrop_weight=0.)
+                train_data=None, dev_data=None, image_root=None, model={}, rdrop_weight=0.,
+                ocr_cache=None, ocr_max_tokens=64, ocr_manifest_sha256=None)
 
 
 def resolve_config(raw):
@@ -39,7 +41,7 @@ def resolve_config(raw):
         cfg['model'] = asdict(ModelConfig(**cfg['model']))
     except (TypeError, ValueError) as error:
         raise ValueError(f'invalid model configuration: {error}') from error
-    for key in ('epochs', 'batch_size', 'eval_batch_size', 'accumulation', 'max_length', 'num_threads'):
+    for key in ('epochs', 'batch_size', 'eval_batch_size', 'accumulation', 'max_length', 'num_threads', 'ocr_max_tokens'):
         if type(cfg[key]) is not int or cfg[key] < 1:
             raise ValueError(f'{key} must be positive integer')
     for key in ('seed', 'num_workers', 'log_every'):
@@ -58,12 +60,22 @@ def resolve_config(raw):
         if (m['mode'] not in ('text', 'fusion') or m['label_scheme'] != 'five'
                 or m['aspect_sentiment_weight'] or m['visual_gate'] or m['word_context']):
             raise ValueError('R-Drop must be an independent five-tag baseline training control')
+    if cfg['ocr_cache'] is not None:
+        m=cfg['model']
+        if (not isinstance(cfg['ocr_cache'],str) or not cfg['ocr_cache']
+                or cfg['max_length']+cfg['ocr_max_tokens']+1>512
+                or m['mode']!='fusion' or m['label_scheme']!='five' or cfg['rdrop_weight']
+                or m['aspect_sentiment_weight'] or m['visual_gate'] or m['word_context']):
+            raise ValueError('OCR requires an independent five-tag fusion baseline and total token budget <=512')
     return cfg
 
 
 def make_dataset(examples, tokenizer, cfg, features):
+    texts,ocr_meta = (open_ocr(cfg['ocr_cache'],cfg['image_root'],examples,cfg.get('ocr_manifest_sha256'))
+                      if cfg.get('ocr_cache') else (None,None))
     dataset = SequenceDataset(examples, tokenizer, max_length=cfg['max_length'],
-                              label_scheme=cfg.get('model', {}).get('label_scheme', 'five'))
+                              label_scheme=cfg.get('model', {}).get('label_scheme', 'five'),
+                              ocr_texts=texts,ocr_max_tokens=cfg.get('ocr_max_tokens',64))
     return CachedVisionDataset(dataset, features) if features is not None else dataset
 
 
@@ -100,6 +112,10 @@ def run_training(raw, output):
         features, cache_meta = open_cache(cfg['visual_cache'], cfg['vision_model'], cfg['image_root'], train + dev)
         if cache_meta['token_shape'][-1] != cfg['model']['visual_size']:
             raise ValueError('visual size does not match verified cache')
+    ocr_meta=None
+    if cfg['ocr_cache']:
+        _,ocr_meta=open_ocr(cfg['ocr_cache'],cfg['image_root'],train+dev,cfg['ocr_manifest_sha256'])
+        cfg['ocr_manifest_sha256']=ocr_meta['manifest_sha256']
     train_ds, dev_ds = [make_dataset(examples, tokenizer, cfg, features) for examples in (train, dev)]
     collator = SequenceCollator(tokenizer.pad_token_id)
     train_loader = DataLoader(train_ds, batch_size=cfg['batch_size'], shuffle=True,
@@ -128,6 +144,8 @@ def run_training(raw, output):
                 'head_learning_rate', 'warmup_ratio', 'device'):
         logger.info(f'{key}: {cfg[key]}')
     logger.info(f"model: {cfg['model']['mode']}; selection: Dev Joint F1; metrics: percent")
+    if ocr_meta:
+        logger.info(f"OCR context: up to {cfg['ocr_max_tokens']} subwords; labels and CRF decode on original words only.")
     if cfg['model']['visual_gate']:
         logger.info(f"Visual gate: per-word null-anchored residual; initial gate: {cfg['model']['visual_gate_init']:g}")
     if cfg['model']['word_context']:
@@ -160,6 +178,9 @@ def run_training(raw, output):
         'cache_features_sha256': cache_meta['features_sha256'] if cache_meta else None,
         'source_sha256': {str(p.relative_to(source)): file_hash(p) for p in sorted(source.rglob('*.py'))},
     }
+    if ocr_meta:
+        provenance['ocr']=dict(**ocr_meta,max_tokens=cfg['ocr_max_tokens'],added_parameters=0,
+                               supervised_positions='original_words_only')
     if cfg['rdrop_weight'] > 0:
         provenance.update(objective='sentence_mean_two_pass_crf_nll_plus_symmetric_sequence_kl',
             rdrop=dict(weight=cfg['rdrop_weight'], kl='0.5*(KL(P||Q)+KL(Q||P))',

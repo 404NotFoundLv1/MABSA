@@ -37,6 +37,11 @@ def resolve_experiment(config, dataset, seed=None, device=None):
         cfg['seed'] = seed
     if device is not None:
         cfg['device'] = device
+    if cfg.get('ocr_cache'):
+        path=Path(cfg['ocr_cache'].format(dataset=dataset))
+        path=(path if path.is_absolute() else ROOT/path).resolve()
+        if not path.is_relative_to(ROOT):raise ValueError('ocr_cache must be inside MACT')
+        cfg['ocr_cache']=str(path)
     test = {key: cfg.pop(key) for key in ('test_data', 'test_visual_cache')}
     return resolve_config(cfg), test
 
@@ -75,7 +80,9 @@ def run_experiment(config, dataset, seed=None, device=None, output=None, evaluat
     if status_path.exists():
         raise FileExistsError(f'run status already exists: {status_path}')
     identity = code_identity()
-    data_hashes = {p:file_hash(p) for p in (cfg['train_data'],cfg['dev_data'],test['test_data'])}
+    data_paths=[cfg['train_data'],cfg['dev_data']]
+    if evaluate_test:data_paths.append(test['test_data'])
+    data_hashes = {p:file_hash(p) for p in data_paths}
     started = time.time()
     write_json(status_path,dict(state='running',dataset=dataset,seed=cfg['seed'],started_at=started))
     try:
