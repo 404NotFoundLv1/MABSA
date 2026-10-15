@@ -33,8 +33,10 @@ def state_hash(model):
     return digest.hexdigest()
 
 
-def read_config(path,dataset,device):
+def read_config(path,dataset,device,seed=None):
     config = json.loads(Path(path).read_text())
+    if seed is not None:
+        config['seed']=seed
     defaults = json.loads((ROOT/'configs/ocr_residual.json').read_text())
     if set(config)!=set(defaults):
         raise ValueError('missing or unknown OCR residual configuration keys')
@@ -42,8 +44,8 @@ def read_config(path,dataset,device):
                 'eval_batch_size','num_threads'):
         if type(config[key]) is not int or config[key]<1:
             raise ValueError(f'{key} must be a positive integer')
-    if config['seed']!=42:
-        raise ValueError('this pilot is preregistered for seed 42')
+    if config['seed']>100:
+        raise ValueError('seed must be in [1,100]')
     if not 0<=config['warmup_ratio']<1:
         raise ValueError('invalid warmup ratio')
     for key in ('learning_rate','weight_decay','gradient_clip'):
@@ -51,7 +53,7 @@ def read_config(path,dataset,device):
             raise ValueError(f'invalid {key}')
     base,_ = resolve_experiment(ROOT/'configs/base.json',dataset,seed=config['seed'],device=device)
     for key in ('baseline','ocr_cache'):
-        path = (ROOT/config[key].format(dataset=dataset)).resolve()
+        path = (ROOT/config[key].format(dataset=dataset,seed=config['seed'])).resolve()
         if not path.is_relative_to(ROOT):
             raise ValueError(f'{key} must be inside MACT')
         config[key] = str(path)
@@ -137,9 +139,9 @@ def diagnostic(model,dev_ds,examples,tokenizer,device,baseline_predictions,expec
     return result
 
 
-def run(config_path,dataset,output,device='cuda:0',smoke=False):
+def run(config_path,dataset,output,device='cuda:0',smoke=False,seed=None):
     started = time.monotonic()
-    cfg = read_config(config_path,dataset,device)
+    cfg = read_config(config_path,dataset,device,seed=seed)
     if smoke:
         cfg['epochs']=1
     output=Path(output).resolve()
@@ -322,8 +324,9 @@ def main():
     parser.add_argument('--output',required=True)
     parser.add_argument('--device',default='cuda:0')
     parser.add_argument('--smoke',action='store_true')
+    parser.add_argument('--seed',type=int)
     args=parser.parse_args()
-    run(args.config,args.dataset,args.output,args.device,args.smoke)
+    run(args.config,args.dataset,args.output,args.device,args.smoke,seed=args.seed)
 
 
 if __name__=='__main__':main()

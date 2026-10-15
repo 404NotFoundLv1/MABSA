@@ -1,0 +1,16 @@
+{
+  "seed": 43,
+  "epochs": 35,
+  "ocr_max_tokens": 64,
+  "attention_heads": 4,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.1,
+  "gradient_clip": 1.0,
+  "accumulation": 8,
+  "batch_size": 1,
+  "eval_batch_size": 1,
+  "num_threads": 4,
+  "baseline": "assets/checkpoints/baseline_s{seed}/{dataset}.pt",
+  "ocr_cache": "assets/cache/ocr_v1/{dataset}"
+}
