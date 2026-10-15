@@ -44,6 +44,25 @@ def open_ocr(cache, image_root, examples, expected_manifest_sha256=None):
                       nonempty=sum(bool(t) for t in texts.values()))
 
 
+def evaluation_ocr_config(cfg, cache):
+    """Use a new split asset only when its recognition pipeline matches training."""
+    if not cfg.get('ocr_cache') or not cfg.get('ocr_manifest_sha256'):
+        raise ValueError('checkpoint has no pinned OCR training asset')
+    original=Path(cfg['ocr_cache']);cache=Path(cache).resolve()
+    if file_hash(original/'manifest.json')!=cfg['ocr_manifest_sha256']:
+        raise ValueError('training OCR manifest changed')
+    trained=json.loads((original/'manifest.json').read_text())
+    fresh=json.loads((cache/'manifest.json').read_text())
+    for meta,path in ((trained,original),(fresh,cache)):
+        if (meta.get('format')!='mact_ocr_v1' or meta.get('label_fields_used') is not False
+                or file_hash(path/'texts.json')!=meta.get('texts_sha256')):
+            raise ValueError('invalid or changed OCR split asset')
+    for key in ('dataset','policy','recognition_config_sha256','engine_versions','models_sha256'):
+        if not trained.get(key) or trained[key]!=fresh.get(key):
+            raise ValueError(f'OCR split pipeline mismatch: {key}')
+    return dict(cfg,ocr_cache=str(cache),ocr_manifest_sha256=file_hash(cache/'manifest.json'))
+
+
 def export_probe(probe, dataset, output):
     """Promote frozen automatic OCR only; never read quality notes or annotations."""
     probe=Path(probe);output=Path(output)

@@ -13,15 +13,18 @@ from .data import load_labeled, SequenceCollator
 from .labels import get_tags, aspects_to_tags
 from .runtime import load_checkpoint, evaluate_model, write_json
 from .train import make_dataset
+from .ocr import evaluation_ocr_config
 
 
 def run_evaluation(checkpoint, data, output, device='cpu', batch_size=1,
-                   force_null=False, predict_only=False, visual_cache=None, resource_paths=None):
+                   force_null=False, predict_only=False, visual_cache=None, resource_paths=None, ocr_cache=None):
     output = Path(output)
     if output.exists() and any(output.iterdir()):
         raise ValueError('evaluation output must be fresh')
     model, metadata = load_checkpoint(checkpoint, device)
     cfg = dict(metadata['run_config'])
+    if ocr_cache is not None:
+        cfg = evaluation_ocr_config(cfg, ocr_cache)
     label_scheme = model.config.label_scheme
     tags = get_tags(label_scheme)
     cfg['model'] = {**cfg.get('model', {}), 'label_scheme': label_scheme}
@@ -56,6 +59,8 @@ def run_evaluation(checkpoint, data, output, device='cpu', batch_size=1,
         provenance['label_scheme'] = label_scheme
     if cfg.get('ocr_cache'):
         provenance['ocr']=dict(cache=cfg['ocr_cache'],manifest_sha256=cfg['ocr_manifest_sha256'],
+                               training_manifest_sha256=metadata['run_config']['ocr_manifest_sha256'],
+                               split_cache_override=ocr_cache is not None,
                                max_tokens=cfg['ocr_max_tokens'],supervised_positions='original_words_only')
     write_json(output / 'provenance.json', provenance)
     write_json(output / 'predictions.json', predictions)
@@ -75,6 +80,7 @@ def main():
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument('--visual-cache')
+    parser.add_argument('--ocr-cache')
     parser.add_argument('--force-null', action='store_true')
     parser.add_argument('--predict-only', action='store_true')
     args = parser.parse_args()

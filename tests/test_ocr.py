@@ -97,7 +97,9 @@ class OCRTests(unittest.TestCase):
             image_sha256={'a.jpg':file_hash(images/'a.jpg')},token_shape=[2,8])))
         ocr=root/'ocr';ocr.mkdir()
         (ocr/'texts.json').write_text(json.dumps({'a.jpg':dict(image_sha256=file_hash(images/'a.jpg'),text='bad')}))
-        (ocr/'manifest.json').write_text(json.dumps(dict(format='mact_ocr_v1',texts_sha256=file_hash(ocr/'texts.json'))))
+        (ocr/'manifest.json').write_text(json.dumps(dict(format='mact_ocr_v1',texts_sha256=file_hash(ocr/'texts.json'),
+            dataset='twitter2015',policy={'min_confidence':.8},recognition_config_sha256='cfg',
+            engine_versions={'engine':'fixed'},models_sha256={'model':'sha'},label_fields_used=False)))
         for split in ('train','dev'):
             (root/f'{split}.json').write_text(json.dumps([dict(id=split,words=['good','washington'],image_id='a.jpg',
                 aspects=[{'from':1,'to':2,'polarity':'positive'}])]))
@@ -116,8 +118,37 @@ class OCRTests(unittest.TestCase):
         self.assertFalse((out/'test').exists())
         self.assertEqual(len(json.loads((out/'experiment.json').read_text())['data_sha256']),2)
         from mact.evaluate import run_evaluation
+        new=root/'new-split';new.mkdir()
+        for name in ('manifest.json','texts.json'):(new/name).write_bytes((ocr/name).read_bytes())
+        metrics,predictions=run_evaluation(out/'best.pt',root/'dev.json',root/'new-cache-eval',ocr_cache=new)
+        self.assertEqual(metrics,summary['best_dev'])
+        self.assertEqual(json.loads(json.dumps(predictions)),json.loads((out/'best_dev_predictions.json').read_text()))
+        provenance=json.loads((root/'new-cache-eval/provenance.json').read_text())
+        self.assertTrue(provenance['ocr']['split_cache_override'])
+        self.assertEqual(provenance['ocr']['training_manifest_sha256'],file_hash(ocr/'manifest.json'))
         (ocr/'manifest.json').write_text('{}')
         with self.assertRaisesRegex(ValueError,'manifest changed'):
             run_evaluation(out/'best.pt',root/'dev.json',root/'corrupt-reload')
+
+    def test_new_split_requires_identical_ocr_pipeline_and_pinned_original(self):
+        from mact.ocr import evaluation_ocr_config
+        root=Path(self.fixture.tmp.name);old=root/'old';new=root/'new';old.mkdir();new.mkdir()
+        identity=dict(format='mact_ocr_v1',dataset='twitter2015',policy={'min_confidence':.8},
+            recognition_config_sha256='cfg',engine_versions={'rapidocr':'fixed'},models_sha256={'model':'sha'},label_fields_used=False)
+        for cache in (old,new):
+            (cache/'texts.json').write_text('{}')
+            (cache/'manifest.json').write_text(json.dumps(dict(**identity,texts_sha256=file_hash(cache/'texts.json'))))
+        cfg=dict(ocr_cache=str(old),ocr_manifest_sha256=file_hash(old/'manifest.json'),ocr_max_tokens=64)
+        resolved=evaluation_ocr_config(cfg,new)
+        self.assertEqual(resolved['ocr_cache'],str(new.resolve()))
+        self.assertEqual(cfg['ocr_cache'],str(old))
+        for key in ('policy','recognition_config_sha256','engine_versions','models_sha256','dataset','label_fields_used'):
+            broken=dict(identity);broken[key]='changed'
+            (new/'manifest.json').write_text(json.dumps(dict(**broken,texts_sha256=file_hash(new/'texts.json'))))
+            with self.subTest(key=key),self.assertRaises(ValueError):evaluation_ocr_config(cfg,new)
+        (new/'manifest.json').write_text((old/'manifest.json').read_text())
+        (old/'manifest.json').write_text('{}')
+        with self.assertRaises(ValueError):evaluation_ocr_config(cfg,new)
+        with self.assertRaises(ValueError):evaluation_ocr_config({},new)
 
 if __name__=='__main__':unittest.main()

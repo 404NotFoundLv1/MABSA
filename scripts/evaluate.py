@@ -18,5 +18,6 @@ if __name__ == '__main__':
     p.add_argument('--split',choices=('dev','test'),default='test')
     p.add_argument('--device',default='cuda:0')
     p.add_argument('--predict-only',action='store_true')
+    p.add_argument('--ocr-cache',help='New split OCR asset, verified against checkpoint training pipeline')
     metrics,_=evaluate(**vars(p.parse_args()))
     print(json.dumps(metrics,indent=2))

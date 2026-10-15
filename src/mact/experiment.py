@@ -59,14 +59,14 @@ def code_identity():
 
 
 def evaluate(checkpoint, dataset, output, config='configs/base.json', split='test', device='cpu',
-             predict_only=False):
+             predict_only=False, ocr_cache=None):
     cfg, test = resolve_experiment(config, dataset, device=device)
     if split not in ('dev','test'):
         raise ValueError('evaluation split must be dev or test')
     return run_evaluation(checkpoint, test['test_data'] if split=='test' else cfg['dev_data'], output,
         device=device, batch_size=cfg['eval_batch_size'], predict_only=predict_only,
         visual_cache=test['test_visual_cache'] if split=='test' else cfg['visual_cache'],
-        resource_paths={key:cfg[key] for key in ('vision_model','image_root')})
+        resource_paths={key:cfg[key] for key in ('vision_model','image_root')},ocr_cache=ocr_cache)
 
 
 def run_experiment(config, dataset, seed=None, device=None, output=None, evaluate_test=True):
