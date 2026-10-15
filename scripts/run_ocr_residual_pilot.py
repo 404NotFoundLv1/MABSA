@@ -42,6 +42,14 @@ def smoke_path(dataset,seed):
     return VERIFY/f'final-smoke-{dataset}{suffix}'
 
 
+def smoke_succeeded(summary,status):
+    return (status['state']=='completed' and not summary['evaluate_test'] and summary['is_smoke']
+            and summary['baseline_frozen_exact'] and summary['reload_exact']
+            and summary['windows']==3 and summary['completed_epochs']==1
+            and 0<summary['optimizer_updates']<=summary['windows']
+            and (summary['peak_cuda_allocated_bytes'] or 0)>0)
+
+
 def preflight():
     identity=code_identity()
     if identity['git_dirty']:
@@ -56,9 +64,7 @@ def preflight():
         summary=json.loads((smoke/'summary.json').read_text())
         provenance=json.loads((smoke/'provenance.json').read_text())
         status=json.loads((smoke/'status.json').read_text())
-        if (status['state']!='completed' or summary['evaluate_test'] or not summary['is_smoke']
-                or not summary['baseline_frozen_exact'] or not summary['reload_exact']
-                or summary['optimizer_updates']!=3):
+        if not smoke_succeeded(summary,status):
             raise ValueError(f'{dataset}: real GPU smoke did not pass')
         if provenance['code']['source_sha256']!=identity['source_sha256']:
             raise ValueError('smoke verification is stale after source edits')

@@ -6,12 +6,25 @@ from pathlib import Path
 
 from mact.ocr_residual_train import read_config
 from mact.ocr_residual_results import paired_summary, same_treatment
-from scripts.run_ocr_residual_pilot import make_jobs
+from scripts.run_ocr_residual_pilot import make_jobs, smoke_succeeded
 
 ROOT=Path(__file__).resolve().parents[1]
 
 
 class ResidualMultiseedTests(unittest.TestCase):
+    def smoke(self):
+        return dict(is_smoke=True,evaluate_test=False,baseline_frozen_exact=True,reload_exact=True,
+                    optimizer_updates=3,windows=3,completed_epochs=1,peak_cuda_allocated_bytes=778000000)
+
+    def test_gpu_smoke_accepts_one_empty_accumulation_window(self):
+        summary=self.smoke();summary['optimizer_updates']=2
+        self.assertTrue(smoke_succeeded(summary,dict(state='completed')))
+
+    def test_gpu_smoke_rejects_no_training_cpu_or_incomplete_windows(self):
+        for key,value in (('optimizer_updates',0),('peak_cuda_allocated_bytes',None),('windows',2)):
+            summary=self.smoke();summary[key]=value
+            self.assertFalse(smoke_succeeded(summary,dict(state='completed')),(key,value))
+
     def test_four_jobs_use_correct_seed_output_and_two_gpus(self):
         jobs=make_jobs((43,44),Path('/tmp/paired'))
         self.assertEqual(len(jobs),4)
