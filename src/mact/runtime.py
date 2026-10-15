@@ -23,6 +23,7 @@ def write_json(path, value):
 
 def model_inputs(batch, device, include_tags=False):
     keys = ['input_ids', 'attention_mask', 'word_ids', 'word_mask', 'visual_features']
+    keys += ['ocr_input_ids', 'ocr_attention_mask', 'ocr_content_mask']
     if include_tags:
         keys.append('tags')
     return {key: batch[key].to(device) for key in keys if key in batch}

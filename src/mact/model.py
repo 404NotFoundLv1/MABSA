@@ -186,7 +186,7 @@ class SequenceModel(nn.Module):
 
     def forward(self, input_ids, attention_mask, word_ids, word_mask,
                 visual_features=None, tags=None, force_null=False,
-                visual_drop_mask=None, return_visual_drop_mask=False):
+                visual_drop_mask=None, return_visual_drop_mask=False, return_words=False):
         if visual_drop_mask is not None:
             if (self.config.mode == 'text' or force_null
                     or visual_drop_mask.dtype != torch.bool
@@ -241,6 +241,8 @@ class SequenceModel(nn.Module):
             if self.config.word_context:
                 emissions = emissions + self.word_context(fused_words, word_mask)
         output = {'emissions': emissions, 'text_emissions': text_emissions}
+        if return_words:
+            output['words'] = words
         if return_visual_drop_mask and self.config.mode != 'text':
             output['visual_drop_mask'] = drop
         if self.config.visual_gate:
