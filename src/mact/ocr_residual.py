@@ -1,5 +1,6 @@
 """Independent OCR emissions over an immutable five-tag MACT checkpoint."""
 import itertools
+import math
 from pathlib import Path
 
 import torch
@@ -61,14 +62,22 @@ class OCRBranch(nn.Module):
 
 
 class OCRResidualModel(nn.Module):
-    def __init__(self,baseline,heads=4):
+    def __init__(self,baseline,heads=4,memory_source='ocr',standalone_weight=0.,memory_max_tokens=64):
         super().__init__()
+        if memory_source not in ('ocr','text'):
+            raise ValueError('memory_source must be ocr or text')
+        if (type(standalone_weight) not in (int,float) or not math.isfinite(standalone_weight)
+                or standalone_weight<0):
+            raise ValueError('standalone_weight must be finite and nonnegative')
+        if type(memory_max_tokens) is not int or not 1<=memory_max_tokens<=510:
+            raise ValueError('memory_max_tokens must be in [1,510]')
         cfg = baseline.config
         if (cfg.mode!='fusion' or cfg.label_scheme!='five' or cfg.visual_gate
                 or cfg.word_context or cfg.aspect_sentiment_weight):
             raise ValueError('OCR residual requires an unmodified five-tag fusion baseline')
         self.baseline = baseline.requires_grad_(False).eval()
         self.config, self.heads = cfg, heads
+        self.memory_source,self.standalone_weight,self.memory_max_tokens = memory_source,standalone_weight,memory_max_tokens
         self.branch = OCRBranch(baseline.text_encoder.config.hidden_size,cfg.hidden_size,heads)
 
     @property
@@ -89,13 +98,26 @@ class OCRResidualModel(nn.Module):
         emissions = base['emissions'].clone()
         if active.any():
             with torch.no_grad():
-                ocr = self.baseline.text_encoder(input_ids=ocr_input_ids[active],
-                    attention_mask=ocr_attention_mask[active]).last_hidden_state
-            residual = self.branch(base['words'][active],ocr,ocr_content_mask[active])
+                if self.memory_source=='ocr':
+                    memory = self.baseline.text_encoder(input_ids=ocr_input_ids[active],
+                        attention_mask=ocr_attention_mask[active]).last_hidden_state
+                    content_mask = ocr_content_mask[active]
+                else:
+                    # Match capacity/availability; never read OCR token content in this control.
+                    memory = self.baseline.text_encoder(input_ids=input_ids[active],
+                        attention_mask=attention_mask[active]).last_hidden_state
+                    content_mask = (word_ids[active]>=0)&attention_mask[active].bool()
+                    content_mask = content_mask & (content_mask.long().cumsum(1)<=self.memory_max_tokens)
+            residual = self.branch(base['words'][active],memory,content_mask)
             emissions[active] = emissions[active] + residual * word_mask[active].unsqueeze(-1)
         output = dict(emissions=emissions,base_emissions=base['emissions'],has_ocr=active)
         if tags is not None:
-            output['losses'] = self.crf(emissions,tags,word_mask)
+            joint = self.crf(emissions,tags,word_mask)
+            standalone = joint.new_zeros(joint.shape)
+            if self.standalone_weight and active.any():
+                standalone[active] = self.crf(residual,tags[active],word_mask[active])
+            output.update(joint_losses=joint,standalone_losses=standalone,
+                losses=joint+self.standalone_weight*standalone if self.standalone_weight else joint)
         return output
 
 
@@ -105,7 +127,7 @@ def residual_train_epoch(model,loader,optimizer,device,accumulation=8,gradient_c
     model.train()
     iterator = iter(loader)
     examples = updates = windows = active_examples = 0
-    loss_sum = 0.
+    loss_sum = joint_sum = standalone_sum = 0.
     while window := list(itertools.islice(iterator,accumulation)):
         count = sum(len(b['input_ids']) for b in window)
         optimizer.zero_grad(set_to_none=True)
@@ -117,6 +139,8 @@ def residual_train_epoch(model,loader,optimizer,device,accumulation=8,gradient_c
             if losses.requires_grad:
                 (losses.sum()/count).backward()
             loss_sum += float(losses.detach().sum())
+            joint_sum += float(output['joint_losses'].detach().sum())
+            standalone_sum += float(output['standalone_losses'].detach().sum())
             active_examples += int(output['has_ocr'].sum())
         parameters = [p for p in model.branch.parameters() if p.grad is not None]
         if parameters:
@@ -128,13 +152,17 @@ def residual_train_epoch(model,loader,optimizer,device,accumulation=8,gradient_c
             scheduler.step()
         examples += count
         windows += 1
-    return dict(sentence_nll=loss_sum/examples if examples else 0.,examples=examples,
+    return dict(sentence_nll=joint_sum/examples if examples else 0.,
+                standalone_nll=standalone_sum/examples if examples else 0.,
+                objective_loss=loss_sum/examples if examples else 0.,examples=examples,
                 has_ocr_examples=active_examples,updates=updates,windows=windows)
 
 
 def save_residual(path,model,baseline_path,run_config,epoch,metrics):
     content = dict(format='mact_ocr_residual_v1',baseline_path=str(Path(baseline_path).resolve()),
         baseline_sha256=file_hash(baseline_path),heads=model.heads,run_config=run_config,
+        memory_source=model.memory_source,standalone_weight=model.standalone_weight,
+        memory_max_tokens=model.memory_max_tokens,
         epoch=epoch,dev_metrics=metrics,
         branch_state={k:v.detach().cpu() for k,v in model.branch.state_dict().items()})
     path=Path(path)
@@ -152,6 +180,7 @@ def load_residual(path,device='cpu'):
     baseline,metadata = load_checkpoint(content['baseline_path'])
     if metadata['run_config'].get('ocr_cache'):
         raise ValueError('concatenated OCR checkpoint is not a baseline')
-    model = OCRResidualModel(baseline,heads=content['heads'])
+    model = OCRResidualModel(baseline,heads=content['heads'],memory_source=content.get('memory_source','ocr'),
+        standalone_weight=content.get('standalone_weight',0.),memory_max_tokens=content.get('memory_max_tokens',64))
     model.branch.load_state_dict(content.pop('branch_state'),strict=True)
     return model.to(device).eval(),content

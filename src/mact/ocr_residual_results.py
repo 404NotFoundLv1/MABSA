@@ -15,6 +15,9 @@ TREATMENT_KEYS=('epochs','ocr_max_tokens','attention_heads','learning_rate','wei
 def same_treatment(a,b):
     if any(a[k]!=b[k] for k in TREATMENT_KEYS):
         return False
+    if any(a.get(k,default)!=b.get(k,default) for k,default in
+           (('memory_source','ocr'),('standalone_weight',0.))):
+        return False
     x,y=a['baseline_run'],b['baseline_run']
     return (x['model']==y['model'] and x['max_length']==y['max_length']
             and a.get('ocr_manifest_sha256')==b.get('ocr_manifest_sha256')

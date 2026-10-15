@@ -169,3 +169,22 @@ OCR assets live in `assets/cache/ocr_v1/{dataset}`. They were exported from the 
 The first experiment uses seeds 42/43/44, 35 epochs, epoch-only logs, and Dev-only selection/comparison. Its detached launcher is `verification/ocr_context/launch.py`; audits and GPU checks are in the same directory. Outputs are `outputs/ocr_context_s42_43_44_20261014`. This is an exploratory comparison on previously examined seeds.
 
 For a new split, pass `--ocr-cache assets/cache/ocr_v1_test/{dataset}` to the evaluation script. The evaluator checks the original checkpoint-pinned asset and requires identical OCR weights, recognition configuration, engine versions and filtering policy. The Test asset is generated separately; archived training caches and checkpoints are never edited. `force_null` disables the visual patch branch but leaves OCR visible, so that setting is not a text-only ablation.
+
+# Frozen residual supervision controls
+
+`scripts/train_ocr_residual.py` trains only a residual branch over a hash-pinned frozen five-tag baseline. The original `configs/ocr_residual.json` remains the OCR-memory, fused-loss-only control. Two optional configurations add direct sequence supervision:
+
+- `configs/residual_supervised_ocr.json`: independent frozen OCR representations as memory.
+- `configs/residual_supervised_text.json`: frozen original-text subword representations as memory; OCR content is never read by this branch.
+
+Both use the same branch parameters, initialization and OCR-presence gate. Text memory selects the first 64 content subwords after encoding the full original sentence; OCR memory encodes its own truncated sequence. These match trainable capacity and active samples, not encoder FLOPs. Missing OCR bypasses either branch exactly.
+
+The per-sentence objective is fused CRF NLL plus `standalone_weight * standalone CRF NLL`, with weight fixed to 1.0 in both new configurations. The standalone term uses residual emissions alone and the same frozen CRF, and is zero for no-OCR rows. Both terms are averaged over all sentences, including inactive ones. Baseline/CRF weights remain frozen, output projection is zero-initialized, and inference still decodes only the fused five-label sequence. No gold labels are supplied at inference.
+
+```bash
+CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train_ocr_residual.py \
+  --config configs/residual_supervised_ocr.json --dataset twitter2015 \
+  --output outputs/residual_supervised_ocr/twitter2015/seed42 --device cuda:0
+```
+
+Use the text configuration for the matched control. The runner uses Train/Dev only, saves the first best Dev checkpoint among epochs 1–35, and reports total loss, fused NLL and standalone NLL once per epoch. Selected-checkpoint diagnostics check reload, OCR removal, unchanged no-OCR predictions and three OCR shuffles. Text-control predictions must remain identical under those content shuffles; removal disables its presence-gated branch. Old branch checkpoints default to OCR memory and zero standalone weight on load.

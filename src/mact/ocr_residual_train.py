@@ -38,8 +38,14 @@ def read_config(path,dataset,device,seed=None):
     if seed is not None:
         config['seed']=seed
     defaults = json.loads((ROOT/'configs/ocr_residual.json').read_text())
-    if set(config)!=set(defaults):
+    optional={'memory_source','standalone_weight'}
+    if set(config)-optional!=set(defaults):
         raise ValueError('missing or unknown OCR residual configuration keys')
+    if config.get('memory_source','ocr') not in ('ocr','text'):
+        raise ValueError('memory_source must be ocr or text')
+    weight=config.get('standalone_weight',0.)
+    if type(weight) not in (int,float) or not math.isfinite(weight) or weight<0:
+        raise ValueError('standalone_weight must be finite and nonnegative')
     for key in ('seed','epochs','ocr_max_tokens','attention_heads','accumulation','batch_size',
                 'eval_batch_size','num_threads'):
         if type(config[key]) is not int or config[key]<1:
@@ -130,11 +136,14 @@ def diagnostic(model,dev_ds,examples,tokenizer,device,baseline_predictions,expec
             raise ValueError('removed OCR must reproduce baseline exactly')
         if any(predictions[i]!=baseline_predictions[i] for i in groups['no_ocr']):
             raise ValueError('no-OCR prediction changed')
+        if (model.memory_source=='text' and mode.startswith('shuffle')
+                and predictions!=normalized(expected_predictions)):
+            raise ValueError('text control must ignore shuffled OCR content')
         result['metrics'][mode] = group_metrics(examples,predictions,groups)
         write_json(output/f'{mode}-predictions.json',predictions)
         print(f"DEV diagnostic {mode}: aesc_f:{100*metrics['joint']['f1']:.2f}",flush=True)
     result.update(reload_exact=True,no_ocr_predictions_exact=True,removed_predictions_exact=True,
-                  evaluate_test=False,is_smoke=smoke)
+                  memory_source=model.memory_source,evaluate_test=False,is_smoke=smoke)
     write_json(output/'diagnostic.json',result)
     return result
 
@@ -224,7 +233,9 @@ def _run(cfg,output,smoke,started,config_path):
         raise ValueError('baseline does not reproduce archived Dev predictions exactly')
     if not smoke and baseline_metrics!=reference_summary['best_dev']:
         raise ValueError('baseline does not reproduce full Dev metrics')
-    model=OCRResidualModel(baseline,heads=cfg['attention_heads']).to(device)
+    model=OCRResidualModel(baseline,heads=cfg['attention_heads'],
+        memory_source=cfg.get('memory_source','ocr'),standalone_weight=cfg.get('standalone_weight',0.),
+        memory_max_tokens=cfg['ocr_max_tokens']).to(device)
     # Check exact zero-init scores on every Dev row; comparison uses the frozen baseline.
     model.eval()
     with torch.no_grad():
@@ -245,12 +256,17 @@ def _run(cfg,output,smoke,started,config_path):
         visual_cache_sha256=visual_meta['features_sha256'],baseline_state_sha256=frozen_hash,
         trainable_parameters=trainable,baseline_frozen=True,precision='fp32',evaluate_test=False,
         is_smoke=smoke,selection='best Dev joint F1 among trained epochs 1..35; epoch0 reported separately',
-        objective='sentence_mean_crf_nll_all_sentences_no_ocr_constant',
+        objective='sentence_mean_fused_crf_plus_weighted_active_standalone_crf' if model.standalone_weight
+            else 'sentence_mean_crf_nll_all_sentences_no_ocr_constant',
+        memory_source=model.memory_source,standalone_weight=model.standalone_weight,
         scheduling='all accumulation windows; optimizer skips all-empty windows',
-        frozen_OCR_encoder='same frozen baseline DeBERTa; independent OCR token sequence'))
+        frozen_OCR_encoder='same frozen baseline DeBERTa',
+        memory_description='independent OCR sequence' if model.memory_source=='ocr'
+            else 'original sentence encoded; first OCR-budget content subwords as memory; OCR presence gate only'))
     logger=TrainingLogger(output)
     logger.info(f'Frozen MACT + independent OCR residual | {dataset}',pad=True)
     logger.info(f"seed:{cfg['seed']} epochs:{cfg['epochs']} trainable:{trainable} LR:{cfg['learning_rate']:g}")
+    logger.info(f'Memory: {model.memory_source}; standalone loss weight: {model.standalone_weight:g}; active rows: OCR present')
     logger.info('Selection: Dev JMASA F1, trained epochs only. Baseline and CRF frozen; no Test evaluation.')
     logger.joint_metrics('BASELINE DEV',baseline_metrics['joint'])
     groups=[dict(params=[p for p in model.branch.parameters() if (p.ndim>=2)==decay],
@@ -276,7 +292,9 @@ def _run(cfg,output,smoke,started,config_path):
         history.append(record)
         write_json(output/'history.json',history)
         logger.event(dict(event='epoch',**record))
-        logger.info(f"Epoch [{epoch}/{cfg['epochs']}], Mean Loss: {result['sentence_nll']:.4f}",pad=True)
+        logger.info(f"Epoch [{epoch}/{cfg['epochs']}], Mean Loss: {result['objective_loss']:.4f}",pad=True)
+        if cfg.get('standalone_weight',0.):
+            logger.info(f"Fused NLL: {result['sentence_nll']:.4f}; Standalone NLL: {result['standalone_nll']:.4f} (all-sentence means)")
         logger.joint_metrics('DEV',metrics['joint'])
         logger.info(f"DEV AE  ae_p:{100*metrics['mate']['precision']:.2f} ae_r:{100*metrics['mate']['recall']:.2f} ae_f:{100*metrics['mate']['f1']:.2f}")
         if metrics['joint']['f1']>best:
