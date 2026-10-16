@@ -96,6 +96,15 @@ def run_experiment(config, dataset, seed=None, device=None, output=None, evaluat
         if dev != summary['best_dev'] or json.loads(json.dumps(predictions)) != json.loads((output/'best_dev_predictions.json').read_text()):
             raise ValueError('checkpoint reload did not reproduce Dev predictions exactly')
         write_json(output/'reload-verification.json',dict(full_dev=True,predictions_exact=True,metrics_exact=True))
+        if cfg['ema_decay']:
+            ema_root = output / 'ema'
+            ema_summary = json.loads((ema_root / 'summary.json').read_text())
+            ema_dev, ema_predictions = evaluate(ema_root/'best.pt',dataset,ema_root/'reloaded_dev',
+                                               config,split='dev',device=cfg['device'])
+            if (ema_dev != ema_summary['best_dev'] or json.loads(json.dumps(ema_predictions))
+                    != json.loads((ema_root/'best_dev_predictions.json').read_text())):
+                raise ValueError('EMA checkpoint reload did not reproduce Dev predictions exactly')
+            write_json(ema_root/'reload-verification.json',dict(full_dev=True,predictions_exact=True,metrics_exact=True))
         for name, sha in identity['source_sha256'].items():
             if file_hash(ROOT/name) != sha:
                 raise ValueError(f'source changed during run: {name}')

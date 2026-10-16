@@ -133,7 +133,7 @@ def evaluate_model(model, loader, device, force_null=False):
     return evaluate_predictions(gold, predictions), predictions
 
 
-def save_checkpoint(path, model, run_config, epoch, metrics):
+def save_checkpoint(path, model, run_config, epoch, metrics, *, weight_metadata=None):
     label_scheme = model.config.label_scheme
     content = {
         'format': 'mabsa_sequence_crf_v1' if label_scheme == 'five' else 'mabsa_sequence_crf_v2',
@@ -144,6 +144,8 @@ def save_checkpoint(path, model, run_config, epoch, metrics):
         'state_dict': {k: v.detach().cpu() for k, v in model.state_dict().items()},
         'epoch': epoch, 'dev_metrics': metrics,
     }
+    if weight_metadata is not None:
+        content['weight_metadata'] = weight_metadata
     path = Path(path)
     temporary = path.with_suffix('.tmp')
     torch.save(content, temporary)

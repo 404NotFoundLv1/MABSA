@@ -23,6 +23,7 @@ from .model import SequenceModel, ModelConfig
 from .ocr import open_ocr
 from .runtime import train_epoch, evaluate_model, save_checkpoint, write_json
 from .finetuning import freeze_text_layers, parameter_hash, optimizer_parameter_groups
+from .averaging import WeightEMA
 
 
 DEFAULTS = dict(seed=42, epochs=10, batch_size=1, eval_batch_size=1, accumulation=8,
@@ -143,6 +144,7 @@ def run_training(raw, output):
     dev_loader = DataLoader(dev_ds, batch_size=cfg['eval_batch_size'], shuffle=False,
                             collate_fn=collator, num_workers=cfg['num_workers'])
     model = SequenceModel(load_text(cfg['text_model']), ModelConfig(**cfg['model'])).to(device)
+    ema = WeightEMA(model, cfg['ema_decay']) if cfg['ema_decay'] else None
     freeze_policy = freeze_text_layers(model, cfg['text_freeze_layers'])
     frozen_before = parameter_hash(model, freeze_policy['frozen_names']) if freeze_policy else None
     groups, group_records = optimizer_parameter_groups(model, cfg['learning_rate'],
@@ -153,6 +155,8 @@ def run_training(raw, output):
         planned = min(planned, cfg['max_updates'])
     scheduler = get_linear_schedule_with_warmup(optimizer, int(planned * cfg['warmup_ratio']), planned)
     output.mkdir(parents=True, exist_ok=True)
+    if ema is not None:
+        (output / 'ema').mkdir()
     logger = TrainingLogger(output)
     label_scheme = model.config.label_scheme
     logger.info(f"MABSA {label_scheme}-tag CRF | {Path(cfg['train_data']).parent.name}", pad=True)
@@ -184,6 +188,8 @@ def run_training(raw, output):
     logger.info(f'Train examples: {len(train)} | Dev examples: {len(dev)} | Optimizer updates: {planned}')
     write_json(output / 'config.json', cfg)
     tokenizer.save_pretrained(output / 'tokenizer')
+    if ema is not None:
+        tokenizer.save_pretrained(output / 'ema/tokenizer')
     source = Path(__file__).parent
     is_smoke = any(cfg[k] is not None for k in ('train_limit', 'dev_limit', 'max_updates'))
     provenance = {
@@ -235,6 +241,11 @@ def run_training(raw, output):
     write_json(output / 'provenance.json', provenance)
     initial_head = model.text_head.weight.detach().clone()
     history, best, updates = [], -1., 0
+    ema_best = -1.
+    trajectory = 'uniform' if cfg['layer_lr_decay'] == 1 else 'llrd'
+    def weight_metadata(source, selected_epoch):
+        return (dict(source=source, ema_decay=cfg['ema_decay'], ema_updates=ema.updates,
+                     trajectory=trajectory, selected_epoch=selected_epoch) if ema is not None else None)
     if device.type == 'cuda':
         torch.cuda.reset_peak_memory_stats(device)
     logger.event({'event': 'ready', 'train_examples': len(train), 'dev_examples': len(dev),
@@ -243,12 +254,26 @@ def run_training(raw, output):
         logger.info(f'Epoch {epoch}', pad=True)
         result = train_epoch(model, train_loader, optimizer, device, cfg['accumulation'], cfg['gradient_clip'],
                              scheduler, planned - updates, cfg['log_every'], logger=logger,
-                             epoch=epoch, epochs=cfg['epochs'], rdrop_weight=cfg['rdrop_weight'])
+                             epoch=epoch, epochs=cfg['epochs'], rdrop_weight=cfg['rdrop_weight'],
+                             after_optimizer_step=(lambda: ema.update(model)) if ema is not None else None)
         result['epoch_complete'] = result['examples'] == len(train)
         updates += result['updates']
         metrics, predictions = evaluate_model(model, dev_loader, device)
         record = {'epoch': epoch, 'train': result, 'dev': metrics, 'optimizer_updates': updates,
                   'elapsed_seconds': time.monotonic() - started}
+        if ema is not None:
+            if ema.updates != updates:
+                raise ValueError('EMA and optimizer update counts differ')
+            with ema.average_parameters(model):
+                ema_metrics, ema_predictions = evaluate_model(model, dev_loader, device)
+                if ema_metrics['joint']['f1'] > ema_best:
+                    ema_best = ema_metrics['joint']['f1']
+                    ema_best_epoch, ema_best_metrics, ema_best_updates = epoch, ema_metrics, ema.updates
+                    save_checkpoint(output / 'ema/best.pt', model, cfg, epoch, ema_metrics,
+                                    weight_metadata=weight_metadata('ema', epoch))
+                    write_json(output / 'ema/best_dev_predictions.json', ema_predictions)
+            record.update(ema_dev=ema_metrics, ema_updates=ema.updates,
+                          elapsed_seconds=time.monotonic() - started)
         history.append(record)
         write_json(output / 'history.json', history)
         logger.event({'event': 'epoch', **record})
@@ -266,19 +291,28 @@ def run_training(raw, output):
             logger.info(f"TRAIN Gate mean:{stats['mean']:.4f} std:{stats['std']:.4f} "
                         f"below_0.1:{stats['fraction_below_0_1'] * 100:.2f}% "
                         f"above_0.9:{stats['fraction_above_0_9'] * 100:.2f}%")
-        logger.joint_metrics('DEV', metrics['joint'])
+        logger.joint_metrics('DEV ONLINE' if ema is not None else 'DEV', metrics['joint'])
+        if ema is not None:
+            logger.joint_metrics('DEV EMA', ema_metrics['joint'])
         logger.info(f"DEV AE  ae_p:{metrics['mate']['precision'] * 100:.2f} "
                     f"ae_r:{metrics['mate']['recall'] * 100:.2f} ae_f:{metrics['mate']['f1'] * 100:.2f}")
         if metrics['joint']['f1'] > best:
             best, best_epoch, best_metrics = metrics['joint']['f1'], epoch, metrics
-            save_checkpoint(output / 'best.pt', model, cfg, epoch, metrics)
+            save_checkpoint(output / 'best.pt', model, cfg, epoch, metrics,
+                            weight_metadata=weight_metadata('online', epoch))
             write_json(output / 'best_dev_predictions.json', predictions)
             logger.info(f'Saved best Dev checkpoint at epoch {epoch}.')
         if updates >= planned:
             break
     if freeze_policy and parameter_hash(model, freeze_policy['frozen_names']) != frozen_before:
         raise ValueError('frozen text parameters changed during training')
-    save_checkpoint(output / 'last.pt', model, cfg, epoch, metrics)
+    save_checkpoint(output / 'last.pt', model, cfg, epoch, metrics,
+                    weight_metadata=weight_metadata('online', epoch))
+    if ema is not None:
+        with ema.average_parameters(model):
+            save_checkpoint(output / 'ema/last.pt', model, cfg, epoch, ema_metrics,
+                            weight_metadata=weight_metadata('ema', epoch))
+            ema_head_delta = float((model.text_head.weight.detach() - initial_head).norm())
     summary = {
         'best_epoch': best_epoch, 'best_dev': best_metrics, 'last_epoch': epoch, 'last_dev': metrics,
         'optimizer_updates': updates, 'planned_updates': planned, 'is_smoke': is_smoke,
@@ -294,6 +328,15 @@ def run_training(raw, output):
         summary['text_freeze'] = dict(bottom_layers=freeze_policy['bottom_layers'],
             frozen_exact=True, frozen_sha256=frozen_before,
             frozen_parameters=freeze_policy['frozen_parameters'], dropout=freeze_policy['dropout'])
+    if ema is not None:
+        summary.update(weight_source='online', trajectory=trajectory)
+        ema_summary = dict(summary, weight_source='ema', best_epoch=ema_best_epoch,
+            best_dev=ema_best_metrics, last_dev=ema_metrics, ema_updates=ema.updates,
+            best_ema_updates=ema_best_updates, ema_decay=cfg['ema_decay'],
+            checkpoint_sha256=file_hash(output / 'ema/best.pt'), emission_head_delta_l2=ema_head_delta)
+        write_json(output / 'ema/summary.json', ema_summary)
+        summary['ema'] = dict(path='ema', best_epoch=ema_best_epoch, best_dev=ema_best_metrics,
+                              checkpoint_sha256=ema_summary['checkpoint_sha256'])
     write_json(output / 'summary.json', summary)
     logger.info(f'Training complete in: {summary["elapsed_seconds"] / 60:.2f} minutes', pad=True)
     logger.info('BEST DEV:-----')
