@@ -197,3 +197,25 @@ The optional `text_freeze_layers` setting defaults to 0, preserving baseline tra
 Frozen parameters are excluded from AdamW and checked by SHA256 before/after training.
 Use `scripts/train.py --config configs/partial_freeze6.json --dataset twitter2015 --seed 42
 --train-only` for Dev-only training; best checkpoints still use earliest maximum Dev Joint F1.
+
+## LLRD × EMA 配对训练
+
+`configs/ema_uniform.json` 保留原优化器学习率，`configs/ema_llrd.json` 使文本层学习率由顶层 `2e-5` 向底层逐层乘 `0.9`。两者均启用系数 `0.99` 的 EMA。`base.json` 不变，新功能默认关闭。
+
+同一条训练轨迹每 epoch 分别评估普通权重和 EMA 权重，各自按 Dev Joint F1 选最早最优 checkpoint。普通输出路径不变，EMA 的权重、tokenizer、Dev 预测和重载验证位于 `ema/`。EMA 评估会恢复在线参数和 RNG；推理只加载一份普通模型，额外开销发生在训练的权重维护与 Dev 评估。
+
+固定两数据集、seeds42/43/44、35 epochs 的四组对照共需要12次训练，产生24个选模结果。先执行四组真实 CUDA 验证，再启动 Dev-only 队列：
+
+```bash
+.runtime/bin/python scripts/verify_llrd_ema.py \
+  --output verification/llrd_ema_20261016 --gpus 0 1
+.runtime/bin/python scripts/run_llrd_ema.py \
+  --output outputs/llrd_ema_s42_43_44_20261016 \
+  --smoke-root verification/llrd_ema_20261016 --detach
+.runtime/bin/python scripts/collect_llrd_ema.py \
+  --output outputs/llrd_ema_s42_43_44_20261016
+```
+
+以上目录必须是新目录；验证后修改源码或配置会使启动检查失败，需重新验证。GPU0负责Twitter2015，GPU1负责Twitter2017，每卡最多一个本轮任务。队列状态为顶层 `status.json` 和各轨迹 `batch-status.json`，汇总为 `results.json`。只有完整24个结果才报告四组均值与配对差值，失败和未完成任务会保留。该入口不读取或评估Test，也不自动扩大种子集合。
+
+独立使用 EMA checkpoint 时，把 `scripts/evaluate.py` 的 `--checkpoint` 指向某条轨迹的 `ema/best.pt`；本轮只使用 `--split dev`。三种子 Dev 改善属于探索性结果，不能直接宣称稳定 Test 提升。

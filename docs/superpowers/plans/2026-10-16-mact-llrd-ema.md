@@ -1,6 +1,6 @@
 # MACT LLRD × EMA Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 实现并启动十二条 Dev-only 训练轨迹，得到原 MACT、EMA、LLRD、LLRD+EMA 四组可配对结果。
 
@@ -36,7 +36,7 @@
 
 **Interfaces:** 新增 `optimizer_parameter_groups(model, learning_rate, head_learning_rate, weight_decay, layer_lr_decay=1.0) -> tuple[list[dict], list[dict]]`。第一项供AdamW使用，第二项为可JSON序列化的分组记录（参数名、元素数、基础lr、weight_decay）。`resolve_config` 增加两个默认字段及校验；非默认新设置仅允许独立五标签text/fusion，禁止与旧实验模块叠加。正式配置仍仅fusion。
 
-- [ ] 写 `test_llrd_covers_every_parameter_once_and_assigns_shared_weights`、`test_default_groups_and_optimizer_updates_match_original`、`test_unknown_text_parameter_and_invalid_config_fail`。独立构建原分组作为默认值对照，做一次真实AdamW更新；测试12层名称映射及实际tiny DeBERTa。
+- [x] 写 `test_llrd_covers_every_parameter_once_and_assigns_shared_weights`、`test_default_groups_and_optimizer_updates_match_original`、`test_unknown_text_parameter_and_invalid_config_fail`。独立构建原分组作为默认值对照，做一次真实AdamW更新；测试12层名称映射及实际tiny DeBERTa。
 
 ```python
 assert by_name['text_encoder.encoder.layer.11.attention.self.query_proj.weight']['lr'] == 2e-5
@@ -45,9 +45,9 @@ assert len(parameter_ids) == len(set(parameter_ids)) == len(trainable_parameters
 assert default_config['layer_lr_decay'] == 1.0 and default_config['ema_decay'] == 0.0
 ```
 
-- [ ] 运行 `PYTHONPATH=src:tests .runtime/bin/python -m unittest test_llrd -v`，确认因缺少接口或行为而失败。
-- [ ] 实现接口并替换train.py的分组构建；lr=1时逐项保留原顺序；共享embeddings/LayerNorm用embedding lr、可选conv用底层lr；拒绝布尔值、NaN、Inf及越界值。分组记录写入provenance，不改变模型参数。
-- [ ] 重跑上述测试及 `test_partial_freeze`、`test_runtime`，确认通过；提交本任务涉及文件，消息 `feat: add optional layer-wise learning rate decay`。
+- [x] 运行 `PYTHONPATH=src:tests .runtime/bin/python -m unittest test_llrd -v`，确认因缺少接口或行为而失败。
+- [x] 实现接口并替换train.py的分组构建；lr=1时逐项保留原顺序；共享embeddings/LayerNorm用embedding lr、可选conv用底层lr；拒绝布尔值、NaN、Inf及越界值。分组记录写入provenance，不改变模型参数。
+- [x] 重跑上述测试及 `test_partial_freeze`、`test_runtime`，确认通过；提交本任务涉及文件，消息 `feat: add optional layer-wise learning rate decay`。
 
 ### Task 2: EMA状态、实际更新回调和隔离上下文
 
@@ -55,7 +55,7 @@ assert default_config['layer_lr_decay'] == 1.0 and default_config['ema_decay'] =
 
 **Interfaces:** `WeightEMA(model, decay)`，公开 `updates: int`、`shadow: dict[str, Tensor]`；`update(model) -> None`；`average_parameters(model) -> ContextManager[None]`。为 `train_epoch` 末尾追加 `after_optimizer_step: Callable[[], None] | None = None`，每次成功optimizer.step后立即调用一次，默认路径不增加随机操作。
 
-- [ ] 写 `test_ema_formula_no_grad_and_partial_accumulation`、`test_context_restores_parameters_buffers_modes_rng_on_error`、`test_online_two_epoch_trajectory_is_identical_with_ema_evaluation`。最后一个使用真正的DataLoader、非零dropout、两轮AdamW，并比较模型、optimizer state和下一次随机抽样；上下文异常测试包括Python/NumPy RNG和混合子模块模式。
+- [x] 写 `test_ema_formula_no_grad_and_partial_accumulation`、`test_context_restores_parameters_buffers_modes_rng_on_error`、`test_online_two_epoch_trajectory_is_identical_with_ema_evaluation`。最后一个使用真正的DataLoader、非零dropout、两轮AdamW，并比较模型、optimizer state和下一次随机抽样；上下文异常测试包括Python/NumPy RNG和混合子模块模式。
 
 ```python
 assert ema.updates == stats['updates'] == 2  # 三个micro-batch、accumulation=2
@@ -65,9 +65,9 @@ assert parameter_ids_after == parameter_ids_before
 assert torch.equal(online_without_ema[name], online_with_ema[name])
 ```
 
-- [ ] 运行 `PYTHONPATH=src:tests .runtime/bin/python -m unittest test_averaging -v`，确认新增行为尚不存在。
-- [ ] 实现FP32影子参数、每次实际更新计数；上下文使用try/finally原位恢复在线参数/buffer/模式和CPU及实际CUDA设备RNG。上下文覆盖评估DataLoader创建迭代器到保存结果全过程，不平均buffer。异常不得吞掉。
-- [ ] 重跑 `test_averaging`、`test_runtime`、`test_rdrop`；提交消息 `feat: add isolated EMA weight evaluation`。
+- [x] 运行 `PYTHONPATH=src:tests .runtime/bin/python -m unittest test_averaging -v`，确认新增行为尚不存在。
+- [x] 实现FP32影子参数、每次实际更新计数；上下文使用try/finally原位恢复在线参数/buffer/模式和CPU及实际CUDA设备RNG。上下文覆盖评估DataLoader创建迭代器到保存结果全过程，不平均buffer。异常不得吞掉。
+- [x] 重跑 `test_averaging`、`test_runtime`、`test_rdrop`；提交消息 `feat: add isolated EMA weight evaluation`。
 
 ### Task 3: 双权重流选模、checkpoint与完整Dev重载
 
@@ -75,7 +75,7 @@ assert torch.equal(online_without_ema[name], online_with_ema[name])
 
 **Interfaces:** `save_checkpoint(..., *, weight_metadata: dict | None = None)`，未提供时保持原格式行为。新增metadata字段 `source`（online/ema）、`ema_decay`、`ema_updates`、`trajectory`、`selected_epoch`。`run_training` 仍返回普通summary，新增 `ema` 字段引用相对路径、best_epoch、best_dev和checkpoint hash；EMA完整summary存 `ema/summary.json`。
 
-- [ ] 写 `test_online_and_ema_choose_independent_earliest_maxima`、`test_both_checkpoint_streams_reload_exactly`、`test_full_training_ema_does_not_change_online_rng_or_weights`、`test_dev_only_never_opens_or_hashes_test`。选模测试注入不同的两组Dev曲线（包括并列），同时保留真实tiny模型训练/加载集成测试。Test读取保护同时拦截path open和hash入口。
+- [x] 写 `test_online_and_ema_choose_independent_earliest_maxima`、`test_both_checkpoint_streams_reload_exactly`、`test_full_training_ema_does_not_change_online_rng_or_weights`、`test_dev_only_never_opens_or_hashes_test`。选模测试注入不同的两组Dev曲线（包括并列），同时保留真实tiny模型训练/加载集成测试。Test读取保护同时拦截path open和hash入口。
 
 ```python
 assert online_summary['best_epoch'] == 2  # online F1: .4, .6, .6
@@ -86,10 +86,10 @@ assert ema_summary['ema_updates'] == online_summary['optimizer_updates']
 assert forbidden_test_reads == []
 ```
 
-- [ ] 运行 `PYTHONPATH=src:tests .runtime/bin/python -m unittest test_llrd_ema_training -v`，确认失败点对应缺失行为。
-- [ ] 连接任务1/2接口；每epoch先原有online评估，再隔离EMA评估；两个best和last、预测、summary分别保存。online仍使用原best.pt及原summary语义，EMA启用才新增字段。独立记录 `DEV ONLINE/DEV EMA`，保留原默认日志行为。`run_experiment` 在标记完成前核对两组完整Dev重载，任一失败即整条轨迹失败。
-- [ ] 两份新配置复制base参数并添加EMA=.99，uniform的LLRD=1、llrd=.9；两份配置只有LLRD不同，所有其他字段完全相等。仅配置metadata新增不影响老checkpoint加载。
-- [ ] 重跑 `test_llrd_ema_training`、`test_project`、`test_logging`、`test_runtime` 和前两任务测试；提交消息 `feat: train and select paired online and EMA checkpoints`。
+- [x] 运行 `PYTHONPATH=src:tests .runtime/bin/python -m unittest test_llrd_ema_training -v`，确认失败点对应缺失行为。
+- [x] 连接任务1/2接口；每epoch先原有online评估，再隔离EMA评估；两个best和last、预测、summary分别保存。online仍使用原best.pt及原summary语义，EMA启用才新增字段。独立记录 `DEV ONLINE/DEV EMA`，保留原默认日志行为。`run_experiment` 在标记完成前核对两组完整Dev重载，任一失败即整条轨迹失败。
+- [x] 两份新配置复制base参数并添加EMA=.99，uniform的LLRD=1、llrd=.9；两份配置只有LLRD不同，所有其他字段完全相等。仅配置metadata新增不影响老checkpoint加载。
+- [x] 重跑 `test_llrd_ema_training`、`test_project`、`test_logging`、`test_runtime` 和前两任务测试；提交消息 `feat: train and select paired online and EMA checkpoints`。
 
 ### Task 4: Dev-only调度及四组配对汇总
 
@@ -97,7 +97,7 @@ assert forbidden_test_reads == []
 
 **Interfaces:** `collect(root: Path, seeds: Sequence[int]=(42,43,44)) -> dict` 生成并原子写 `results.json`；报告状态、24个结果行、逐数据集A/B/C/D统计、相对A的配对差值、筛选候选、共同正确边界情感准确率。启动命令：`.runtime/bin/python scripts/run_llrd_ema.py --output outputs/llrd_ema_s42_43_44_20261016 --smoke-root verification/llrd_ema_20261016 --detach`。
 
-- [ ] 写 `test_twelve_jobs_have_isolated_logs_and_train_only`、`test_hash_change_or_failed_smoke_blocks_launch`、`test_detached_launcher_records_failure_without_orphans`、`test_incomplete_duplicate_nonfinite_or_mismatched_results_are_rejected`、`test_paired_deltas_sample_sd_and_common_boundary_metrics`。合成结果验证两数据集都平均为正且各至少2胜才筛入；并列按B/C/D顺序。
+- [x] 写 `test_twelve_jobs_have_isolated_logs_and_train_only`、`test_hash_change_or_failed_smoke_blocks_launch`、`test_detached_launcher_records_failure_without_orphans`、`test_incomplete_duplicate_nonfinite_or_mismatched_results_are_rejected`、`test_paired_deltas_sample_sd_and_common_boundary_metrics`。合成结果验证两数据集都平均为正且各至少2胜才筛入；并列按B/C/D顺序。
 
 ```python
 assert len(jobs) == len({(j['dataset'], j['seed'], j['trajectory']) for j in jobs}) == 12
@@ -107,10 +107,10 @@ assert incomplete['state'] == 'incomplete' and incomplete['aggregate'] is None
 assert complete['aggregate']['twitter2015']['B']['wins'] == 2
 ```
 
-- [ ] 运行 `PYTHONPATH=src:tests .runtime/bin/python -m unittest test_llrd_ema_schedule test_llrd_ema_results -v`，确认预期失败。
-- [ ] 启动器创建新顶层目录，先uniform、再llrd，各用独立调度目录和group_size=1，两GPU并行且组间等待；轨迹目录为 `<root>/<trajectory>/<dataset>/seedN`，复用原日志命名也不会冲突。顶层记录状态/PID/固定源码与配置hash，组前验证；正式启动要求四份匹配当前源配置的CUDA smoke通过。保留既有调度组件对普通任务失败的继续执行行为，顶层结果仍标失败/不完整；源文件漂移阻止后续任务。
-- [ ] 汇总只读取本轮普通/EMA summary、best Dev预测、checkpoint hash及Dev gold；核对dataset/seed/配置/权重来源、35轮完成及重载报告，重新计算预测指标。没有完整24行就不给完整均值；不读取历史Test，不按历史最佳种子筛选。每组及全部完成后自动汇总，结果文件自含计算单位（F1百分点）。
-- [ ] 重跑新增测试及 `test_schedule`、`test_multiseed`；提交消息 `feat: schedule and summarize Dev-only LLRD EMA experiment`。
+- [x] 运行 `PYTHONPATH=src:tests .runtime/bin/python -m unittest test_llrd_ema_schedule test_llrd_ema_results -v`，确认预期失败。
+- [x] 启动器创建新顶层目录，先uniform、再llrd，各用独立调度目录和group_size=1，两GPU并行且组间等待；轨迹目录为 `<root>/<trajectory>/<dataset>/seedN`，复用原日志命名也不会冲突。顶层记录状态/PID/固定源码与配置hash，组前验证；正式启动要求四份匹配当前源配置的CUDA smoke通过。保留既有调度组件对普通任务失败的继续执行行为，顶层结果仍标失败/不完整；源文件漂移阻止后续任务。
+- [x] 汇总只读取本轮普通/EMA summary、best Dev预测、checkpoint hash及Dev gold；核对dataset/seed/配置/权重来源、35轮完成及重载报告，重新计算预测指标。没有完整24行就不给完整均值；不读取历史Test，不按历史最佳种子筛选。每组及全部完成后自动汇总，结果文件自含计算单位（F1百分点）。
+- [x] 重跑新增测试及 `test_schedule`、`test_multiseed`；提交消息 `feat: schedule and summarize Dev-only LLRD EMA experiment`。
 
 ### Task 5: 实际资源验证、文档与正式启动
 
@@ -130,4 +130,4 @@ assert complete['aggregate']['twitter2015']['B']['wins'] == 2
 
 已覆盖设计全部章节：任务1落实LLRD规则，任务2落实EMA及隔离，任务3落实双流checkpoint和Dev重载，任务4落实完整配对/筛选与Dev-only队列，任务5落实真实资源验证及启动。额外实体先验诊断是设计中的可选项，本轮不新增该分析器。
 
-推荐主助手在当前会话顺序实施：五个任务共享训练接口和状态，逐项由同一实施者集成便于维护一致性；最终做一次独立代码审阅。用户尚未指定执行方式，计划审阅和执行方式选择后进入实现。
+推荐主助手在当前会话顺序实施：五个任务共享训练接口和状态，逐项由同一实施者集成便于维护一致性；最终做一次独立代码审阅。用户已选择当前会话顺序实施；2026-10-16 开始执行，任务1–4已实现并通过各自验证。

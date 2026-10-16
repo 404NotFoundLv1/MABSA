@@ -131,3 +131,15 @@ prediction = 原五标签 CRF 的一次 Viterbi 解码
 自动汇总包含 JMASA P/R/F1、MATE、匹配边界情感准确率、NEG/NEU/POS 混淆矩阵，
 以及新旧模型共同识别正确边界上的情感准确率。对照中的共同比较子集由同一 seed 的
 两套预测与 gold 边界交集确定，避免把边界集合变化误当作纯情感提升。
+
+## LLRD 和 EMA
+
+配置字段位于训练配置顶层：`layer_lr_decay=1.0`、`ema_decay=0.0` 为默认关闭行为。启用时只允许独立五标签 text/fusion 控制，本轮正式配置为 fusion，不与已有实验模块组合。
+
+`finetuning.optimizer_parameter_groups` 对文本层按深度分组，embedding、共享相对位置参数及共享 LayerNorm 使用最小学习率，可选卷积使用底层学习率；任务头、视觉投影和 CRF 保持原头部学习率。`layer_lr_decay=1` 保留旧分组顺序。未知文本参数在 LLRD 启用时明确拒绝，实际分组名称、元素数量、基础学习率和 weight decay 存入 `provenance.json`。
+
+`averaging.WeightEMA` 保存 FP32、无梯度的影子参数；`runtime.train_epoch` 在每次真实优化器更新后调用回调，梯度累积的 micro-batch 不计为一次 EMA 更新。包含 CRF 可学习参数，固定约束 buffer 不平均。评估上下文恢复参数值、buffer、子模块模式和 Python/NumPy/Torch RNG，不替换 Parameter 对象。
+
+每次训练保留两个独立的 Dev 选模流；`history.json` 的 `dev` 为普通权重，`ema_dev` 为平均权重。原 `summary.json` 表示普通权重，新增 `ema` 引用；完整 EMA 指标位于 `ema/summary.json`。checkpoint 的可选 `weight_metadata` 标注权重来源、轨迹、更新数和选中 epoch；旧checkpoint仍可加载。EMA目录包含独立tokenizer，不需要在线模型权重。
+
+专用 `run_llrd_ema.py` 复用现有调度组件，以trajectory子目录隔离日志；`llrd_ema_results.py` 从Dev预测重算指标，检查源码、配置、checkpoint散列和完整重载记录后才汇总。方案与验收规则见 `docs/superpowers/specs/2026-10-16-mact-llrd-ema-design.md`。

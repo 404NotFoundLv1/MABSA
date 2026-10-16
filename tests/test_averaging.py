@@ -5,12 +5,12 @@ import unittest
 import numpy as np
 import torch
 from mact.runtime import train_epoch, evaluate_model
-from test_runtime import RuntimeTests
+import test_runtime as runtime_fixtures
 
 
 class AveragingTests(unittest.TestCase):
     def setUp(self):
-        self.fixture=RuntimeTests(); self.fixture.setUp(); self.addCleanup(self.fixture.doCleanups)
+        self.fixture=runtime_fixtures.RuntimeTests(); self.fixture.setUp(); self.addCleanup(self.fixture.doCleanups)
         torch.set_num_threads(1)
 
     def ema(self, model):

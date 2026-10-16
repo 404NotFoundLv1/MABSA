@@ -67,6 +67,7 @@ def validate_smokes(smoke_root):
                     or check.get('physical_gpu') != gpu or check.get('peak_cuda_allocated_bytes',0) <= 0
                     or check.get('optimizer_updates') != 2 or check.get('ema_updates') != 2
                     or check.get('head_updated') is not True or check.get('finite_gradients') is not True
+                    or check.get('lr_groups_match') is not True
                     or check.get('source_sha256') != identity['source_sha256']
                     or check.get('config_sha256') != file_hash(ROOT/f'configs/ema_{arm}.json')
                     or not all(check.get(k) is True for k in ('online_reload_exact','ema_reload_exact'))):
