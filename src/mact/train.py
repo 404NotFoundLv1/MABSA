@@ -22,7 +22,7 @@ from .logging import TrainingLogger
 from .model import SequenceModel, ModelConfig
 from .ocr import open_ocr
 from .runtime import train_epoch, evaluate_model, save_checkpoint, write_json
-from .finetuning import freeze_text_layers, parameter_hash
+from .finetuning import freeze_text_layers, parameter_hash, optimizer_parameter_groups
 
 
 DEFAULTS = dict(seed=42, epochs=10, batch_size=1, eval_batch_size=1, accumulation=8,
@@ -31,7 +31,8 @@ DEFAULTS = dict(seed=42, epochs=10, batch_size=1, eval_batch_size=1, accumulatio
                 num_workers=0, num_threads=4, log_every=50, train_limit=None, dev_limit=None,
                 max_updates=None, text_model=None, vision_model=None, visual_cache=None,
                 train_data=None, dev_data=None, image_root=None, model={}, rdrop_weight=0.,
-                ocr_cache=None, ocr_max_tokens=64, ocr_manifest_sha256=None, text_freeze_layers=0)
+                ocr_cache=None, ocr_max_tokens=64, ocr_manifest_sha256=None, text_freeze_layers=0,
+                layer_lr_decay=1., ema_decay=0.)
 
 
 def resolve_config(raw):
@@ -74,6 +75,17 @@ def resolve_config(raw):
                 or cfg['rdrop_weight'] or cfg['ocr_cache'] is not None
                 or m['aspect_sentiment_weight'] or m['visual_gate'] or m['word_context']):
             raise ValueError('partial freezing must be an independent five-tag baseline control')
+    for key in ('layer_lr_decay', 'ema_decay'):
+        value = cfg[key]
+        if (type(value) not in (int, float) or not math.isfinite(value)
+                or not (0 < value <= 1 if key == 'layer_lr_decay' else 0 <= value < 1)):
+            raise ValueError(f'invalid {key}')
+    if cfg['layer_lr_decay'] != 1 or cfg['ema_decay']:
+        m = cfg['model']
+        if (m['mode'] not in ('text', 'fusion') or m['label_scheme'] != 'five'
+                or cfg['rdrop_weight'] or cfg['ocr_cache'] is not None or cfg['text_freeze_layers']
+                or m['aspect_sentiment_weight'] or m['visual_gate'] or m['word_context']):
+            raise ValueError('LLRD/EMA require independent five-tag baseline training')
     return cfg
 
 
@@ -133,14 +145,9 @@ def run_training(raw, output):
     model = SequenceModel(load_text(cfg['text_model']), ModelConfig(**cfg['model'])).to(device)
     freeze_policy = freeze_text_layers(model, cfg['text_freeze_layers'])
     frozen_before = parameter_hash(model, freeze_policy['frozen_names']) if freeze_policy else None
-    groups = {}
-    for name, parameter in model.named_parameters():
-        if parameter.requires_grad:
-            groups.setdefault((name.startswith('text_encoder.'), parameter.ndim >= 2), []).append(parameter)
-    optimizer = torch.optim.AdamW([{'params': params,
-        'lr': cfg['learning_rate'] if backbone else cfg['head_learning_rate'],
-        'weight_decay': cfg['weight_decay'] if decay else 0.}
-        for (backbone, decay), params in groups.items()])
+    groups, group_records = optimizer_parameter_groups(model, cfg['learning_rate'],
+        cfg['head_learning_rate'], cfg['weight_decay'], cfg['layer_lr_decay'])
+    optimizer = torch.optim.AdamW(groups)
     planned = math.ceil(len(train_loader) / cfg['accumulation']) * cfg['epochs']
     if cfg['max_updates'] is not None:
         planned = min(planned, cfg['max_updates'])
@@ -180,6 +187,7 @@ def run_training(raw, output):
     source = Path(__file__).parent
     is_smoke = any(cfg[k] is not None for k in ('train_limit', 'dev_limit', 'max_updates'))
     provenance = {
+        'optimizer_groups': group_records,
         'is_smoke': is_smoke, 'tags': list(get_tags(label_scheme)), 'selection_metric': 'dev_joint_f1',
         'precision': 'fp32', 'objective': 'sentence_mean_crf_nll', 'vision_frozen': True,
         'torch': str(torch.__version__), 'transformers': transformers.__version__,

@@ -1,7 +1,47 @@
 """Optional parameter freezing; preserve the existing forward and dropout behavior."""
 import hashlib
+import math
 
 import torch
+
+
+def optimizer_parameter_groups(model, learning_rate, head_learning_rate,
+                               weight_decay, layer_lr_decay=1.0):
+    """Preserve legacy grouping at 1; otherwise assign explicit DeBERTa depths."""
+    if (type(layer_lr_decay) not in (int, float) or not math.isfinite(layer_lr_decay)
+            or not 0 < layer_lr_decay <= 1):
+        raise ValueError('invalid layer_lr_decay')
+    layers = getattr(getattr(model.text_encoder, 'encoder', None), 'layer', None)
+    if layer_lr_decay != 1 and not isinstance(layers, torch.nn.ModuleList):
+        raise ValueError('LLRD requires encoder.layer')
+    groups, records = {}, {}
+    for name, parameter in model.named_parameters():
+        if not parameter.requires_grad:
+            continue
+        text, decay = name.startswith('text_encoder.'), parameter.ndim >= 2
+        depth = None
+        if text and layer_lr_decay != 1:
+            local = name[len('text_encoder.'):]
+            if local.startswith('encoder.layer.'):
+                index = local.split('.')[2]
+                if not index.isdigit() or not 0 <= int(index) < len(layers):
+                    raise ValueError(f'unrecognized text parameter: {name}')
+                depth = len(layers) - 1 - int(index)
+            elif local.startswith(('embeddings.', 'encoder.rel_embeddings.', 'encoder.LayerNorm.')):
+                depth = len(layers)
+            elif local.startswith('encoder.conv.'):
+                depth = len(layers) - 1
+            else:
+                raise ValueError(f'unrecognized text parameter: {name}')
+        key = (text, decay, depth)
+        lr = learning_rate * layer_lr_decay ** (depth or 0) if text else head_learning_rate
+        if key not in groups:
+            groups[key] = dict(params=[], lr=lr, weight_decay=weight_decay if decay else 0.)
+            records[key] = dict(names=[], numel=0, lr=lr, weight_decay=weight_decay if decay else 0.)
+        groups[key]['params'].append(parameter)
+        records[key]['names'].append(name)
+        records[key]['numel'] += parameter.numel()
+    return list(groups.values()), list(records.values())
 
 
 def freeze_text_layers(model, count):
