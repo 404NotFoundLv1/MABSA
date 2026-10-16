@@ -118,10 +118,10 @@ assert complete['aggregate']['twitter2015']['B']['wins'] == 2
 
 **Interfaces:** `.runtime/bin/python scripts/verify_llrd_ema.py --output verification/llrd_ema_20261016 --gpus 0 1`。输出每个dataset/trajectory的 `integration_check.json`（passed、CUDA设备/峰值显存、更新次数、EMA次数、两份checkpoint重载一致性、源配置hash）、resolved smoke config和整体manifest。使用 `resolve_experiment` 后加smoke限制，调用 `run_training`；重载必须显式传入已验证本地缓存和资源路径，不能直接使用旧smoke的无缓存入口。
 
-- [ ] 写并先运行 `test_smoke_requires_cuda_updates_both_streams_and_current_hashes`：CPU、零更新、EMA次数不符、旧源hash或任意重载失败均拒绝正式启动。实现验证器，固定每组seed42、16 Train/8 Dev、1epoch、2次更新、log_every=0；保留原样本id。记录并要求任务头参数变化量为正，反向梯度有限，实际优化器学习率符合分组记录；四组在对应GPU串行执行，每卡最多一个。
-- [ ] 运行 `PYTHONPATH=src .runtime/bin/python -m unittest discover -s tests -v`，要求退出码0；记录实际测试数量和输出，不复用以前通过数。
-- [ ] 按选定执行方式完成代码审阅；重点检查Review Focus、默认路径与原实现比较、source/config冻结、退出清理。修复发现的问题并重跑受影响验证。
-- [ ] 更新文档说明默认关闭、新配置、开销、双流选模/加载、Dev-only启动/汇总命令与限制；确认 `git diff --check` 通过、基线配置与历史文件未改变，提交最终源码。
+- [x] 写并先运行 `test_smoke_requires_cuda_updates_both_streams_and_current_hashes`：CPU、零更新、EMA次数不符、旧源hash或任意重载失败均拒绝正式启动。实现验证器，固定每组seed42、16 Train/8 Dev、1epoch、2次更新、log_every=0；保留原样本id。记录并要求任务头参数变化量为正，反向梯度有限，实际优化器学习率符合分组记录；四组在对应GPU串行执行，每卡最多一个。
+- [x] 运行 `PYTHONPATH=src .runtime/bin/python -m unittest discover -s tests -v`，要求退出码0；记录实际测试数量和输出，不复用以前通过数。
+- [x] 按选定执行方式完成代码审阅；重点检查Review Focus、默认路径与原实现比较、source/config冻结、退出清理。修复发现的问题并重跑受影响验证。
+- [x] 更新文档说明默认关闭、新配置、开销、双流选模/加载、Dev-only启动/汇总命令与限制；确认 `git diff --check` 通过、基线配置与历史文件未改变，提交最终源码。
 - [ ] `nvidia-smi` 检查占用后运行上述四组真实CUDA验证；核对正显存、两次实际更新、两流预测及指标重载一致、源码hash未变。失败则诊断修复，相关测试及最终源码smoke重新通过后再启动；不声称CPU测试等同CUDA验证。
 - [ ] 执行任务4的正式后台启动命令，确认父调度PID存活、两个首任务在正确GPU运行、ready事件及首个完整epoch ONLINE/EMA日志。此时只报告“训练已启动”，不报告提升。
 - [ ] 十二条轨迹全部结束后检查24份选模结果、完整重载验证及配对汇总，提交结果报告；长训练可后台继续并交代状态路径，但不得把启动当作效果验证完成。本轮不自动启动Test或扩展种子。

@@ -104,6 +104,7 @@ def run_cohort(output, smoke_root):
         for arm in TRAJECTORIES:
             states.append(run_schedule(groups[arm],output/arm,training_command,before_group=verify,
                                        after_group=lambda:collect(output)))
+        verify()
         result = collect(output)
         state.update(state='completed' if result['state']=='completed' and all(s['state']=='completed' for s in states)
                      else 'failed',ended_at=time.time())

@@ -47,3 +47,18 @@ class CohortScheduleTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError,'worker failed'):m.run_cohort(out,Path(td)/'smoke')
             import json
             self.assertEqual(json.loads((out/'status.json').read_text())['state'],'failed')
+
+    def test_resource_drift_during_last_group_blocks_completion(self):
+        m=self.module()
+        with tempfile.TemporaryDirectory() as td:
+            out=Path(td)/'run';resource=Path(td)/'weights';resource.write_text('original')
+            hashes={str(resource):m.file_hash(resource)}
+            calls=[]
+            def schedule(groups,output,command,before_group,after_group):
+                before_group();calls.append(output)
+                if len(calls)==2:resource.write_text('changed during final group')
+                return {'state':'completed'}
+            with patch.object(m,'validate_smokes',return_value={'resource_sha256':hashes}),\
+                 patch.object(m,'resource_hashes',return_value=hashes),patch.object(m,'run_schedule',side_effect=schedule),\
+                 patch.object(m,'collect',return_value={'state':'completed'}):
+                with self.assertRaisesRegex(ValueError,'frozen file'):m.run_cohort(out,Path(td)/'smoke')

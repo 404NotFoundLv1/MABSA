@@ -3,6 +3,7 @@ import json
 import math
 from pathlib import Path
 import statistics
+import torch
 
 from .common.cache import file_hash
 from .common.metrics import evaluate_predictions
@@ -11,6 +12,7 @@ from .runtime import write_json
 
 DATASETS = ('twitter2015', 'twitter2017')
 ARMS = {('uniform','online'):'A', ('uniform','ema'):'B', ('llrd','online'):'C', ('llrd','ema'):'D'}
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def common_boundary_sentiment(gold, baseline, treatment):
@@ -85,6 +87,12 @@ def collect(root, seeds=(42,43,44)):
             raise ValueError('trajectory mismatch')
         if any(cfg[k] is not None for k in ('train_limit','dev_limit','max_updates')):
             raise ValueError('smoke cannot be aggregated as formal training')
+        # This collector is for the fixed official split cohort only. Check before
+        # hashing/opening a manifest-provided path, even if both configs agree.
+        for key, split in (('train_data','train'),('dev_data','dev')):
+            allowed = (ROOT/'assets/data'/ds/f'{split}.json').resolve()
+            if Path(cfg[key]).resolve() != allowed:
+                raise ValueError(f'not an allowed official Train/Dev path: {cfg[key]}')
         for key in ('train_data','dev_data'):
             if file_hash(cfg[key]) != launch['resource_sha256'][cfg[key]]:
                 raise ValueError('official Train/Dev data changed')
@@ -108,6 +116,19 @@ def collect(root, seeds=(42,43,44)):
                 raise ValueError(f'invalid completed checkpoint: {directory}')
             if source=='ema' and summary['ema_updates'] != summary['optimizer_updates']:
                 raise ValueError('EMA update count mismatch')
+            checkpoint = torch.load(directory/'best.pt',map_location='cpu',weights_only=True,mmap=True)
+            metadata = checkpoint.get('weight_metadata',{})
+            updates = summary['optimizer_updates']
+            selected_updates = updates // 35 * summary['best_epoch']
+            if (checkpoint.get('run_config') != cfg or checkpoint.get('epoch') != summary['best_epoch']
+                    or checkpoint.get('dev_metrics') != summary['best_dev']
+                    or metadata.get('source') != source or metadata.get('trajectory') != trajectory
+                    or metadata.get('ema_decay') != cfg['ema_decay']
+                    or metadata.get('selected_epoch') != summary['best_epoch']
+                    or updates <= 0 or updates % 35 or metadata.get('ema_updates') != selected_updates
+                    or (source=='ema' and summary['best_ema_updates'] != selected_updates)):
+                raise ValueError(f'checkpoint identity mismatch: {directory}')
+            del checkpoint
             pred = json.loads((directory/'best_dev_predictions.json').read_text())
             metrics = evaluate_predictions(golds[ds],pred)
             if metrics != summary['best_dev']:
