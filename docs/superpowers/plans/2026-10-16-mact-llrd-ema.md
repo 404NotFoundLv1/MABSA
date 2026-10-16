@@ -123,7 +123,7 @@ assert complete['aggregate']['twitter2015']['B']['wins'] == 2
 - [x] 按选定执行方式完成代码审阅；重点检查Review Focus、默认路径与原实现比较、source/config冻结、退出清理。修复发现的问题并重跑受影响验证。
 - [x] 更新文档说明默认关闭、新配置、开销、双流选模/加载、Dev-only启动/汇总命令与限制；确认 `git diff --check` 通过、基线配置与历史文件未改变，提交最终源码。
 - [x] `nvidia-smi` 检查占用后运行上述四组真实CUDA验证；核对正显存、两次实际更新、两流预测及指标重载一致、源码hash未变。失败则诊断修复，相关测试及最终源码smoke重新通过后再启动；不声称CPU测试等同CUDA验证。
-- [ ] 执行任务4的正式后台启动命令，确认父调度PID存活、两个首任务在正确GPU运行、ready事件及首个完整epoch ONLINE/EMA日志。此时只报告“训练已启动”，不报告提升。
+- [x] 执行任务4的正式后台启动命令，确认父调度PID存活、两个首任务在正确GPU运行、ready事件及首个完整epoch ONLINE/EMA日志。此时只报告“训练已启动”，不报告提升。
 - [ ] 十二条轨迹全部结束后检查24份选模结果、完整重载验证及配对汇总，提交结果报告；长训练可后台继续并交代状态路径，但不得把启动当作效果验证完成。本轮不自动启动Test或扩展种子。
 
 ## 自审与执行交接
@@ -140,3 +140,7 @@ assert complete['aggregate']['twitter2015']['B']['wins'] == 2
 - 暂缓小项：`test_detached_launcher_records_failure_without_orphans` 的名称超出其模拟异常测试覆盖；实际子进程清理由既有 scheduler 测试覆盖。
 - 最终源码 CUDA 验证：`verification/llrd_ema_20261016`，四组均通过，各有2次 optimizer/EMA 更新，梯度有限、任务头改变、实际学习率匹配、两份权重重载预测与指标完全一致。峰值分配显存：uniform 4,902,796,288 bytes，LLRD 4,903,058,432 bytes。
 - 正式训练结果仍待运行完成；短训练分数不计入效果比较。
+
+- 正式后台队列：`outputs/llrd_ema_s42_43_44_20261016`；父 PID 5962，首组 Twitter2015/GPU0 PID 7031、Twitter2017/GPU1 PID 7032，均显式 `--train-only`。已核对父子进程存活、GPU 映射、ready 与首个完整 epoch ONLINE/EMA 日志。
+- 首轮仅作启动证据：Twitter2015 2101 Train/727 Dev、263 次更新；Twitter2017 1746 Train/577 Dev、219 次更新，均非 smoke，EMA 更新数一致。两条轨迹各计划35轮，剩余任务由后台调度自动继续。
+- `status.json` 记录调度状态，`results.json` 仅在完整24份有效结果齐备后给出配对统计。当前不得据首轮分数作效果结论；末项结果报告尚待训练完成。
