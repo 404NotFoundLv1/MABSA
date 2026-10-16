@@ -49,7 +49,8 @@ def training_output(model, inputs, rdrop_weight=0.):
 
 
 def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=1.,
-                scheduler=None, max_updates=None, log_every=50, logger=None, epoch=1, epochs=1, rdrop_weight=0.):
+                scheduler=None, max_updates=None, log_every=50, logger=None, epoch=1, epochs=1, rdrop_weight=0.,
+                after_optimizer_step=None):
     if accumulation < 1:
         raise ValueError('accumulation must be positive')
     model.train()
@@ -90,6 +91,8 @@ def train_epoch(model, loader, optimizer, device, accumulation=8, gradient_clip=
         parameters = [p for p in model.parameters() if p.grad is not None]
         torch.nn.utils.clip_grad_norm_(parameters, gradient_clip or float('inf'), error_if_nonfinite=True)
         optimizer.step()
+        if after_optimizer_step is not None:
+            after_optimizer_step()
         if scheduler is not None:
             scheduler.step()
         updates += 1
