@@ -188,3 +188,12 @@ CUDA_VISIBLE_DEVICES=0 .runtime/bin/python scripts/train_ocr_residual.py \
 ```
 
 Use the text configuration for the matched control. The runner uses Train/Dev only, saves the first best Dev checkpoint among epochs 1–35, and reports total loss, fused NLL and standalone NLL once per epoch. Selected-checkpoint diagnostics check reload, OCR removal, unchanged no-OCR predictions and three OCR shuffles. Text-control predictions must remain identical under those content shuffles; removal disables its presence-gated branch. Old branch checkpoints default to OCR memory and zero standalone weight on load.
+
+`configs/partial_freeze6.json` is a separate five-tag baseline training control. It starts
+from the original pretrained text backbone and freezes embeddings, the bottom 6 of 12
+DeBERTa layers, and shared relative-position embeddings/normalization. Upper layers and
+the existing task heads remain trainable; dropout stays in its normal training mode.
+The optional `text_freeze_layers` setting defaults to 0, preserving baseline training.
+Frozen parameters are excluded from AdamW and checked by SHA256 before/after training.
+Use `scripts/train.py --config configs/partial_freeze6.json --dataset twitter2015 --seed 42
+--train-only` for Dev-only training; best checkpoints still use earliest maximum Dev Joint F1.

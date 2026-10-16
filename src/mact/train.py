@@ -22,6 +22,7 @@ from .logging import TrainingLogger
 from .model import SequenceModel, ModelConfig
 from .ocr import open_ocr
 from .runtime import train_epoch, evaluate_model, save_checkpoint, write_json
+from .finetuning import freeze_text_layers, parameter_hash
 
 
 DEFAULTS = dict(seed=42, epochs=10, batch_size=1, eval_batch_size=1, accumulation=8,
@@ -30,7 +31,7 @@ DEFAULTS = dict(seed=42, epochs=10, batch_size=1, eval_batch_size=1, accumulatio
                 num_workers=0, num_threads=4, log_every=50, train_limit=None, dev_limit=None,
                 max_updates=None, text_model=None, vision_model=None, visual_cache=None,
                 train_data=None, dev_data=None, image_root=None, model={}, rdrop_weight=0.,
-                ocr_cache=None, ocr_max_tokens=64, ocr_manifest_sha256=None)
+                ocr_cache=None, ocr_max_tokens=64, ocr_manifest_sha256=None, text_freeze_layers=0)
 
 
 def resolve_config(raw):
@@ -44,7 +45,7 @@ def resolve_config(raw):
     for key in ('epochs', 'batch_size', 'eval_batch_size', 'accumulation', 'max_length', 'num_threads', 'ocr_max_tokens'):
         if type(cfg[key]) is not int or cfg[key] < 1:
             raise ValueError(f'{key} must be positive integer')
-    for key in ('seed', 'num_workers', 'log_every'):
+    for key in ('seed', 'num_workers', 'log_every', 'text_freeze_layers'):
         if type(cfg[key]) is not int or cfg[key] < 0:
             raise ValueError(f'{key} must be nonnegative integer')
     for key in ('train_limit', 'dev_limit', 'max_updates'):
@@ -67,6 +68,12 @@ def resolve_config(raw):
                 or m['mode']!='fusion' or m['label_scheme']!='five' or cfg['rdrop_weight']
                 or m['aspect_sentiment_weight'] or m['visual_gate'] or m['word_context']):
             raise ValueError('OCR requires an independent five-tag fusion baseline and total token budget <=512')
+    if cfg['text_freeze_layers']:
+        m = cfg['model']
+        if (m['mode'] not in ('text', 'fusion') or m['label_scheme'] != 'five'
+                or cfg['rdrop_weight'] or cfg['ocr_cache'] is not None
+                or m['aspect_sentiment_weight'] or m['visual_gate'] or m['word_context']):
+            raise ValueError('partial freezing must be an independent five-tag baseline control')
     return cfg
 
 
@@ -124,6 +131,8 @@ def run_training(raw, output):
     dev_loader = DataLoader(dev_ds, batch_size=cfg['eval_batch_size'], shuffle=False,
                             collate_fn=collator, num_workers=cfg['num_workers'])
     model = SequenceModel(load_text(cfg['text_model']), ModelConfig(**cfg['model'])).to(device)
+    freeze_policy = freeze_text_layers(model, cfg['text_freeze_layers'])
+    frozen_before = parameter_hash(model, freeze_policy['frozen_names']) if freeze_policy else None
     groups = {}
     for name, parameter in model.named_parameters():
         if parameter.requires_grad:
@@ -144,6 +153,10 @@ def run_training(raw, output):
                 'head_learning_rate', 'warmup_ratio', 'device'):
         logger.info(f'{key}: {cfg[key]}')
     logger.info(f"model: {cfg['model']['mode']}; selection: Dev Joint F1; metrics: percent")
+    if freeze_policy:
+        logger.info(f"Text freeze: embeddings + bottom {freeze_policy['bottom_layers']}/{freeze_policy['total_layers']} layers "
+                    f"+ {freeze_policy['shared_modules']}; dropout unchanged.")
+        logger.info(f"Frozen parameters: {freeze_policy['frozen_parameters']} | Trainable parameters: {freeze_policy['trainable_parameters']}")
     if ocr_meta:
         logger.info(f"OCR context: up to {cfg['ocr_max_tokens']} subwords; labels and CRF decode on original words only.")
     if cfg['model']['visual_gate']:
@@ -181,6 +194,9 @@ def run_training(raw, output):
     if ocr_meta:
         provenance['ocr']=dict(**ocr_meta,max_tokens=cfg['ocr_max_tokens'],added_parameters=0,
                                supervised_positions='original_words_only')
+    if freeze_policy:
+        provenance['text_freeze'] = dict(**freeze_policy, initial_frozen_sha256=frozen_before,
+            initialization='original_pretrained_text_backbone_and_seeded_task_heads')
     if cfg['rdrop_weight'] > 0:
         provenance.update(objective='sentence_mean_two_pass_crf_nll_plus_symmetric_sequence_kl',
             rdrop=dict(weight=cfg['rdrop_weight'], kl='0.5*(KL(P||Q)+KL(Q||P))',
@@ -252,6 +268,8 @@ def run_training(raw, output):
             logger.info(f'Saved best Dev checkpoint at epoch {epoch}.')
         if updates >= planned:
             break
+    if freeze_policy and parameter_hash(model, freeze_policy['frozen_names']) != frozen_before:
+        raise ValueError('frozen text parameters changed during training')
     save_checkpoint(output / 'last.pt', model, cfg, epoch, metrics)
     summary = {
         'best_epoch': best_epoch, 'best_dev': best_metrics, 'last_epoch': epoch, 'last_dev': metrics,
@@ -264,6 +282,10 @@ def run_training(raw, output):
         'trainable_parameters': sum(p.numel() for p in model.parameters() if p.requires_grad),
         'peak_cuda_allocated_bytes': torch.cuda.max_memory_allocated(device) if device.type == 'cuda' else None,
     }
+    if freeze_policy:
+        summary['text_freeze'] = dict(bottom_layers=freeze_policy['bottom_layers'],
+            frozen_exact=True, frozen_sha256=frozen_before,
+            frozen_parameters=freeze_policy['frozen_parameters'], dropout=freeze_policy['dropout'])
     write_json(output / 'summary.json', summary)
     logger.info(f'Training complete in: {summary["elapsed_seconds"] / 60:.2f} minutes', pad=True)
     logger.info('BEST DEV:-----')
