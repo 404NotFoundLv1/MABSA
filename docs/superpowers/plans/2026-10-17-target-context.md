@@ -57,4 +57,30 @@ uses few Train aspects/one epoch but complete Dev and is explicitly labelled.
 
 ## Execution evidence
 
-Pending implementation, review and pilot launch.
+Implementation: a8afe13 (marked encoder), b98e2d1 (Train/Dev runner).
+144 tests passed, including a real tiny-transformer training/reload cycle and
+an audit hook confirming no Test-file opens. Exact checkpoint roundtrip exposed
+SDPA/eager mismatch; persisting encoder attention implementation fixed it.
+
+Independent gpt-6-astra review: no Critical/Important issues. Deferred minor:
+fault-injection tests for interruption and input mutation during training;
+the reviewed failure handling correctly prevents completed status.
+
+Real DeBERTa GPU smoke passed on both datasets (16 Train aspects, two updates,
+full Dev evaluation and exact checkpoint reload). Every boundary/input/source
+invariant passed. Smoke scores are not learning-performance evidence.
+Artifacts: outputs/target_context_smoke_20261017.
+
+Full Train/Dev tokenization preflight: T15 3179/1122 aspects, T17 3562/1176;
+maximum marked lengths 50/51 tokens, no truncation needed.
+
+Formal launcher: outputs/target_context_control_20261017/run_pilot.py.
+Output: outputs/target_context_s42_20261017. Two concurrent dataset jobs,
+one seed each; no extra seed or Test stage. comparison.json records stop versus
+eligibility to consider replication after both jobs pass reload verification.
+
+Execution decisions: preserve the user-selected shared branch; GPU compatibility
+was gated by smoke; improvement awaits completed formal results. Fixed CLI paths
+define the pilot's Train/Dev boundary (arbitrary renamed data passed directly to
+Python API is outside scope). No resume support; a hard-killed run remains
+non-completed and needs a fresh output. This costs restart work if interrupted.
