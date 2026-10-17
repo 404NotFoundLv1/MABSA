@@ -84,3 +84,11 @@ was gated by smoke; improvement awaits completed formal results. Fixed CLI paths
 define the pilot's Train/Dev boundary (arbitrary renamed data passed directly to
 Python API is outside scope). No resume support; a hard-killed run remains
 non-completed and needs a fresh output. This costs restart work if interrupted.
+
+Launch confirmed 2026-10-17 12:07 Asia/Shanghai: scheduler PID 4616; T15/GPU0
+PID 4705 and T17/GPU1 PID 4706. Both completed epoch 1/35, finite loss and
+unchanged extraction metrics. First epochs took 34.09/36.93 seconds; estimated
+completion around 12:30 including reload (estimate, not a completion claim).
+Live status is outputs/target_context_s42_20261017/batch-status.json plus each
+dataset's seed42.status.json. Execution ledger/test evidence archived under
+outputs/target_context_control_20261017/implementation-audit.
