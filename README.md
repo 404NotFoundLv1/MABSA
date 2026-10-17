@@ -20,6 +20,13 @@ MACT = **Multimodal Attention CRF Tagger**。这是从已验证实验中分离�
 所有 checkpoint 均按 Dev 选取；补充复现实验开始前已观察 seed 42 Test。
 详细决策与产物位置见[实验记录](docs/superpowers/plans/2026-10-17-target-context.md)。
 
+**后续补充证据（2026-10-17）：** 原三组共12个历史 seed 已完成，Test 均值
+在 Twitter2015 上为原 MACT 68.48、候选68.26（−0.22 pp），Twitter2017 为
+68.76、68.55（−0.22 pp）；两个数据集均为5升7降。Dev 平均虽分别提升
+0.35/0.89 pp，Test 未复现最初三个 seed 的一致增益。因此目前不支持将候选
+称为稳定增强。历史12 seed 按以往结果选取，与42/43/44单独报告；上面的
+主力候选指定记录了用户此前的决策，不表示扩大复现已通过。
+
 一套代码供所有数据集与随机种子使用。原 `mabsa_evidence`、`deqa_reproduction` 代码、实验和结果完整保留；本项目的日常训练与评估不读取它们。
 
 ## 目录
