@@ -2,6 +2,24 @@
 
 MACT = **Multimodal Attention CRF Tagger**。这是从已验证实验中分离的 MABSA baseline：DeBERTa-v3-base + 冻结 SigLIP2 视觉特征 + 跨模态注意力 + 五标签约束 CRF，默认 `fusion` 模式。
 
+## 当前实验主线（2026-10-17 用户确认）
+
+**主力候选：MACT＋目标上下文情感分类器。对照：原 MACT。**
+候选使用原 MACT 预测的方面边界，由独立微调的 DeBERTa 显式标记目标、
+重新编码上下文并替换情感标签。后续实验围绕该候选推进，并保留同 seed 原 MACT 对照。
+`configs/base.json` 继续代表原 MACT；候选分类器配置为 `configs/target_context.json`。
+
+已完成 seeds 42、43、44。Test Joint F1（均值 ± 样本标准差）：
+
+| 数据集 | 原 MACT | 主力候选 | 平均提升（百分点） |
+|---|---:|---:|---:|
+| Twitter2015 | 67.81 ± 0.90 | 68.19 ± 0.76 | +0.38 |
+| Twitter2017 | 67.91 ± 0.32 | 69.51 ± 1.39 | +1.60 |
+
+六组配对 Test 均提升；seed 44 的两个 Dev 均下降，三 seed 结果不等于统计显著性证明。
+所有 checkpoint 均按 Dev 选取；补充复现实验开始前已观察 seed 42 Test。
+详细决策与产物位置见[实验记录](docs/superpowers/plans/2026-10-17-target-context.md)。
+
 一套代码供所有数据集与随机种子使用。原 `mabsa_evidence`、`deqa_reproduction` 代码、实验和结果完整保留；本项目的日常训练与评估不读取它们。
 
 ## 目录

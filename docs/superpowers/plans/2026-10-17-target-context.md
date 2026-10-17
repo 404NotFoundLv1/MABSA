@@ -92,3 +92,39 @@ completion around 12:30 including reload (estimate, not a completion claim).
 Live status is outputs/target_context_s42_20261017/batch-status.json plus each
 dataset's seed42.status.json. Execution ledger/test evidence archived under
 outputs/target_context_control_20261017/implementation-audit.
+
+## 完成结果与当前主力候选决策（2026-10-17）
+
+用户在完成 seed42 Test 和 seeds43/44 配对复现后明确同意：
+**“MACT＋目标上下文情感分类器”作为当前主力候选，保留原 MACT 作对照。**
+该决策确定后续实验主线，不改变原 baseline 配置及历史实验定义。
+候选是原 MACT 预测边界加独立目标情感重编码器，不包含 EMA、LLRD 或 OCR 分支。
+
+三个 seed 的 Test Joint F1（均值 ± 样本标准差）：
+
+| 数据集 | 原 MACT | 主力候选 | 平均配对提升 |
+|---|---:|---:|---:|
+| Twitter2015 | 67.81 ± 0.90 | 68.19 ± 0.76 | +0.38 pp |
+| Twitter2017 | 67.91 ± 0.32 | 69.51 ± 1.39 | +1.60 pp |
+
+Test 配对增益依 seed42/43/44 为 T15 +0.38/+0.19/+0.57 pp，
+T17 +0.32/+1.28/+3.21 pp。Dev 平均增益分别 +0.38/+0.47 pp，
+但 seed44 Dev 分别下降 0.80/0.67 pp。保留这种不一致及 T17 的较大波动，
+不将三 seed 的一致 Test 方向表述为统计显著或普遍稳定提升。
+后续实验继续保留同 seed 原 MACT 对照，使用 Dev 选模，不根据 Test 调参。
+补充 seed43/44 是观察 seed42 Test 后、保持配置不变的复现实验。
+
+全部训练各35轮，完整 Dev 重载验证及 Test 独立指标核验通过，方面边界保持一致。
+补充实验于 2026-10-17 14:13:03 Asia/Shanghai 完成，耗时43.44分钟。
+
+产物（相对项目根目录）：
+
+- 原 MACT 配对权重：`outputs/llrd_ema_s42_43_44_20261016/uniform/{dataset}/seed{seed}/best.pt`。
+- 候选 seed42 分类器：`outputs/target_context_s42_20261017/{dataset}/seed42/best.pt`。
+- 候选 seeds43/44 分类器：`outputs/target_context_s43_44_20261017/{dataset}/seed{seed}/best.pt`。
+- 各 seed Test：`outputs/target_context_test_s{seed}_20261017/`。
+- 三 seed 汇总：`outputs/target_context_multiseed_control_20261017/comparison.json`。
+- 独立核验：同目录 `postrun-audit.json`。
+
+候选推理需要配套的原 MACT 权重、目标分类器权重及各自 tokenizer。
+后续待办为推理成本测量和情感错误分析；本次确认未自动启动新训练或增加模块。
