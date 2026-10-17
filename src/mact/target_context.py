@@ -118,6 +118,7 @@ def predict_targets(model, loader, device):
 def save_target(path, model, metadata):
     path = Path(path)
     content = dict(format='mact_target_context_v1', text_config=model.encoder.config.to_dict(),
+        text_attention=model.encoder.config._attn_implementation,
         dropout=model.dropout.p, metadata=metadata,
         state_dict={k: v.detach().cpu() for k, v in model.state_dict().items()})
     temporary = path.with_suffix('.tmp')
@@ -129,6 +130,6 @@ def load_target(path, device='cpu'):
     content = torch.load(path, map_location='cpu', weights_only=True)
     if content.get('format') != 'mact_target_context_v1':
         raise ValueError('unsupported target checkpoint')
-    model = TargetClassifier(text_from_config(content['text_config']), content['dropout'])
+    model = TargetClassifier(text_from_config(content['text_config'], content['text_attention']), content['dropout'])
     model.load_state_dict(content['state_dict'], strict=True)
     return model.to(device).eval(), content['metadata']
