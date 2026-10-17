@@ -186,3 +186,16 @@ assert complete['aggregate']['twitter2015']['B']['wins'] == 2
 结果来源：`outputs/llrd_ema_s42_43_44_20261016/results.json`；实验状态：同目录`status.json`。
 
 2026-10-17最终复核：专用collector重新执行退出码0，重验24份checkpoint哈希/内部身份、来源、配置和Dev预测指标，结果仍为completed，唯一候选B。
+
+## MACT + EMA Test评估（用户于2026-10-17明确要求）
+
+本节在此前Dev-only实验结束后执行，是用户新增授权的Test评估。固定uniform轨迹的EMA best.pt，保留三个种子42/43/44，各checkpoint仍按Dev Joint F1独立选取；没有按Test选种子、选epoch或重新训练。6项均完成，checkpoint内部身份、Dev选中epoch、哈希、Test数据/缓存身份已核对；逐样本预测覆盖与指标另行重算一致。
+
+| 数据集 | seed42 Joint F1 | seed43 Joint F1 | seed44 Joint F1 | Joint F1均值±样本SD | MATE F1均值±样本SD |
+|---|---:|---:|---:|---:|---:|
+| twitter2015 | 67.02 | 68.26 | 67.61 | 67.63 ± 0.62 | 86.58 ± 0.23 |
+| twitter2017 | 69.03 | 69.53 | 68.13 | 68.90 ± 0.71 | 93.39 ± 0.15 |
+
+这些是MACT+EMA的Test绝对成绩；本次未评估同批普通权重A的Test，不能将此前Dev上的增益当作Test增益。
+
+结果与每个种子的预测、provenance、Dev选模记录保存在`outputs/ema_test_s42_43_44_20261017/`。
