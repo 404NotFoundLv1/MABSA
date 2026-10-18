@@ -123,3 +123,43 @@ remains unchanged.
 Artifacts: outputs/calibrated_fusion_20261018/{comparison.json,SUMMARY.txt,
 per_seed.csv,postrun-audit.json}; original raw reports, score caches, SHA sidecars,
 and logs retained. The initial3 and historical12 cohorts are separately reported.
+
+## Authorized follow-up: fixed equal-fusion Test evaluation
+
+The user explicitly said “继续下一步” after the recommendation to evaluate the
+raw fixed 1:1 mixture. This authorizes a separate Test evaluation; it does not
+change the failed calibrated variant's gate or permit Test-based tuning.
+
+Before the new Test run, outputs/fixed_equal_fusion_test_20261018/decision.json
+locked both temperatures to 1, alpha to .5, both datasets and all 15 seeds,
+30 paired checkpoint hashes, target config hashes, and the unchanged numerical
+fusion module hash. Initial decision SHA256:
+`ef6d90acf0abc1bafc0dfbb4cb48d8b875add0a3332d20d9312562c880bd64ba`.
+
+Implementation is bounded: add src/mact/fusion_test.py and
+scripts/evaluate_fixed_fusion.py, preserving the Dev entry point and access
+guard. Remove all gold annotations from inference examples; use frozen predicted
+boundaries. Verify both controls against their previously archived full Test
+predictions and metrics. Generate fusion predictions with exactly the existing
+raw-half numerical rule. Never fit temperatures, search weights, choose seeds,
+train encoders or select checkpoints using Test. Hash the effective visual cache
+in the new evaluator, including when inherited from checkpoint configuration.
+
+Tests: initial four tests failed for missing implementation, then the full
+158-test suite passed. Added real tiny-checkpoint evaluation, changed-gold
+prediction invariance, locked-parameter rejection, replay failures, missing
+cohorts and misplaced result identities. A synthetic perfectly symmetric score
+fixture was made unambiguous after measuring a 5.55e-17 softmax permutation
+difference; the frozen fusion algorithm was not changed.
+
+Run one dataset per GPU, all seeds sequentially. Require all 30 pairs before
+aggregation. Recompute saved prediction metrics and boundaries; report all15,
+initial3 and historical12 means, sample SD and paired win/tie/loss counts.
+Earlier Test results and historical seed selection are known, so this is not a
+claim of performance on an untouched benchmark. Keep current branch; no push.
+
+```bash
+.runtime/bin/python scripts/evaluate_fixed_fusion.py run --root outputs/fixed_equal_fusion_test_20261018 --dataset twitter2015 --device cuda:0
+.runtime/bin/python scripts/evaluate_fixed_fusion.py run --root outputs/fixed_equal_fusion_test_20261018 --dataset twitter2017 --device cuda:1
+.runtime/bin/python scripts/evaluate_fixed_fusion.py summarize --root outputs/fixed_equal_fusion_test_20261018
+```
