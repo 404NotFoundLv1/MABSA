@@ -1,6 +1,7 @@
 import copy
 import importlib.util
 import json
+import inspect
 import unittest
 from pathlib import Path
 
@@ -78,7 +79,7 @@ class FusionExperimentTests(unittest.TestCase):
         f=fixtures.DataModelTests(); f.setUp();self.addCleanup(f.doCleanups)
         root=Path(f.tmp.name);base_dir=root/'base';target_dir=root/'target'
         base_dir.mkdir();target_dir.mkdir()
-        data=root/'dev.json'
+        data=root/'twitter2015'/'dev.json';data.parent.mkdir()
         data.write_text(json.dumps([dict(id=e.id,words=e.words,image_id=e.image_id,
             aspects=[{'from':s,'to':e_,'polarity':['negative','neutral','positive'][p]}
                      for s,e_,p in e.aspects]) for e in f.examples]))
@@ -118,8 +119,32 @@ class FusionExperimentTests(unittest.TestCase):
         self.assertTrue(cache['provenance']['target_replay_exact'])
         loaded=self.f.load_verified(out)
         self.assertEqual(loaded['baseline'],json.loads(json.dumps(bp)))
+        self.assertIn('expected_dataset',inspect.signature(self.f.load_verified).parameters,
+                      'cache loading must bind the requested dataset')
+        with self.assertRaisesRegex(ValueError,'dataset'):
+            self.f.load_verified(out,expected_dataset='twitter2017',expected_seed=42)
+        with self.assertRaisesRegex(ValueError,'seed'):
+            self.f.load_verified(out,expected_dataset='twitter2015',expected_seed=43)
+        with self.assertRaisesRegex(ValueError,'dataset'):
+            self.f.extract_run(target_dir,'twitter2017',42,'cpu',root/'wrong.json',{})
         with self.assertRaises(FileExistsError):
             self.f.extract_run(target_dir,'twitter2015',42,'cpu',out,{})
         data.write_text(data.read_text()+' ')
         with self.assertRaisesRegex(ValueError,'changed|stale'):
             self.f.load_verified(out)
+
+    def test_dev_guard_blocks_test_filenames_and_unapproved_aggregate_inputs(self):
+        path=Path(__file__).resolve().parents[1]/'scripts/run_calibrated_fusion.py'
+        spec=importlib.util.spec_from_file_location('fusion_cli',path)
+        cli=importlib.util.module_from_spec(spec);spec.loader.exec_module(cli)
+        forbidden=['assets/data/twitter2015/test.json',
+            'outputs/rdrop_s42_43_44_20261013/test-comparison.json',
+            'outputs/run/seed42-test.log',
+            'outputs/target_context_historical12_20261017/comparison.json',
+            'reference/runs/twitter2015/seed42/test/config.json']
+        for relative in forbidden:
+            with self.subTest(path=relative),self.assertRaises(RuntimeError):
+                cli.deny_test('open',(str(cli.ROOT/relative),'r',0))
+        for relative in ['outputs/run/config.json','outputs/run/best_dev_predictions.json',
+                         'reference/runs/twitter2015/seed42/tokenizer/tokenizer.json']:
+            cli.deny_test('open',(str(cli.ROOT/relative),'r',0))

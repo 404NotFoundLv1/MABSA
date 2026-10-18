@@ -63,6 +63,8 @@ def extract_run(run,dataset,seed,device,output,resources):
     cfg,summary=_read(run/'config.json'),_read(run/'summary.json')
     if cfg['seed'] != seed or Path(cfg['dev_data']).name != 'dev.json':
         raise ValueError('seed mismatch or non-Dev data')
+    if Path(cfg['dev_data']).resolve().parent.name != dataset:
+        raise ValueError('dataset does not match Dev data identity')
     base_summary=_read(cfg['baseline_summary'])
     tokenizer_path=Path(cfg['baseline_summary']).parent/'tokenizer'
     paths=[run/name for name in ('config.json','summary.json','best.pt','best_dev_predictions.json')]
@@ -149,11 +151,15 @@ def extract_run(run,dataset,seed,device,output,resources):
     return result
 
 
-def load_verified(path):
+def load_verified(path,expected_dataset=None,expected_seed=None):
     path=Path(path)
     if file_hash(path) != path.with_suffix('.sha256').read_text().strip():
         raise ValueError('corrupted score cache')
     run=_read(path)
+    if expected_dataset is not None and run.get('dataset') != expected_dataset:
+        raise ValueError('cached dataset differs from requested dataset')
+    if expected_seed is not None and run.get('seed') != expected_seed:
+        raise ValueError('cached seed differs from requested seed')
     if run.get('format') != 'mact_fusion_scores_v1': raise ValueError('wrong cache format')
     p=run['provenance']
     if not p['baseline_replay_exact'] or not p['target_replay_exact'] or p['test_used']:
