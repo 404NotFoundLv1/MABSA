@@ -57,6 +57,12 @@ def validate_cache(c):
     if (len(set(m['sentence_ids'])) != len(m['sentence_ids']) or set(m['sentence_ids']) != set(c['gold'])
             or set(c['gold']) != set(c['baseline'])):
         raise ValueError('incomplete sentence identities')
+    validate_payload(c)
+
+
+def validate_payload(c):
+    """Validate feature content independently of the experiment's provenance format."""
+    if set(c['gold']) != set(c['baseline']): raise ValueError('incomplete sentence identities')
     expected = []
     for sid, spans in c['baseline'].items():
         for values in (spans, c['gold'][sid]):
@@ -236,6 +242,15 @@ def train_pair(train_cache, dev_cache, output, config=None):
             or any(a[k] != b[k] for k in ('dataset', 'seed', 'checkpoints', 'source_sha256', 'input_sha256'))
             or any(train[k].shape[1] != dev[k].shape[1] for k in INPUTS)):
         raise ValueError('incompatible Train/Dev pair')
+    return _fit_verified_pair(train, dev, train_cache, dev_cache, output, config)
+
+
+def _fit_verified_pair(train, dev, train_cache, dev_cache, output, config,
+                       limitation=LIMITATION, provenance_extra=None):
+    """Numerical fitter; callers must first verify their explicit provenance format."""
+    output = Path(output)
+    if output.exists(): raise FileExistsError('training destination must be fresh')
+    a = train['meta']
     indices = torch.where(train['labels'] >= 0)[0]
     if not len(indices): raise ValueError('no supervised Train aspects')
     output.mkdir(parents=True)
@@ -243,13 +258,14 @@ def train_pair(train_cache, dev_cache, output, config=None):
     torch.use_deterministic_algorithms(True)
     provenance = dict(cache_sha256=_hashes([train_cache, dev_cache]), source_sha256=source_hashes(),
                       checkpoints=a['checkpoints'], config=config, dataset=a['dataset'], test_used=False)
+    provenance.update(provenance_extra or {})
     write_json(output/'protocol.json', provenance)
     controls = {name: assess(dev, dev[key])[0] for name, key in
                 [('baseline', 'base_labels'), ('target', 'target_labels'), ('fixed', 'fixed_labels')]}
     train_controls = {name: assess(train, train[key])[0] for name, key in
                       [('baseline', 'base_labels'), ('target', 'target_labels'), ('fixed', 'fixed_labels')]}
     result = dict(dataset=a['dataset'], seed=42, controls=controls, train_controls=train_controls,
-        matched_train_aspects=len(indices), variants={}, limitation=LIMITATION, test_used=False)
+        matched_train_aspects=len(indices), variants={}, limitation=limitation, test_used=False)
     dimensions = dict(base_dim=train['base_features'].shape[1], target_dim=train['target_features'].shape[1],
                       hidden=config['hidden'], dropout=config['dropout'])
     for variant in ('plain', 'bounded'):
