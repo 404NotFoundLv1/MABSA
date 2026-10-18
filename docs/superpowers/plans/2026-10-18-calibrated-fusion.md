@@ -233,3 +233,101 @@ The evidence is the completed 15-seed Test comparison above (fusion means
 +0.8474/+0.7031 pp over target-only). This records the accepted research direction;
 the failed calibrated Dev gate, historical selection limitations, locked
 experiment decision, archived predictions and results remain as recorded.
+
+## Follow-up Dev disagreement diagnostic (2026-10-18)
+
+User authorized “开始下一步” after the proposal to diagnose expert disagreements
+before adding a reliability module. Reused all 30 saved Dev score caches; no
+training, fitted parameters or Test access. Fixed three untuned confidence
+controls before reading scores: higher maximum probability, larger top-two
+probability margin, and lower entropy (ties retain MACT).
+
+| Mean Dev Joint F1 / diagnostic | Twitter2015 | Twitter2017 |
+|---|---:|---:|
+| Current fixed fusion | 68.0373 | 68.1259 |
+| Higher maximum probability | 68.0609 | 68.0983 |
+| Larger top-two margin | 68.0373 | 68.0871 |
+| Lower entropy | 68.0609 | 68.1094 |
+| Gold oracle choosing between experts | 73.3330 | 74.8826 |
+| Ideal selectable gap above fixed fusion | 5.2957 | 6.7567 |
+
+The oracle uses gold and is not a deployable result or a forecast. A separate
+oracle retaining fixed fusion's possible third-class successes gives the same
+values here (no such rescues observed); this equivalence is not assumed generally.
+
+Among exact-boundary matched aspect-seed pairs, experts disagree on 14.00%/16.88%.
+Of the fixed fusion's remaining sentiment errors, 898/3125 (28.74%) on 2015 and
+1212/4373 (27.72%) on 2017 have at least one correct expert. The remaining
+71.26%/72.28% are wrong in both experts. False-positive boundaries and missed
+gold boundaries are counted separately; sentiment rerouting cannot repair them.
+Aspect-seed totals repeat sentences across seeds and are not independent sample
+counts. Dev-selected checkpoints remain an exploratory limitation.
+
+All three original metric sets replayed exactly from cached predictions/scores;
+count partitions and 30 paired oracle F1 calculations passed a separate stdlib
+audit. Input/cache sidecars, current Dev gold and relevant numerical source
+hashes were checked. This audit did not reload checkpoints or visual features.
+
+Artifacts: outputs/disagreement_diagnostic_20261018/{protocol.json,diagnose.py,
+comparison.json,per_seed.csv,matched_aspects.csv,SUMMARY.txt,audit.json,
+independent_audit.py,independent-audit.json,*-unique-aspects.json}.
+
+Interpretation: these three confidence-only rules do not improve both datasets.
+This does not rule out a learned gate, but provides no basis to promote one.
+Keep fixed fusion as main candidate and test additional evidence before choosing
+a module; the majority shared errors also motivate better representations.
+
+### Completed image-masking sensitivity probe
+
+Ran all six Dev pairs for seeds42/43/44 with frozen MACT weights, original
+predicted boundaries and original neighboring Viterbi tags. Compared real-image
+emissions with `force_null=True`, which masks visual tokens but retains the
+learned null token. Gold annotations were removed from model inputs. This is a
+conditional polarity probe, not image-free end-to-end decoding or causal proof.
+
+| Initial3 mean Dev / diagnostic | Twitter2015 | Twitter2017 |
+|---|---:|---:|
+| Fixed equal fusion | 68.0113 | 68.2173 |
+| Masked-image conditional scores + target fusion | 68.0113 | 68.2452 |
+| MACT with image, original boundaries | 67.5700 | 67.0481 |
+| Masked-image conditional labels, original boundaries | 67.5115 | 66.4371 |
+| Image changed conditional label (matched aspect-seed pairs) | 68/2940 | 125/3319 |
+| Image helpful / harmful flips | 34 / 32 | 71 / 49 |
+| Mean per-seed AUROC: raw expert margin difference | 0.5511 | 0.5631 |
+| Mean per-seed AUROC: image-induced log-odds shift | 0.4704 | 0.4953 |
+
+AUROC evaluates which expert is right only on matched, disagreeing aspects
+where exactly one expert is correct; positive class is MACT correct. Scores
+and directions were specified before summary, without fitting a gate or choosing
+a threshold. These weak scalar results do not prove every image-based reliability
+mechanism impossible, nor do they imply images are generally useless. They do
+not support promoting the proposed simple image-sensitivity gate.
+
+All six real-image predictions replayed exactly. Repeated FP32 scores differed
+from the archive by at most 1.90735e-6; numerical checks used absolute tolerance
+1e-5 while label checks remained exact. The initial attempt assumed a nonexistent
+separate Dev visual cache; the corrected runner resolves and verifies the actual
+train_dev cache from archived provenance. Failed attempts wrote no score results.
+Independent scalar softmax/F1/flip-count recomputation passed for all six pairs.
+
+Artifacts under outputs/disagreement_diagnostic_20261018/: null_probe.py,
+summarize_null.py, audit_null.py and null_probe/{protocol.json,twitter*/seed*.json,
+comparison.json,SUMMARY.txt,independent-audit.json,status.json}.
+
+### Next design priority
+
+Keep fixed fusion as the main candidate. Do not promote confidence-only or
+image-log-odds routing based on these diagnostics. The next candidate design to
+investigate is a small target-conditioned sentiment correction head, using the
+target encoder representation and MACT aspect representation, anchored to fixed
+fusion with zero initial correction. Unlike a pure expert selector, it must be
+able to change an incorrect label shared by both experts. Track corrections and
+regressions separately; unchanged aspect boundaries remain an invariant.
+
+This is a proposed hypothesis, not an implemented or validated module and not
+a novelty claim. Before training, compare nearest prior residual/correction
+methods and specify the mechanism-specific contribution. Use Train-derived
+held-out/out-of-fold examples where error-conditioned supervision is needed;
+do not train a correction gate against the already-observed Test. Compare a plain
+parameter-matched residual head against the proposed mechanism and the existing
+three controls. Freeze the design before expanding seeds and final Test.
