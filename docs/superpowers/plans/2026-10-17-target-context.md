@@ -95,6 +95,10 @@ outputs/target_context_control_20261017/implementation-audit.
 
 ## 完成结果与当前主力候选决策（2026-10-17）
 
+后续状态：2026-10-18 用户已确认固定等权概率融合为主力候选；本节的分类器单独
+替换方案现保留为对照二，原 MACT 为对照一。详见[后续正式决策](2026-10-18-calibrated-fusion.md#confirmed-main-candidate-2026-10-18)。
+以下保留2026-10-17的决策及其当时依据。
+
 用户在完成 seed42 Test 和 seeds43/44 配对复现后明确同意：
 **“MACT＋目标上下文情感分类器”作为当前主力候选，保留原 MACT 作对照。**
 该决策确定后续实验主线，不改变原 baseline 配置及历史实验定义。

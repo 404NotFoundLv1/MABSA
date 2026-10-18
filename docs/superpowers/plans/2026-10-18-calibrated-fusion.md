@@ -209,3 +209,27 @@ per_seed.csv, paired_results.csv, SUMMARY.txt, make_report.py, postrun-audit.jso
 and completed status.json. The audit confirms effective multimodal cache
 fingerprints for all 30 pairs; the small dedicated fallback regression test
 remains the documented minor coverage gap.
+
+## Confirmed main candidate (2026-10-18)
+
+After reviewing the full Dev/Test and per-seed comparisons, the user explicitly
+confirmed: “将固定等权融合升级为主力候选，保留原 MACT 和分类器单独替换方案作对照。”
+
+- Main candidate: fixed equal probability fusion of MACT and the target-context
+  classifier, alpha=.5 and both temperatures=1, preserving MACT aspect boundaries
+  and the existing verified fusion/tie-handling implementation.
+- Control 1: original MACT, using its original CRF predictions.
+- Control 2: target-context classifier alone replaces sentiment labels on the
+  same MACT-predicted aspect boundaries.
+
+This supersedes the 2026-10-17 target-only main-candidate designation. Subsequent
+experiments should report all three schemes on paired seeds and retain Dev-based
+model selection. configs/base.json and configs/target_context.json continue to
+define their respective component models. The main candidate reuses both trained
+models; its verified Test entry point is scripts/evaluate_fixed_fusion.py.
+
+The evidence is the completed 15-seed Test comparison above (fusion means
+69.0954/69.4443, gains +0.7506/+0.8519 pp over original MACT and
++0.8474/+0.7031 pp over target-only). This records the accepted research direction;
+the failed calibrated Dev gate, historical selection limitations, locked
+experiment decision, archived predictions and results remain as recorded.
