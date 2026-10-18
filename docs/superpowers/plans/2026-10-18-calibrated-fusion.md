@@ -163,3 +163,49 @@ claim of performance on an untouched benchmark. Keep current branch; no push.
 .runtime/bin/python scripts/evaluate_fixed_fusion.py run --root outputs/fixed_equal_fusion_test_20261018 --dataset twitter2017 --device cuda:1
 .runtime/bin/python scripts/evaluate_fixed_fusion.py summarize --root outputs/fixed_equal_fusion_test_20261018
 ```
+
+Follow-up review: a fresh independent reviewer found no Critical or Important
+issues, reran the four new tests, checked all 30 archive mappings and recomputed
+their archived metrics. Minor coverage gap deferred: the new tiny fixtures use
+text-only baselines, so effective visual-cache metadata fallback lacks its own
+small regression test. The real experiment's postrun audit explicitly checks
+manifest/features fingerprints for all 30 multimodal evaluations. Actual GPU
+replay is judged from the run, while earlier training/seed selection remains
+an unchanged upstream limitation. No existing Dev protection was weakened.
+
+## Completed fixed equal-fusion Test evaluation
+
+Both GPU processes, aggregation and the postrun report/audit exited 0. All 30
+paired evaluations completed under the locked decision SHA above, with source
+implementation frozen at af71feb. Both archived controls replayed exactly;
+all aspect boundaries, input hashes and source hashes passed verification.
+The full implementation suite passed 158 tests before these runs. Subsequent
+changes are documentation only.
+
+| All15 Test Joint F1 (mean ± sample SD) | Twitter2015 | Twitter2017 |
+|---|---:|---:|
+| Baseline | 68.3447 ± 0.8242 | 68.5923 ± 0.8768 |
+| Target only | 68.2480 ± 0.9933 | 68.7411 ± 0.9752 |
+| Fixed equal probability fusion | 69.0954 ± 0.8395 | 69.4443 ± 0.8459 |
+
+Fusion minus baseline: +0.7506/+0.8519 pp; wins/ties/losses 12/1/2 and 13/1/1.
+Fusion minus target: +0.8474/+0.7031 pp; wins/ties/losses 12/1/2 and 14/0/1.
+
+| Test cohort | 2015 fusion | Δ baseline | Δ target | 2017 fusion | Δ baseline | Δ target |
+|---|---:|---:|---:|---:|---:|---:|
+| Initial3 | 68.8279 | +1.0165 | +0.6355 | 70.0527 | +2.1429 | +0.5386 |
+| Historical12 | 69.1622 | +0.6842 | +0.9004 | 69.2921 | +0.5292 | +0.7443 |
+
+Twitter2017 seed44 target-only 71.1075 becomes fusion 71.2681; this single seed
+is supplementary, not the basis for the mean-gain conclusion. The results support
+recommending fixed equal fusion as the next main candidate, retaining baseline
+and target-only controls. They do not change the calibrated variant's failed
+Dev gate or erase earlier Test exposure/historical seed selection. No Test
+tuning, new training or additional experiments were performed in this step.
+
+Artifacts in outputs/fixed_equal_fusion_test_20261018/: decision.json and SHA
+sidecar, 30 paired result.json files and sidecars, GPU logs, comparison.json,
+per_seed.csv, paired_results.csv, SUMMARY.txt, make_report.py, postrun-audit.json
+and completed status.json. The audit confirms effective multimodal cache
+fingerprints for all 30 pairs; the small dedicated fallback regression test
+remains the documented minor coverage gap.
