@@ -26,7 +26,9 @@ aspects of a sentence together. For each held-out fold, fit temperatures and
 select alpha exclusively on the other four folds. Concatenate held-out
 predictions before computing each seed's full Dev F1. Report per-seed values,
 mean, sample SD and paired changes for baseline, target-only, raw .5 mixture,
-and calibrated selected fusion. Raw .5 is an explanatory calibration ablation.
+and calibrated selected fusion. Raw .5 is a fixed-mixture control: comparison
+with selected calibrated fusion measures calibration plus weight selection,
+and does not isolate temperature calibration's causal contribution.
 Also fit full-Dev deployment parameters, clearly separate from cross-fold
 results. Dataset-specific parameters, never seed-specific parameter selection.
 Require complete unique 15-seed cohorts before selection. Report initial3 and
