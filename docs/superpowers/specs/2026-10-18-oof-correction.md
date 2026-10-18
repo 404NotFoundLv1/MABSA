@@ -66,3 +66,11 @@ hash-verified stages; partial stage outputs require explicit diagnosis, never
 automatic deletion. Do not label a launched multi-hour queue as completed.
 The queue automatically extracts, trains both controls and OOF arms, audits saved
 predictions and writes final comparisons after all required models finish.
+
+Replay details: exact selected/best-trained epochs, metrics, error changes and
+saved predictions are required. Train CE/residual RMS diagnostic differences are
+reported separately rather than rejected bitwise; these diagnostics do not select
+models. Prior result/prediction references are included in immutable launch hashes.
+Completed head-stage reuse verifies Train/Dev cache hashes, format, source,
+configuration, full epoch history, completion status and both saved checkpoints'
+training provenance before accepting independently recomputed tuple metrics.

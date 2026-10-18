@@ -247,9 +247,41 @@ def fit_oof_pair(train_path, dev_path, output, config=None):
                               outer_folds=3, inner_selection_only=True))
 
 
-def audit_fit(fit, dev_path):
+def verify_fit(fit, train_path, dev_path, kind, config=None):
+    """Bind a completed head stage to its actual feature sources and protocol."""
+    if kind not in ('in_sample', 'oof'): raise ValueError('unknown fitting protocol')
+    cfg = {**DEFAULTS, **(config or {})}
+    train = load_oof(train_path) if kind == 'oof' else load_cache(train_path)
+    dev = load_cache(dev_path)
+    if train['meta']['split'] != 'train' or dev['meta']['split'] != 'dev': raise ValueError('wrong fitting splits')
+    expected = dict(cache_sha256=_hashes([train_path, dev_path]), source_sha256=source_hashes(),
+                    checkpoints=train['meta']['checkpoints'], config=cfg, dataset=train['meta']['dataset'], test_used=False)
+    if kind == 'oof':
+        expected.update(training_format='oof_train_features_v1', dev_checkpoints=dev['meta']['checkpoints'],
+                        outer_folds=3, inner_selection_only=True)
+    fit = Path(fit)
+    if read(fit/'protocol.json') != expected: raise ValueError('fit protocol/provenance differs from expected training')
+    status = read(fit/'status.json'); result = read(fit/'result.json')
+    if (status.get('state') != 'completed' or status.get('test_used') is not False or result.get('test_used') is not False
+            or result['dataset'] != train['meta']['dataset'] or result['seed'] != 42
+            or set(result['variants']) != {'plain', 'bounded'}):
+        raise ValueError('head stage incomplete or wrong experiment')
+    dimensions = dict(base_dim=train['base_features'].shape[1], target_dim=train['target_features'].shape[1],
+                      hidden=cfg['hidden'], dropout=cfg['dropout'])
+    for variant, row in result['variants'].items():
+        if ([r['epoch'] for r in row['history']] != list(range(cfg['epochs']+1))
+                or read(fit/variant/'history.json') != row['history'] or not row['reload_exact']):
+            raise ValueError('incomplete head history')
+        for name in ('best', 'best_trained'):
+            saved = torch.load(fit/variant/(name+'.pt'), weights_only=True, map_location='cpu')
+            if saved['provenance'] != expected or saved['variant'] != variant or saved['dimensions'] != dimensions:
+                raise ValueError('saved head has stale or mixed training provenance')
+    return result, dev
+
+
+def audit_fit(fit, train_path, dev_path, kind, config=None):
     """Independently recompute exact tuples/counts from saved predictions and reload heads."""
-    fit = Path(fit); r = read(fit/'result.json'); dev = load_cache(dev_path)
+    fit = Path(fit); r, dev = verify_fit(fit, train_path, dev_path, kind, config)
     gold = {(sid, *t) for sid, values in dev['gold'].items() for t in values}
     gb = {t[:3] for t in gold}
     fixed = {(sid, s, e, int(p)) for (sid, s, e), p in zip(dev['keys'], dev['fixed_labels'])}
@@ -285,6 +317,37 @@ def audit_fit(fit, dev_path):
             result[variant+'_'+name] = dict(epoch=chosen['epoch'], f1_pp=f1*100, changes=changes)
     write_json(fit/'audit.json', dict(passed=True, results=result, test_used=False))
     return result
+
+
+def replay_reference_paths(dataset):
+    directory = ROOT/'outputs/sentiment_correction_s42_20261018'/dataset/'fit'
+    return [directory/'result.json']+[directory/v/(name+'.json') for v in ('plain', 'bounded')
+            for name in ('predictions', 'best_trained_predictions')]
+
+
+def verify_control_replay(current, reference):
+    """Require exact selected outcomes, while recording non-selection float drift."""
+    current, reference = Path(current), Path(reference)
+    a, b = read(current/'result.json'), read(reference/'result.json')
+    if a['controls'] != b['controls'] or a['train_controls'] != b['train_controls']:
+        raise ValueError('original control predictions/metrics changed')
+    differences = {}
+    keys = ('selected_epoch', 'selected_metrics', 'selected_changes', 'best_trained_epoch',
+            'best_trained_metrics', 'best_trained_changes', 'parameter_count', 'initial_sha256')
+    for variant in ('plain', 'bounded'):
+        x, y = a['variants'][variant], b['variants'][variant]
+        if any(x[k] != y[k] for k in keys): raise ValueError('control selected outcomes differ from locked reference')
+        for name in ('predictions', 'best_trained_predictions'):
+            if read(current/variant/(name+'.json')) != read(reference/variant/(name+'.json')):
+                raise ValueError('control selected predictions differ from locked reference')
+        if len(x['history']) != len(y['history']): raise ValueError('control epoch budgets differ')
+        differences[variant] = {k: max(abs(i[k]-j[k]) for i, j in zip(x['history'], y['history']))
+                                for k in ('train_ce', 'train_residual_rms')}
+    report = dict(selected_epochs_exact=True, selected_predictions_exact=True, selected_metrics_exact=True,
+                  diagnostic_max_absolute_difference=differences,
+                  diagnostic_policy='record only; diagnostics do not select or invalidate exact selected outcomes')
+    write_json(current/'reference_replay.json', report)
+    return report
 
 
 def compare_dataset(directory):
@@ -334,6 +397,7 @@ def prepare_pipeline(root, device):
     for ds in ('twitter2015', 'twitter2017'):
         run = target_run(ds, 42); cfg = read(run/'config.json')
         paths += [run/'config.json', run/'best.pt', cfg['baseline_checkpoint'], cfg['baseline_summary']]
+        paths += replay_reference_paths(ds)
     launch = dict(format='oof_correction_launch_v1', seed=42, datasets=['twitter2015', 'twitter2017'],
         jobs=jobs, code=code_identity(), input_sha256=_hashes(paths), config=DEFAULTS, test_used=False,
         limitation=LIMITATION, device=device, created_at=time.time())
@@ -348,6 +412,8 @@ def verify_launch(root):
     if file_hash(root/'launch.json') != (root/'launch.sha256').read_text().strip(): raise ValueError('launch protocol changed')
     launch = read(root/'launch.json')
     if launch['code']['source_sha256'] != code_identity()['source_sha256']: raise ValueError('code/config changed during OOF queue')
+    required = {str(p.resolve()) for ds in launch['datasets'] for p in replay_reference_paths(ds)}
+    if not required <= set(launch['input_sha256']): raise ValueError('prior control replay references are not locked')
     _verify_hashes(launch['input_sha256'])
     return launch
 
@@ -389,14 +455,10 @@ def run_pipeline(root):
                 status.update(stage='head_fitting_and_audit'); write_json(root/'status.json', status)
                 if not (directory/'control_fit/result.json').exists():
                     train_pair(directory/'features/train.pt', dev_path, directory/'control_fit')
-                audit_fit(directory/'control_fit', dev_path)
-                prior = read(ROOT/'outputs/sentiment_correction_s42_20261018'/ds/'fit/result.json')
-                control = read(directory/'control_fit/result.json')
-                for variant in ('plain', 'bounded'):
-                    if control['variants'][variant] != prior['variants'][variant]:
-                        raise ValueError('in-sample control differs from the previous locked experiment')
+                audit_fit(directory/'control_fit', directory/'features/train.pt', dev_path, 'in_sample')
+                verify_control_replay(directory/'control_fit', replay_reference_paths(ds)[0].parent)
                 if not (directory/'oof_fit/result.json').exists(): fit_oof_pair(oof_path, dev_path, directory/'oof_fit')
-                audit_fit(directory/'oof_fit', dev_path)
+                audit_fit(directory/'oof_fit', oof_path, dev_path, 'oof')
                 reports[ds] = compare_dataset(directory)
             verify_launch(root)
             gates = {variant: all(r['arms'][variant]['oof_selected_f1_pp'] >= r['fixed_f1_pp']+.2-1e-10 and

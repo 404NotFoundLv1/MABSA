@@ -105,7 +105,7 @@ class OOFFoldIntegrationTests(unittest.TestCase):
         with patch.object(self.m, 'target_run', return_value=Path(jobs[0]['output'])/'target'):
             result = self.m.fit_oof_pair(aggregate, dev_path, self.root/'fit', dict(epochs=2, batch_size=2))
         self.assertTrue(result['variants']['plain']['reload_exact'])
-        self.m.audit_fit(self.root/'fit', dev_path)
+        self.m.audit_fit(self.root/'fit', aggregate, dev_path, 'oof', dict(epochs=2, batch_size=2))
         bad = torch.load(aggregate, weights_only=True)
         bad['base_features'][0, 0] += 1
         corrupt = self.root/'corrupt.pt'; save_cache(corrupt, bad)
@@ -118,6 +118,66 @@ class OOFFoldIntegrationTests(unittest.TestCase):
     def test_incomplete_fold_set_cannot_be_aggregated(self):
         with self.assertRaises(ValueError): self.m.aggregate_oof([], [], self.root/'oof.pt')
         with self.assertRaises(ValueError): self.m.aggregate_oof([self.job]*3, [], self.root/'oof.pt')
+
+
+class OOFStageReuseTests(unittest.TestCase):
+    def setUp(self):
+        from test_correction_experiment import CorrectionExperimentTests
+        self.fixture = CorrectionExperimentTests()
+        self.fixture.setUp(); self.addCleanup(self.fixture.doCleanups)
+        self.m = importlib.import_module('mact.oof_correction')
+        self.root = self.fixture.root
+        self.train = self.fixture.save(self.fixture.cache('train'), 'train.pt')
+        self.dev = self.fixture.save(self.fixture.cache('dev'), 'dev.pt')
+        self.fit = self.root/'fit'
+        self.config = dict(epochs=1)
+        self.fixture.m.train_pair(self.train, self.dev, self.fit, self.config)
+
+    def test_control_cannot_masquerade_as_oof_and_changed_fit_provenance_is_rejected(self):
+        self.m.audit_fit(self.fit, self.train, self.dev, 'in_sample', self.config)
+        with self.assertRaises(ValueError): self.m.audit_fit(self.fit, self.train, self.dev, 'oof', self.config)
+        protocol = json.loads((self.fit/'protocol.json').read_text())
+        original = json.loads(json.dumps(protocol))
+        protocol['cache_sha256'][str(self.train.resolve())] = '0'*64
+        write_json(self.fit/'protocol.json', protocol)
+        with self.assertRaises(ValueError): self.m.audit_fit(self.fit, self.train, self.dev, 'in_sample', self.config)
+        write_json(self.fit/'protocol.json', original)
+        saved = torch.load(self.fit/'plain/best.pt', weights_only=True)
+        saved['provenance']['config']['epochs'] = 999
+        torch.save(saved, self.fit/'plain/best.pt')
+        with self.assertRaises(ValueError): self.m.audit_fit(self.fit, self.train, self.dev, 'in_sample', self.config)
+
+    def test_replay_accepts_diagnostic_roundoff_but_rejects_prediction_change(self):
+        import shutil
+        reference = self.root/'reference'; shutil.copytree(self.fit, reference)
+        result = json.loads((self.fit/'result.json').read_text())
+        result['variants']['plain']['history'][0]['train_ce'] += 1e-8
+        write_json(self.fit/'result.json', result)
+        self.m.verify_control_replay(self.fit, reference)
+        p = self.fit/'plain/predictions.json'
+        predictions = json.loads(p.read_text()); predictions['dev:0'][0][2] = 2
+        write_json(p, predictions)
+        with self.assertRaises(ValueError): self.m.verify_control_replay(self.fit, reference)
+
+    def test_launch_refuses_unlocked_prior_replay_references(self):
+        launch = self.root/'launch'; launch.mkdir()
+        with patch.object(self.m, 'ROOT', self.root):
+            refs = []
+            for ds in ('twitter2015', 'twitter2017'):
+                d = self.root/'outputs/sentiment_correction_s42_20261018'/ds/'fit'
+                d.mkdir(parents=True)
+                for name in ['result.json']+[f'{v}/{n}.json' for v in ('plain','bounded') for n in ('predictions','best_trained_predictions')]:
+                    p=d/name; p.parent.mkdir(exist_ok=True); p.write_text('{}'); refs.append(p)
+            protocol = dict(code=self.m.code_identity(), input_sha256={}, datasets=['twitter2015','twitter2017'])
+            def save():
+                write_json(launch/'launch.json', protocol)
+                (launch/'launch.sha256').write_text(file_hash(launch/'launch.json'))
+            save()
+            with self.assertRaises(ValueError): self.m.verify_launch(launch)
+            protocol['input_sha256'] = {str(p): file_hash(p) for p in refs}; save()
+            self.m.verify_launch(launch)
+            refs[0].write_text('{"changed":true}')
+            with self.assertRaises(ValueError): self.m.verify_launch(launch)
 
 
 if __name__ == '__main__': unittest.main()
