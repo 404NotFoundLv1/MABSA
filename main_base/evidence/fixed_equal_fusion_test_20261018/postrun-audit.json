@@ -1,0 +1,219 @@
+{
+  "verified_pairs": [
+    {
+      "dataset": "twitter2015",
+      "seed": 42,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 43,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 44,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 24,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 25,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 17,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 16,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 31,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 22,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 27,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 26,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 30,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 28,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 23,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 19,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 42,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 43,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 44,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 24,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 25,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 17,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 16,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 31,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 22,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 27,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 26,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 30,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 28,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 23,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 19,
+      "controls_exact": true,
+      "boundaries_unchanged": true,
+      "effective_visual_cache_fingerprinted": true
+    }
+  ],
+  "count": 30,
+  "summary_sha256": "2b5d3e14a03bfe6bf1d9368a66f4e12b1e7f469b442cbeaa6fbc0bf638fd4e7f",
+  "decision_sha256": "ef6d90acf0abc1bafc0dfbb4cb48d8b875add0a3332d20d9312562c880bd64ba",
+  "parameters_unchanged": true,
+  "test_used_for_selection": false
+}

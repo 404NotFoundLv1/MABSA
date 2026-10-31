@@ -1,0 +1,554 @@
+test_adjacent_begins_are_distinct_aspects (test_aspect_sentiment.AspectSentimentTests.test_adjacent_begins_are_distinct_aspects) ... ok
+test_auxiliary_loss_reaches_encoder_but_never_changes_emissions (test_aspect_sentiment.AspectSentimentTests.test_auxiliary_loss_reaches_encoder_but_never_changes_emissions) ... ok
+test_combined_objective_preserves_sentence_mean_accumulation (test_aspect_sentiment.AspectSentimentTests.test_combined_objective_preserves_sentence_mean_accumulation) ... ok
+test_disabled_branch_and_old_checkpoint_keep_baseline_exact (test_aspect_sentiment.AspectSentimentTests.test_disabled_branch_and_old_checkpoint_keep_baseline_exact) ... ok
+test_enabled_checkpoint_roundtrip (test_aspect_sentiment.AspectSentimentTests.test_enabled_checkpoint_roundtrip) ... ok
+test_invalid_auxiliary_weight_rejected (test_aspect_sentiment.AspectSentimentTests.test_invalid_auxiliary_weight_rejected) ... ok
+test_span_pooling_polarity_mapping_padding_and_sentence_normalization (test_aspect_sentiment.AspectSentimentTests.test_span_pooling_polarity_mapping_padding_and_sentence_normalization) ... ok
+test_training_logs_components_and_reload_dev_without_step_noise (test_aspect_sentiment.AspectSentimentTests.test_training_logs_components_and_reload_dev_without_step_noise) ... ok
+test_context_restores_parameters_buffers_modes_rng_on_error (test_averaging.AveragingTests.test_context_restores_parameters_buffers_modes_rng_on_error) ... ok
+test_ema_formula_no_grad_and_partial_accumulation (test_averaging.AveragingTests.test_ema_formula_no_grad_and_partial_accumulation) ... ok
+test_online_two_epoch_trajectory_is_identical_with_ema_evaluation (test_averaging.AveragingTests.test_online_two_epoch_trajectory_is_identical_with_ema_evaluation) ... ok
+test_conditional_logits_equal_exhaustive_path_score_differences (test_calibrated_fusion.CalibratedFusionTests.test_conditional_logits_equal_exhaustive_path_score_differences) ... ok
+test_empty_decisions_and_empty_calibration (test_calibrated_fusion.CalibratedFusionTests.test_empty_decisions_and_empty_calibration) ... ok
+test_mixture_uses_both_experts_and_preserves_endpoints_and_ties (test_calibrated_fusion.CalibratedFusionTests.test_mixture_uses_both_experts_and_preserves_endpoints_and_ties) ... ok
+test_rejects_nonfinite_scores_bad_temperatures_and_bad_labels (test_calibrated_fusion.CalibratedFusionTests.test_rejects_nonfinite_scores_bad_temperatures_and_bad_labels) ... ok
+test_temperature_recovers_known_optimum_and_does_not_change_argmax (test_calibrated_fusion.CalibratedFusionTests.test_temperature_recovers_known_optimum_and_does_not_change_argmax) ... ok
+test_inference_never_uses_gold_and_zero_residual_preserves_consensus (test_correction_experiment.CorrectionExperimentTests.test_inference_never_uses_gold_and_zero_residual_preserves_consensus) ... ok
+test_reject_split_overlap_seed_identity_and_corruption (test_correction_experiment.CorrectionExperimentTests.test_reject_split_overlap_seed_identity_and_corruption) ... ok
+test_train_reload_and_epoch_zero_fallback_preserve_all_boundaries (test_correction_experiment.CorrectionExperimentTests.test_train_reload_and_epoch_zero_fallback_preserve_all_boundaries) ... {"dataset": "twitter2015", "variant": "plain", "epoch": 0, "dev_f1_pp": 80.0, "train_ce": 0.013385901721448809}
+{"dataset": "twitter2015", "variant": "plain", "epoch": 1, "dev_f1_pp": 80.0, "train_ce": 0.012994453323267364}
+{"dataset": "twitter2015", "variant": "plain", "epoch": 2, "dev_f1_pp": 80.0, "train_ce": 0.012625110705686723}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 0, "dev_f1_pp": 80.0, "train_ce": 0.013385901721448809}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 1, "dev_f1_pp": 80.0, "train_ce": 0.012994482857348832}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 2, "dev_f1_pp": 80.0, "train_ce": 0.01262533726264414}
+ok
+test_null_evidence_exactly_cancels_visual_residual (test_data_model.DataModelTests.test_null_evidence_exactly_cancels_visual_residual) ... ok
+test_real_transformer_visual_attention_and_crf_receive_gradients (test_data_model.DataModelTests.test_real_transformer_visual_attention_and_crf_receive_gradients) ... ok
+test_subwords_special_tokens_and_padding_preserve_word_labels (test_data_model.DataModelTests.test_subwords_special_tokens_and_padding_preserve_word_labels) ... ok
+test_aggregation_refuses_missing_and_wrong_identity_results (test_fixed_fusion_test.FixedFusionTestTests.test_aggregation_refuses_missing_and_wrong_identity_results) ... ok
+test_archive_mismatch_fails_without_success_result (test_fixed_fusion_test.FixedFusionTestTests.test_archive_mismatch_fails_without_success_result) ... ok
+test_locked_parameters_and_requested_identity_reject_changes (test_fixed_fusion_test.FixedFusionTestTests.test_locked_parameters_and_requested_identity_reject_changes) ... ok
+test_real_test_replay_label_independence_and_fresh_output (test_fixed_fusion_test.FixedFusionTestTests.test_real_test_replay_label_independence_and_fresh_output) ... ok
+test_dev_guard_blocks_test_filenames_and_unapproved_aggregate_inputs (test_fusion_experiment.FusionExperimentTests.test_dev_guard_blocks_test_filenames_and_unapproved_aggregate_inputs) ... ok
+test_full_joint_denominator_counts_false_positives_and_missed_gold (test_fusion_experiment.FusionExperimentTests.test_full_joint_denominator_counts_false_positives_and_missed_gold) ... ok
+test_held_out_labels_never_affect_that_folds_parameters (test_fusion_experiment.FusionExperimentTests.test_held_out_labels_never_affect_that_folds_parameters) ... ok
+test_incomplete_duplicate_or_misaligned_runs_rejected (test_fusion_experiment.FusionExperimentTests.test_incomplete_duplicate_or_misaligned_runs_rejected) ... ok
+test_real_model_extraction_exact_replay_and_stale_cache_rejection (test_fusion_experiment.FusionExperimentTests.test_real_model_extraction_exact_replay_and_stale_cache_rejection) ... ok
+test_config_validation_and_real_training_preserve_loss_identity (test_label_smoothing.LabelSmoothingTests.test_config_validation_and_real_training_preserve_loss_identity) ... {"epoch": 1, "train_ce": 0.6314685940742493, "train_loss": 0.6613622903823853, "target": {"joint": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 1.0, "count": 1, "correct": 1}}, "fusion": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 0.0, "count": 1, "correct": 0}}, "matched_sentiment": {"confusion": [[0, 0, 0], [0, 0, 0], [1, 0, 0]], "class_order": ["NEG", "NEU", "POS"], "per_class_f1": [0.0, 0.0, 0.0], "macro_f1": 0.0, "count": 1}, "vs_historical": {"corrected": 0, "regressed": 0, "changed": 0, "still_wrong": 1}, "seconds": 0.011394500732421875, "elapsed_seconds": 0.05190467834472656}
+{"epoch": 2, "train_ce": 0.589885413646698, "train_loss": 0.6227757334709167, "target": {"joint": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 1.0, "count": 1, "correct": 1}}, "fusion": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 0.0, "count": 1, "correct": 0}}, "matched_sentiment": {"confusion": [[0, 0, 0], [0, 0, 0], [1, 0, 0]], "class_order": ["NEG", "NEU", "POS"], "per_class_f1": [0.0, 0.0, 0.0], "macro_f1": 0.0, "count": 1}, "vs_historical": {"corrected": 0, "regressed": 0, "changed": 0, "still_wrong": 1}, "seconds": 0.00572514533996582, "elapsed_seconds": 0.057953834533691406}
+{"epoch": 1, "train_ce": 0.6314685940742493, "train_loss": 0.6314685940742493, "target": {"joint": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 1.0, "count": 1, "correct": 1}}, "fusion": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 0.0, "count": 1, "correct": 0}}, "matched_sentiment": {"confusion": [[0, 0, 0], [0, 0, 0], [1, 0, 0]], "class_order": ["NEG", "NEU", "POS"], "per_class_f1": [0.0, 0.0, 0.0], "macro_f1": 0.0, "count": 1}, "vs_historical": {"corrected": 0, "regressed": 0, "changed": 0, "still_wrong": 1}, "seconds": 0.008071660995483398, "elapsed_seconds": 0.04615950584411621}
+{"epoch": 2, "train_ce": 0.589885413646698, "train_loss": 0.589885413646698, "target": {"joint": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 1.0, "count": 1, "correct": 1}}, "fusion": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 0.0, "count": 1, "correct": 0}}, "matched_sentiment": {"confusion": [[0, 0, 0], [0, 0, 0], [1, 0, 0]], "class_order": ["NEG", "NEU", "POS"], "per_class_f1": [0.0, 0.0, 0.0], "macro_f1": 0.0, "count": 1}, "vs_historical": {"corrected": 0, "regressed": 0, "changed": 0, "still_wrong": 1}, "seconds": 0.005482196807861328, "elapsed_seconds": 0.05196714401245117}
+ok
+test_loss_and_gradient_use_uniform_three_class_targets (test_label_smoothing.LabelSmoothingTests.test_loss_and_gradient_use_uniform_three_class_targets) ... ok
+test_zero_is_exact_old_loss_and_gradient (test_label_smoothing.LabelSmoothingTests.test_zero_is_exact_old_loss_and_gradient) ... ok
+test_confidence_diagnostic_is_for_matched_spans_only (test_label_smoothing_batch.LabelSmoothingBatchTests.test_confidence_diagnostic_is_for_matched_spans_only) ... ok
+test_failed_or_missing_child_cannot_produce_success (test_label_smoothing_batch.LabelSmoothingBatchTests.test_failed_or_missing_child_cannot_produce_success) ... ok
+test_rejects_confounded_or_missing_pairs (test_label_smoothing_batch.LabelSmoothingBatchTests.test_rejects_confounded_or_missing_pairs) ... ok
+test_screen_needs_both_datasets_and_never_promotes_smoke (test_label_smoothing_batch.LabelSmoothingBatchTests.test_screen_needs_both_datasets_and_never_promotes_smoke) ... ok
+test_sigterm_and_child_failure_reap_workers_and_record_failure (test_label_smoothing_batch.LabelSmoothingBatchTests.test_sigterm_and_child_failure_reap_workers_and_record_failure) ... ok
+test_illegal_inside_is_impossible_even_with_extreme_emissions (test_labels_crf.CRFTests.test_illegal_inside_is_impossible_even_with_extreme_emissions) ... ok
+test_padding_has_no_loss_gradient_or_decoding_effect (test_labels_crf.CRFTests.test_padding_has_no_loss_gradient_or_decoding_effect) ... ok
+test_partition_and_viterbi_agree_with_exhaustive_legal_paths (test_labels_crf.CRFTests.test_partition_and_viterbi_agree_with_exhaustive_legal_paths) ... ok
+test_uniform_single_word_partition_excludes_inside (test_labels_crf.CRFTests.test_uniform_single_word_partition_excludes_inside) ... ok
+test_adjacent_aspects_and_last_word_roundtrip (test_labels_crf.LabelTests.test_adjacent_aspects_and_last_word_roundtrip) ... ok
+test_invalid_spans_and_orphan_inside_are_rejected (test_labels_crf.LabelTests.test_invalid_spans_and_orphan_inside_are_rejected) ... ok
+test_default_groups_and_optimizer_updates_match_original (test_llrd.LLRDTests.test_default_groups_and_optimizer_updates_match_original) ... ok
+test_llrd_covers_every_parameter_once_and_assigns_shared_weights (test_llrd.LLRDTests.test_llrd_covers_every_parameter_once_and_assigns_shared_weights) ... ok
+test_unknown_text_parameter_and_invalid_config_fail (test_llrd.LLRDTests.test_unknown_text_parameter_and_invalid_config_fail) ... ok
+test_collect_recomputes_metrics_and_rejects_empty_source_provenance (test_llrd_ema_results.ResultsTests.test_collect_recomputes_metrics_and_rejects_empty_source_provenance) ... ok
+test_incomplete_duplicate_nonfinite_or_mismatched_results_are_rejected (test_llrd_ema_results.ResultsTests.test_incomplete_duplicate_nonfinite_or_mismatched_results_are_rejected) ... ok
+test_paired_deltas_sample_sd_and_common_boundary_metrics (test_llrd_ema_results.ResultsTests.test_paired_deltas_sample_sd_and_common_boundary_metrics) ... ok
+test_detached_launcher_records_failure_without_orphans (test_llrd_ema_schedule.CohortScheduleTests.test_detached_launcher_records_failure_without_orphans) ... ok
+test_hash_change_or_failed_smoke_blocks_launch (test_llrd_ema_schedule.CohortScheduleTests.test_hash_change_or_failed_smoke_blocks_launch) ... ok
+test_resource_drift_during_last_group_blocks_completion (test_llrd_ema_schedule.CohortScheduleTests.test_resource_drift_during_last_group_blocks_completion) ... ok
+test_twelve_jobs_have_isolated_logs_and_train_only (test_llrd_ema_schedule.CohortScheduleTests.test_twelve_jobs_have_isolated_logs_and_train_only) ... ok
+test_both_checkpoint_streams_reload_exactly_and_dev_only_never_opens_or_hashes_test (test_llrd_ema_training.EMATrainingTests.test_both_checkpoint_streams_reload_exactly_and_dev_only_never_opens_or_hashes_test) ... ======== MABSA five-tag CRF | tmpd1ye462r ========
+seed: 42
+epochs: 2
+batch_size: 1
+accumulation: 2
+learning_rate: 2e-05
+head_learning_rate: 0.0001
+warmup_ratio: 0.1
+device: cpu
+model: fusion; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 3 | Dev examples: 3 | Optimizer updates: 4
+==================== Epoch 1 =====================
+Epoch [1/2], Mean Loss: 1.9950
+DEV ONLINE  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+DEV EMA  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+DEV AE  ae_p:50.00 ae_r:100.00 ae_f:66.67
+Saved best Dev checkpoint at epoch 1.
+==================== Epoch 2 =====================
+Epoch [2/2], Mean Loss: 2.2241
+DEV ONLINE  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+DEV EMA  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+DEV AE  ae_p:50.00 ae_r:100.00 ae_f:66.67
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+ok
+test_configs_only_differ_in_layer_decay (test_llrd_ema_training.EMATrainingTests.test_configs_only_differ_in_layer_decay) ... ok
+test_full_training_ema_does_not_change_online_rng_or_weights (test_llrd_ema_training.EMATrainingTests.test_full_training_ema_does_not_change_online_rng_or_weights) ... ======== MABSA five-tag CRF | tmp_hgdwohf ========
+seed: 42
+epochs: 2
+batch_size: 1
+accumulation: 2
+learning_rate: 2e-05
+head_learning_rate: 0.0001
+warmup_ratio: 0.1
+device: cpu
+model: text; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 3 | Dev examples: 3 | Optimizer updates: 4
+==================== Epoch 1 =====================
+Epoch [1/2], Mean Loss: 3.9017
+DEV ONLINE  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+DEV EMA  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+DEV AE  ae_p:0.00 ae_r:0.00 ae_f:0.00
+Saved best Dev checkpoint at epoch 1.
+==================== Epoch 2 =====================
+Epoch [2/2], Mean Loss: 4.1810
+DEV ONLINE  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+DEV EMA  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+DEV AE  ae_p:0.00 ae_r:0.00 ae_f:0.00
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+======== MABSA five-tag CRF | tmp_hgdwohf ========
+seed: 42
+epochs: 2
+batch_size: 1
+accumulation: 2
+learning_rate: 2e-05
+head_learning_rate: 0.0001
+warmup_ratio: 0.1
+device: cpu
+model: text; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 3 | Dev examples: 3 | Optimizer updates: 4
+==================== Epoch 1 =====================
+Epoch [1/2], Mean Loss: 3.9017
+DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+DEV AE  ae_p:0.00 ae_r:0.00 ae_f:0.00
+Saved best Dev checkpoint at epoch 1.
+==================== Epoch 2 =====================
+Epoch [2/2], Mean Loss: 4.1810
+DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+DEV AE  ae_p:0.00 ae_r:0.00 ae_f:0.00
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+ok
+test_online_and_ema_choose_independent_earliest_maxima (test_llrd_ema_training.EMATrainingTests.test_online_and_ema_choose_independent_earliest_maxima) ... ======== MABSA five-tag CRF | tmpp83xzhh6 ========
+seed: 42
+epochs: 3
+batch_size: 1
+accumulation: 2
+learning_rate: 2e-05
+head_learning_rate: 0.0001
+warmup_ratio: 0.1
+device: cpu
+model: text; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 3 | Dev examples: 3 | Optimizer updates: 6
+==================== Epoch 1 =====================
+Epoch [1/3], Mean Loss: 2.4721
+DEV ONLINE  aesc_p:0.00 aesc_r:0.00 aesc_f:40.00
+DEV EMA  aesc_p:0.00 aesc_r:0.00 aesc_f:30.00
+DEV AE  ae_p:0.00 ae_r:0.00 ae_f:0.00
+Saved best Dev checkpoint at epoch 1.
+==================== Epoch 2 =====================
+Epoch [2/3], Mean Loss: 2.3730
+DEV ONLINE  aesc_p:0.00 aesc_r:0.00 aesc_f:60.00
+DEV EMA  aesc_p:0.00 aesc_r:0.00 aesc_f:50.00
+DEV AE  ae_p:0.00 ae_r:0.00 ae_f:0.00
+Saved best Dev checkpoint at epoch 2.
+==================== Epoch 3 =====================
+Epoch [3/3], Mean Loss: 2.5374
+DEV ONLINE  aesc_p:0.00 aesc_r:0.00 aesc_f:60.00
+DEV EMA  aesc_p:0.00 aesc_r:0.00 aesc_f:70.00
+DEV AE  ae_p:0.00 ae_r:0.00 ae_f:0.00
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 2
+BEST DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:60.00
+ok
+test_smoke_requires_cuda_updates_both_streams_and_current_hashes (test_llrd_ema_verification.AdmissionTests.test_smoke_requires_cuda_updates_both_streams_and_current_hashes) ... ok
+test_verifier_refuses_cpu_before_loading_resources (test_llrd_ema_verification.AdmissionTests.test_verifier_refuses_cpu_before_loading_resources) ... ok
+test_training_prints_vlp_steps_and_percent_metrics_without_json_noise (test_logging.LoggingTests.test_training_prints_vlp_steps_and_percent_metrics_without_json_noise) ... ok
+test_log_every_zero_suppresses_all_steps_but_keeps_each_epoch_result (test_multiseed.MultiseedTests.test_log_every_zero_suppresses_all_steps_but_keeps_each_epoch_result) ... ok
+test_statistics_require_all_seeds_and_use_sample_standard_deviation (test_multiseed.MultiseedTests.test_statistics_require_all_seeds_and_use_sample_standard_deviation) ... ok
+test_asset_rejects_missing_changed_image_and_changed_payload (test_ocr.OCRTests.test_asset_rejects_missing_changed_image_and_changed_payload) ... ok
+test_context_receives_gradient_but_never_decode_positions (test_ocr.OCRTests.test_context_receives_gradient_but_never_decode_positions) ... ok
+test_generic_filter_and_configuration_guards (test_ocr.OCRTests.test_generic_filter_and_configuration_guards) ... ok
+test_missing_ocr_fails_and_gold_does_not_change_encoding (test_ocr.OCRTests.test_missing_ocr_fails_and_gold_does_not_change_encoding) ... ok
+test_new_split_requires_identical_ocr_pipeline_and_pinned_original (test_ocr.OCRTests.test_new_split_requires_identical_ocr_pipeline_and_pinned_original) ... ok
+test_suffix_preserves_original_words_and_budget (test_ocr.OCRTests.test_suffix_preserves_original_words_and_budget) ... ok
+test_train_only_reloads_ocr_and_does_not_require_test_file (test_ocr.OCRTests.test_train_only_reloads_ocr_and_does_not_require_test_file) ... ======== MABSA five-tag CRF | tmpdvfcwud8 ========
+seed: 42
+epochs: 1
+batch_size: 1
+accumulation: 8
+learning_rate: 2e-05
+head_learning_rate: 0.0001
+warmup_ratio: 0.1
+device: cpu
+model: fusion; selection: Dev Joint F1; metrics: percent
+OCR context: up to 64 subwords; labels and CRF decode on original words only.
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 1 | Dev examples: 1 | Optimizer updates: 1
+==================== Epoch 1 =====================
+Epoch [1/1], Mean Loss: 2.7697
+DEV  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+DEV AE  ae_p:50.00 ae_r:100.00 ae_f:66.67
+Saved best Dev checkpoint at epoch 1.
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+ok
+test_accumulation_includes_no_ocr_constants_in_sentence_mean (test_ocr_residual.OCRResidualTests.test_accumulation_includes_no_ocr_constants_in_sentence_mean) ... ok
+test_checkpoint_roundtrip_and_baseline_hash_guard (test_ocr_residual.OCRResidualTests.test_checkpoint_roundtrip_and_baseline_hash_guard) ... ok
+test_empty_windows_do_not_update_and_mixed_windows_train (test_ocr_residual.OCRResidualTests.test_empty_windows_do_not_update_and_mixed_windows_train) ... ok
+test_nonbaseline_variant_rejected (test_ocr_residual.OCRResidualTests.test_nonbaseline_variant_rejected) ... ok
+test_original_alignment_and_independent_budget (test_ocr_residual.OCRResidualTests.test_original_alignment_and_independent_budget) ... ok
+test_shuffle_is_bijective_different_content_and_keeps_original_inputs (test_ocr_residual.OCRResidualTests.test_shuffle_is_bijective_different_content_and_keeps_original_inputs) ... ok
+test_tokenizer_and_feature_payload_are_integrity_protected_without_test (test_ocr_residual.OCRResidualTests.test_tokenizer_and_feature_payload_are_integrity_protected_without_test) ... ok
+test_zero_init_eval_mode_gradients_and_no_ocr_after_updates (test_ocr_residual.OCRResidualTests.test_zero_init_eval_mode_gradients_and_no_ocr_after_updates) ... ok
+test_aggregation_rejects_missing_duplicate_and_nonfinite_results (test_ocr_residual_multiseed.ResidualMultiseedTests.test_aggregation_rejects_missing_duplicate_and_nonfinite_results) ... ok
+test_four_jobs_use_correct_seed_output_and_two_gpus (test_ocr_residual_multiseed.ResidualMultiseedTests.test_four_jobs_use_correct_seed_output_and_two_gpus) ... ok
+test_gpu_smoke_accepts_one_empty_accumulation_window (test_ocr_residual_multiseed.ResidualMultiseedTests.test_gpu_smoke_accepts_one_empty_accumulation_window) ... ok
+test_gpu_smoke_rejects_no_training_cpu_or_incomplete_windows (test_ocr_residual_multiseed.ResidualMultiseedTests.test_gpu_smoke_rejects_no_training_cpu_or_incomplete_windows) ... ok
+test_paired_aggregate_and_sample_standard_deviation (test_ocr_residual_multiseed.ResidualMultiseedTests.test_paired_aggregate_and_sample_standard_deviation) ... ok
+test_seed42_default_configuration_unchanged (test_ocr_residual_multiseed.ResidualMultiseedTests.test_seed42_default_configuration_unchanged) ... ok
+test_seed_override_selects_matching_baseline_without_changing_treatment (test_ocr_residual_multiseed.ResidualMultiseedTests.test_seed_override_selects_matching_baseline_without_changing_treatment) ... ok
+test_treatment_checks_ignore_seed_and_paths_but_reject_hyperparameter_changes (test_ocr_residual_multiseed.ResidualMultiseedTests.test_treatment_checks_ignore_seed_and_paths_but_reject_hyperparameter_changes) ... ok
+test_incomplete_fold_set_cannot_be_aggregated (test_oof_correction.OOFFoldIntegrationTests.test_incomplete_fold_set_cannot_be_aggregated) ... ok
+test_real_fold_training_inner_replay_outer_features_and_stale_refusal (test_oof_correction.OOFFoldIntegrationTests.test_real_fold_training_inner_replay_outer_features_and_stale_refusal) ... =========== MABSA five-tag CRF | fold0 ===========
+seed: 42
+epochs: 1
+batch_size: 2
+accumulation: 1
+learning_rate: 0.001
+head_learning_rate: 0.01
+warmup_ratio: 0.1
+device: cpu
+model: fusion; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 10 | Dev examples: 2 | Optimizer updates: 5
+==================== Epoch 1 =====================
+Epoch [1/1], Mean Loss: 2.0150
+DEV  aesc_p:100.00 aesc_r:100.00 aesc_f:100.00
+DEV AE  ae_p:100.00 ae_r:100.00 ae_f:100.00
+Saved best Dev checkpoint at epoch 1.
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:100.00 aesc_r:100.00 aesc_f:100.00
+{"epoch": 1, "train_ce": 2.1036065578460694, "dev": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 2, "gold": 2}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 2, "predicted": 2, "gold": 2}, "sentiment_on_matched": {"accuracy": 0.0, "count": 2, "correct": 0}}, "gold_boundary": {"accuracy": 0.0, "macro_f1": 0.0, "confusion": [[0, 0, 0], [0, 0, 0], [0, 2, 0]], "count": 2}, "delta_joint_f1_pp": -100.0, "seconds": 0.023894786834716797, "elapsed_seconds": 0.0476374626159668}
+ok
+test_three_real_folds_aggregate_fit_audit_and_reject_old_sources (test_oof_correction.OOFFoldIntegrationTests.test_three_real_folds_aggregate_fit_audit_and_reject_old_sources) ... =========== MABSA five-tag CRF | fold0 ===========
+seed: 42
+epochs: 1
+batch_size: 2
+accumulation: 1
+learning_rate: 0.001
+head_learning_rate: 0.01
+warmup_ratio: 0.1
+device: cpu
+model: fusion; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 10 | Dev examples: 2 | Optimizer updates: 5
+==================== Epoch 1 =====================
+Epoch [1/1], Mean Loss: 2.0150
+DEV  aesc_p:100.00 aesc_r:100.00 aesc_f:100.00
+DEV AE  ae_p:100.00 ae_r:100.00 ae_f:100.00
+Saved best Dev checkpoint at epoch 1.
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:100.00 aesc_r:100.00 aesc_f:100.00
+{"epoch": 1, "train_ce": 2.1036065578460694, "dev": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 2, "gold": 2}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 2, "predicted": 2, "gold": 2}, "sentiment_on_matched": {"accuracy": 0.0, "count": 2, "correct": 0}}, "gold_boundary": {"accuracy": 0.0, "macro_f1": 0.0, "confusion": [[0, 0, 0], [0, 0, 0], [0, 2, 0]], "count": 2}, "delta_joint_f1_pp": -100.0, "seconds": 0.023003578186035156, "elapsed_seconds": 0.04525923728942871}
+=========== MABSA five-tag CRF | fold1 ===========
+seed: 42
+epochs: 1
+batch_size: 2
+accumulation: 1
+learning_rate: 0.001
+head_learning_rate: 0.01
+warmup_ratio: 0.1
+device: cpu
+model: fusion; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 10 | Dev examples: 2 | Optimizer updates: 5
+==================== Epoch 1 =====================
+Epoch [1/1], Mean Loss: 2.0150
+DEV  aesc_p:100.00 aesc_r:100.00 aesc_f:100.00
+DEV AE  ae_p:100.00 ae_r:100.00 ae_f:100.00
+Saved best Dev checkpoint at epoch 1.
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:100.00 aesc_r:100.00 aesc_f:100.00
+{"epoch": 1, "train_ce": 2.1036065578460694, "dev": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 2, "gold": 2}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 2, "predicted": 2, "gold": 2}, "sentiment_on_matched": {"accuracy": 0.0, "count": 2, "correct": 0}}, "gold_boundary": {"accuracy": 0.0, "macro_f1": 0.0, "confusion": [[0, 0, 0], [0, 0, 0], [0, 2, 0]], "count": 2}, "delta_joint_f1_pp": -100.0, "seconds": 0.025684118270874023, "elapsed_seconds": 0.051132917404174805}
+=========== MABSA five-tag CRF | fold2 ===========
+seed: 42
+epochs: 1
+batch_size: 2
+accumulation: 1
+learning_rate: 0.001
+head_learning_rate: 0.01
+warmup_ratio: 0.1
+device: cpu
+model: fusion; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 10 | Dev examples: 2 | Optimizer updates: 5
+==================== Epoch 1 =====================
+Epoch [1/1], Mean Loss: 2.0150
+DEV  aesc_p:100.00 aesc_r:100.00 aesc_f:100.00
+DEV AE  ae_p:100.00 ae_r:100.00 ae_f:100.00
+Saved best Dev checkpoint at epoch 1.
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:100.00 aesc_r:100.00 aesc_f:100.00
+{"epoch": 1, "train_ce": 2.1036065578460694, "dev": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 2, "gold": 2}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 2, "predicted": 2, "gold": 2}, "sentiment_on_matched": {"accuracy": 0.0, "count": 2, "correct": 0}}, "gold_boundary": {"accuracy": 0.0, "macro_f1": 0.0, "confusion": [[0, 0, 0], [0, 0, 0], [0, 2, 0]], "count": 2}, "delta_joint_f1_pp": -100.0, "seconds": 0.022654294967651367, "elapsed_seconds": 0.04373598098754883}
+{"dataset": "twitter2015", "variant": "plain", "epoch": 0, "dev_f1_pp": 100.0, "train_ce": 0.8318509918356676}
+{"dataset": "twitter2015", "variant": "plain", "epoch": 1, "dev_f1_pp": 100.0, "train_ce": 0.4939058755408653}
+{"dataset": "twitter2015", "variant": "plain", "epoch": 2, "dev_f1_pp": 100.0, "train_ce": 0.17627502824051355}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 0, "dev_f1_pp": 100.0, "train_ce": 0.8318509918356676}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 1, "dev_f1_pp": 100.0, "train_ce": 0.49676872553512674}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 2, "dev_f1_pp": 100.0, "train_ce": 0.1988945470641449}
+ok
+test_control_cannot_masquerade_as_oof_and_changed_fit_provenance_is_rejected (test_oof_correction.OOFStageReuseTests.test_control_cannot_masquerade_as_oof_and_changed_fit_provenance_is_rejected) ... {"dataset": "twitter2015", "variant": "plain", "epoch": 0, "dev_f1_pp": 80.0, "train_ce": 0.013385901721448809}
+{"dataset": "twitter2015", "variant": "plain", "epoch": 1, "dev_f1_pp": 80.0, "train_ce": 0.012994453323267364}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 0, "dev_f1_pp": 80.0, "train_ce": 0.013385901721448809}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 1, "dev_f1_pp": 80.0, "train_ce": 0.012994482857348832}
+ok
+test_launch_refuses_unlocked_prior_replay_references (test_oof_correction.OOFStageReuseTests.test_launch_refuses_unlocked_prior_replay_references) ... {"dataset": "twitter2015", "variant": "plain", "epoch": 0, "dev_f1_pp": 80.0, "train_ce": 0.013385901721448809}
+{"dataset": "twitter2015", "variant": "plain", "epoch": 1, "dev_f1_pp": 80.0, "train_ce": 0.012994453323267364}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 0, "dev_f1_pp": 80.0, "train_ce": 0.013385901721448809}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 1, "dev_f1_pp": 80.0, "train_ce": 0.012994482857348832}
+ok
+test_replay_accepts_diagnostic_roundoff_but_rejects_prediction_change (test_oof_correction.OOFStageReuseTests.test_replay_accepts_diagnostic_roundoff_but_rejects_prediction_change) ... {"dataset": "twitter2015", "variant": "plain", "epoch": 0, "dev_f1_pp": 80.0, "train_ce": 0.013385901721448809}
+{"dataset": "twitter2015", "variant": "plain", "epoch": 1, "dev_f1_pp": 80.0, "train_ce": 0.012994453323267364}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 0, "dev_f1_pp": 80.0, "train_ce": 0.013385901721448809}
+{"dataset": "twitter2015", "variant": "bounded", "epoch": 1, "dev_f1_pp": 80.0, "train_ce": 0.012994482857348832}
+ok
+test_assignment_ignores_labels_and_input_order (test_oof_data.OOFSplitTests.test_assignment_ignores_labels_and_input_order) ... ok
+test_transitive_duplicates_never_cross_fit_inner_or_outer (test_oof_data.OOFSplitTests.test_transitive_duplicates_never_cross_fit_inner_or_outer) ... ok
+test_freeze_config_defaults_and_rejects_invalid_or_combined_treatments (test_partial_freeze.PartialFreezeTests.test_freeze_config_defaults_and_rejects_invalid_or_combined_treatments) ... ok
+test_frozen_bottom_and_shared_position_weights_survive_real_optimizer_step (test_partial_freeze.PartialFreezeTests.test_frozen_bottom_and_shared_position_weights_survive_real_optimizer_step) ... ok
+test_training_entrypoint_applies_freeze_and_records_integrity (test_partial_freeze.PartialFreezeTests.test_training_entrypoint_applies_freeze_and_records_integrity) ... ======== MABSA five-tag CRF | tmpql_zw2wz ========
+seed: 42
+epochs: 1
+batch_size: 1
+accumulation: 8
+learning_rate: 2e-05
+head_learning_rate: 0.0001
+warmup_ratio: 0.1
+device: cpu
+model: text; selection: Dev Joint F1; metrics: percent
+Text freeze: embeddings + bottom 1/2 layers + ['encoder.rel_embeddings', 'encoder.LayerNorm']; dropout unchanged.
+Frozen parameters: 1256 | Trainable parameters: 912
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 1 | Dev examples: 1 | Optimizer updates: 1
+==================== Epoch 1 =====================
+Epoch [1/1], Mean Loss: 2.9974
+DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+DEV AE  ae_p:0.00 ae_r:0.00 ae_f:0.00
+Saved best Dev checkpoint at epoch 1.
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+ok
+test_zero_is_noop_and_out_of_range_fails_without_mutation (test_partial_freeze.PartialFreezeTests.test_zero_is_noop_and_out_of_range_fails_without_mutation) ... ok
+test_cache_identity_paths_are_relative_to_manifest_not_working_directory (test_project.ProjectTests.test_cache_identity_paths_are_relative_to_manifest_not_working_directory) ... ok
+test_missing_seeds_never_produce_a_complete_mean (test_project.ProjectTests.test_missing_seeds_never_produce_a_complete_mean) ... ok
+test_resolved_config_uses_one_baseline_and_only_local_resources (test_project.ProjectTests.test_resolved_config_uses_one_baseline_and_only_local_resources) ... ok
+test_shared_entrypoint_trains_reloads_and_evaluates_test_with_local_assets (test_project.ProjectTests.test_shared_entrypoint_trains_reloads_and_evaluates_test_with_local_assets) ... ======== MABSA five-tag CRF | tmpdkus5a8d ========
+seed: 25
+epochs: 2
+batch_size: 1
+accumulation: 8
+learning_rate: 2e-05
+head_learning_rate: 0.0001
+warmup_ratio: 0.1
+device: cpu
+model: fusion; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 1 | Dev examples: 1 | Optimizer updates: 2
+==================== Epoch 1 =====================
+Epoch [1/2], Mean Loss: 2.6707
+DEV  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+DEV AE  ae_p:50.00 ae_r:100.00 ae_f:66.67
+Saved best Dev checkpoint at epoch 1.
+==================== Epoch 2 =====================
+Epoch [2/2], Mean Loss: 2.6408
+DEV  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+DEV AE  ae_p:50.00 ae_r:100.00 ae_f:66.67
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+BEST DEV TEST:-----
+BEST DEV--TEST  aesc_p:50.00 aesc_r:100.00 aesc_f:66.67
+TEST AE  ae_p:50.00 ae_r:100.00 ae_f:66.67
+ok
+test_unknown_dataset_and_external_resources_are_rejected (test_project.ProjectTests.test_unknown_dataset_and_external_resources_are_rejected) ... ok
+test_exact_sequence_kl_values_and_all_gradients_with_padding (test_rdrop.CRFConsistencyTests.test_exact_sequence_kl_values_and_all_gradients_with_padding) ... ok
+test_identical_distributions_zero_and_reduced_precision_safe (test_rdrop.CRFConsistencyTests.test_identical_distributions_zero_and_reduced_precision_safe) ... ok
+test_config_rejects_invalid_or_combined_experiments (test_rdrop.PairedTrainingTests.test_config_rejects_invalid_or_combined_experiments) ... ok
+test_disabled_path_exact_outputs_rng_and_gradients (test_rdrop.PairedTrainingTests.test_disabled_path_exact_outputs_rng_and_gradients) ... ok
+test_partial_accumulation_and_epoch_stats (test_rdrop.PairedTrainingTests.test_partial_accumulation_and_epoch_stats) ... ok
+test_real_training_logs_checkpoint_and_single_pass_evaluation (test_rdrop.PairedTrainingTests.test_real_training_logs_checkpoint_and_single_pass_evaluation) ... ======== MABSA five-tag CRF | tmpiyttl6iy ========
+seed: 42
+epochs: 1
+batch_size: 1
+accumulation: 2
+learning_rate: 2e-05
+head_learning_rate: 0.0001
+warmup_ratio: 0.1
+device: cpu
+model: text; selection: Dev Joint F1; metrics: percent
+Loss = mean(two CRF NLLs) + 1 * symmetric sequence KL; sentence mean.
+R-Drop: shared whole-image dropout, independent neural dropout; two training passes, one inference pass.
+Train examples: 3 | Dev examples: 1 | Optimizer updates: 2
+==================== Epoch 1 =====================
+Epoch [1/1], Mean Loss: 3.4564, CRF NLL: 3.3161, Symmetric KL: 0.1404, KL Weight: 1
+DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+DEV AE  ae_p:50.00 ae_r:100.00 ae_f:66.67
+Saved best Dev checkpoint at epoch 1.
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+ok
+test_two_passes_share_visual_mask_average_nll_and_use_sequence_kl (test_rdrop.PairedTrainingTests.test_two_passes_share_visual_mask_average_nll_and_use_sequence_kl) ... ok
+test_visual_override_validation_and_all_null_identity (test_rdrop.PairedTrainingTests.test_visual_override_validation_and_all_null_identity) ... ok
+test_decision_rejects_changed_source_and_partial_existing_directory (test_representation_batch.RepresentationBatchTests.test_decision_rejects_changed_source_and_partial_existing_directory) ... ok
+test_paired_comparison_uses_same_dataset_a_and_marks_smoke (test_representation_batch.RepresentationBatchTests.test_paired_comparison_uses_same_dataset_a_and_marks_smoke) ... ok
+test_read_guard_blocks_test_data_cache_and_results_but_allows_train_dev (test_representation_batch.RepresentationBatchTests.test_read_guard_blocks_test_data_cache_and_results_but_allows_train_dev) ... ok
+test_schedule_is_six_sequential_paired_jobs (test_representation_batch.RepresentationBatchTests.test_schedule_is_six_sequential_paired_jobs) ... ok
+test_diagnostic_counts_shared_errors_without_treating_cues_as_causes (test_representation_experiment.RepresentationExperimentTests.test_diagnostic_counts_shared_errors_without_treating_cues_as_causes) ... ok
+test_fusion_scoring_counts_all_boundaries_and_empty_prediction_sets (test_representation_experiment.RepresentationExperimentTests.test_fusion_scoring_counts_all_boundaries_and_empty_prediction_sets) ... ok
+test_selection_ignores_classifier_metric_and_preserves_earliest_tie (test_representation_experiment.RepresentationExperimentTests.test_selection_ignores_classifier_metric_and_preserves_earliest_tie) ... ok
+test_tiny_training_fusion_selection_full_reload_no_test_and_resume_identity (test_representation_experiment.RepresentationExperimentTests.test_tiny_training_fusion_selection_full_reload_no_test_and_resume_identity) ... {"epoch": 1, "train_ce": 0.8766137957572937, "train_loss": 0.8766137957572937, "target": {"joint": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 1.0, "count": 1, "correct": 1}}, "fusion": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 0.0, "count": 1, "correct": 0}}, "matched_sentiment": {"confusion": [[0, 0, 0], [0, 0, 0], [1, 0, 0]], "class_order": ["NEG", "NEU", "POS"], "per_class_f1": [0.0, 0.0, 0.0], "macro_f1": 0.0, "count": 1}, "vs_historical": {"corrected": 0, "regressed": 0, "changed": 0, "still_wrong": 1}, "seconds": 0.021222352981567383, "elapsed_seconds": 0.07703232765197754}
+{"epoch": 2, "train_ce": 0.7814204692840576, "train_loss": 0.7814204692840576, "target": {"joint": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 1.0, "count": 1, "correct": 1}}, "fusion": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 0.0, "count": 1, "correct": 0}}, "matched_sentiment": {"confusion": [[0, 0, 0], [0, 0, 0], [1, 0, 0]], "class_order": ["NEG", "NEU", "POS"], "per_class_f1": [0.0, 0.0, 0.0], "macro_f1": 0.0, "count": 1}, "vs_historical": {"corrected": 0, "regressed": 0, "changed": 0, "still_wrong": 1}, "seconds": 0.007432460784912109, "elapsed_seconds": 0.08512687683105469}
+ok
+test_wrong_dataset_dev_identity_and_test_path_rejected (test_representation_experiment.RepresentationExperimentTests.test_wrong_dataset_dev_identity_and_test_path_rejected) ... ok
+test_checkpoint_retains_arm_and_loss_and_accepts_legacy_format (test_residual_supervision.ResidualSupervisionTests.test_checkpoint_retains_arm_and_loss_and_accepts_legacy_format) ... ok
+test_config_and_aggregation_reject_invalid_or_mixed_arms (test_residual_supervision.ResidualSupervisionTests.test_config_and_aggregation_reject_invalid_or_mixed_arms) ... ok
+test_direct_loss_supplies_gradient_when_fused_loss_is_saturated (test_residual_supervision.ResidualSupervisionTests.test_direct_loss_supplies_gradient_when_fused_loss_is_saturated) ... ok
+test_supervised_updates_leave_baseline_and_empty_windows_unchanged (test_residual_supervision.ResidualSupervisionTests.test_supervised_updates_leave_baseline_and_empty_windows_unchanged) ... ok
+test_text_control_ignores_ocr_content_with_identical_capacity_and_bypass (test_residual_supervision.ResidualSupervisionTests.test_text_control_ignores_ocr_content_with_identical_capacity_and_bypass) ... ok
+test_text_memory_excludes_special_and_padded_tokens_and_obeys_budget (test_residual_supervision.ResidualSupervisionTests.test_text_memory_excludes_special_and_padded_tokens_and_obeys_budget) ... ok
+test_zero_aux_weight_preserves_old_outputs_and_training_loss (test_residual_supervision.ResidualSupervisionTests.test_zero_aux_weight_preserves_old_outputs_and_training_loss) ... ok
+test_checkpoint_reload_reproduces_emissions_and_predictions (test_runtime.RuntimeTests.test_checkpoint_reload_reproduces_emissions_and_predictions) ... ok
+test_limited_training_counts_partial_epoch_and_evaluation_records_identity (test_runtime.RuntimeTests.test_limited_training_counts_partial_epoch_and_evaluation_records_identity) ... ======== MABSA five-tag CRF | tmp0ctlzr0_ ========
+seed: 42
+epochs: 3
+batch_size: 1
+accumulation: 2
+learning_rate: 2e-05
+head_learning_rate: 0.0001
+warmup_ratio: 0.1
+device: cpu
+model: text; selection: Dev Joint F1; metrics: percent
+Step counts training mini-batches; Loss is mean CRF NLL per sentence.
+Train examples: 3 | Dev examples: 1 | Optimizer updates: 1
+==================== Epoch 1 =====================
+Epoch [1/3], Mean Loss: 4.6473
+DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+DEV AE  ae_p:50.00 ae_r:100.00 ae_f:66.67
+Saved best Dev checkpoint at epoch 1.
+======= Training complete in: 0.00 minutes =======
+BEST DEV:-----
+Best epoch: 1
+BEST DEV  aesc_p:0.00 aesc_r:0.00 aesc_f:0.00
+ok
+test_missing_gold_is_rejected_but_empty_gold_is_valid (test_runtime.RuntimeTests.test_missing_gold_is_rejected_but_empty_gold_is_valid) ... ok
+test_partial_accumulation_matches_sentence_mean_updates (test_runtime.RuntimeTests.test_partial_accumulation_matches_sentence_mean_updates) ... ok
+test_unknown_or_invalid_config_fails_before_training (test_runtime.RuntimeTests.test_unknown_or_invalid_config_fails_before_training) ... ok
+test_group_barrier_and_failed_worker_do_not_skip_remaining_groups (test_schedule.ScheduleTests.test_group_barrier_and_failed_worker_do_not_skip_remaining_groups) ... Starting group 1/3: seeds [20]
+Finished group 1/3
+Starting group 2/3: seeds [21]
+Finished group 2/3
+Starting group 3/3: seeds [22]
+Finished group 3/3
+ok
+test_interrupt_and_termination_cleanup_all_workers (test_schedule.ScheduleTests.test_interrupt_and_termination_cleanup_all_workers) ... ok
+test_seeds_are_grouped_and_both_datasets_receive_each_seed (test_schedule.ScheduleTests.test_seeds_are_grouped_and_both_datasets_receive_each_seed) ... ok
+test_bounded_correction_can_override_shared_wrong_label (test_sentiment_correction.SentimentCorrectionTests.test_bounded_correction_can_override_shared_wrong_label) ... ok
+test_empty_aspects_and_invalid_variant (test_sentiment_correction.SentimentCorrectionTests.test_empty_aspects_and_invalid_variant) ... ok
+test_real_multimodal_extraction_is_gold_independent_and_cleans_hooks (test_sentiment_correction.SentimentCorrectionTests.test_real_multimodal_extraction_is_gold_independent_and_cleans_hooks) ... ok
+test_zero_identity_ties_and_no_encoder_gradients (test_sentiment_correction.SentimentCorrectionTests.test_zero_identity_ties_and_no_encoder_gradients) ... ok
+test_emission_dimension_must_match_scheme (test_seven_labels_crf.SevenCRFTests.test_emission_dimension_must_match_scheme) ... ok
+test_expanded_five_parameters_preserve_every_legal_path_and_padded_likelihood (test_seven_labels_crf.SevenCRFTests.test_expanded_five_parameters_preserve_every_legal_path_and_padded_likelihood) ... ok
+test_gold_constraints_cover_every_transition_and_ignore_padding (test_seven_labels_crf.SevenCRFTests.test_gold_constraints_cover_every_transition_and_ignore_padding) ... ok
+test_nonzero_partition_viterbi_and_gradients_match_exhaustive_paths (test_seven_labels_crf.SevenCRFTests.test_nonzero_partition_viterbi_and_gradients_match_exhaustive_paths) ... ok
+test_padding_and_single_word_have_finite_gradients (test_seven_labels_crf.SevenCRFTests.test_padding_and_single_word_have_finite_gradients) ... ok
+test_uniform_single_word_partition_has_only_four_start_states (test_seven_labels_crf.SevenCRFTests.test_uniform_single_word_partition_has_only_four_start_states) ... ok
+test_wrong_polarity_is_impossible_even_with_extreme_emissions (test_seven_labels_crf.SevenCRFTests.test_wrong_polarity_is_impossible_even_with_extreme_emissions) ... ok
+test_every_entrypoint_rejects_unknown_schemes (test_seven_labels_crf.SevenLabelTests.test_every_entrypoint_rejects_unknown_schemes) ... ok
+test_literal_roundtrip_preserves_polarity_and_adjacent_aspects (test_seven_labels_crf.SevenLabelTests.test_literal_roundtrip_preserves_polarity_and_adjacent_aspects) ... ok
+test_scheme_vocabulary_keeps_default_five_and_adds_seven (test_seven_labels_crf.SevenLabelTests.test_scheme_vocabulary_keeps_default_five_and_adds_seven) ... ok
+test_seven_keeps_span_validation (test_seven_labels_crf.SevenLabelTests.test_seven_keeps_span_validation) ... ok
+test_seven_rejects_orphan_wrong_polarity_and_invalid_inside_tags (test_seven_labels_crf.SevenLabelTests.test_seven_rejects_orphan_wrong_polarity_and_invalid_inside_tags) ... ok
+test_existing_optional_branches_can_consume_seven_tags (test_seven_model.SevenModelTests.test_existing_optional_branches_can_consume_seven_tags) ... ok
+test_expansion_preserves_common_initial_parameters_rng_and_sequence_scores (test_seven_model.SevenModelTests.test_expansion_preserves_common_initial_parameters_rng_and_sequence_scores) ... ok
+test_inside_polarities_receive_distinct_finite_gradients_and_learn_independently (test_seven_model.SevenModelTests.test_inside_polarities_receive_distinct_finite_gradients_and_learn_independently) ... ok
+test_model_rejects_invalid_label_schemes (test_seven_model.SevenModelTests.test_model_rejects_invalid_label_schemes) ... ok
+test_audit_roundtrip_counts_inside_tags_for_each_polarity (test_seven_pipeline.SevenPipelineTests.test_audit_roundtrip_counts_inside_tags_for_each_polarity) ... ok
+test_checkpoint_format_tags_and_schema_must_agree (test_seven_pipeline.SevenPipelineTests.test_checkpoint_format_tags_and_schema_must_agree) ... ok
+test_evaluation_decodes_inside_polarity_without_gold_inputs (test_seven_pipeline.SevenPipelineTests.test_evaluation_decodes_inside_polarity_without_gold_inputs) ... ok
+test_invalid_schema_is_rejected_even_for_an_empty_dataset (test_seven_pipeline.SevenPipelineTests.test_invalid_schema_is_rejected_even_for_an_empty_dataset) ... ok
+test_legacy_v1_without_schema_still_loads_without_rewriting_metadata (test_seven_pipeline.SevenPipelineTests.test_legacy_v1_without_schema_still_loads_without_rewriting_metadata) ... ok
+test_multitoken_polarities_subwords_and_padding_use_selected_schema (test_seven_pipeline.SevenPipelineTests.test_multitoken_polarities_subwords_and_padding_use_selected_schema) ... ok
+test_real_seven_training_reload_metrics_and_auxiliary_provenance (test_seven_pipeline.SevenPipelineTests.test_real_seven_training_reload_metrics_and_auxiliary_provenance) ... ok
+test_seven_checkpoint_export_uses_model_schema_over_stale_run_config (test_seven_pipeline.SevenPipelineTests.test_seven_checkpoint_export_uses_model_schema_over_stale_run_config) ... ok
+test_inference_ignores_gold_and_original_polarities_and_keeps_empty_ids (test_target_context.TargetContextTests.test_inference_ignores_gold_and_original_polarities_and_keeps_empty_ids) ... ok
+test_repeated_multisubword_target_marks_requested_occurrence (test_target_context.TargetContextTests.test_repeated_multisubword_target_marks_requested_occurrence) ... ok
+test_trainable_encoder_and_portable_checkpoint (test_target_context.TargetContextTests.test_trainable_encoder_and_portable_checkpoint) ... ok
+test_real_training_full_dev_reload_and_fresh_output (test_target_context_training.TargetTrainingTests.test_real_training_full_dev_reload_and_fresh_output) ... {"epoch": 1, "train_ce": 1.2130078077316284, "dev": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 0.0, "count": 1, "correct": 0}}, "gold_boundary": {"accuracy": 0.0, "macro_f1": 0.0, "confusion": [[0, 0, 0], [0, 0, 0], [0, 1, 0]], "count": 1}, "delta_joint_f1_pp": 0.0, "seconds": 0.008634567260742188, "elapsed_seconds": 0.051947832107543945}
+{"epoch": 2, "train_ce": 1.0901603698730469, "dev": {"joint": {"precision": 0.0, "recall": 0.0, "f1": 0.0, "tp": 0, "predicted": 1, "gold": 1}, "mate": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 1, "predicted": 1, "gold": 1}, "sentiment_on_matched": {"accuracy": 0.0, "count": 1, "correct": 0}}, "gold_boundary": {"accuracy": 0.0, "macro_f1": 0.0, "confusion": [[0, 0, 0], [0, 0, 0], [0, 1, 0]], "count": 1}, "delta_joint_f1_pp": 0.0, "seconds": 0.006247282028198242, "elapsed_seconds": 0.05850839614868164}
+ok
+test_selection_uses_primary_metric_and_earliest_tie (test_target_context_training.TargetTrainingTests.test_selection_uses_primary_metric_and_earliest_tie) ... ok
+test_stale_baseline_and_test_inputs_are_rejected (test_target_context_training.TargetTrainingTests.test_stale_baseline_and_test_inputs_are_rejected) ... ok
+test_context_mask_empty_rows_and_masked_values_do_not_influence_attention (test_target_representation.RepresentationTests.test_context_mask_empty_rows_and_masked_values_do_not_influence_attention) ... ok
+test_gold_and_input_polarity_do_not_change_inference_features (test_target_representation.RepresentationTests.test_gold_and_input_polarity_do_not_change_inference_features) ... ok
+test_marker_control_matches_legacy_initialization_logits_and_gradients (test_target_representation.RepresentationTests.test_marker_control_matches_legacy_initialization_logits_and_gradients) ... ok
+test_repeated_target_equal_word_weights_unknown_context_and_padding (test_target_representation.RepresentationTests.test_repeated_target_equal_word_weights_unknown_context_and_padding) ... ok
+test_variants_receive_gradients_and_checkpoint_replays_exactly (test_target_representation.RepresentationTests.test_variants_receive_gradients_and_checkpoint_replays_exactly) ... ok
+test_disabled_and_old_checkpoints_have_no_gate_parameters (test_visual_gate.VisualGateTests.test_disabled_and_old_checkpoints_have_no_gate_parameters) ... ok
+test_epoch_gate_statistics_exclude_padding (test_visual_gate.VisualGateTests.test_epoch_gate_statistics_exclude_padding) ... ok
+test_forced_null_and_visual_dropout_cancel_gate_effect (test_visual_gate.VisualGateTests.test_forced_null_and_visual_dropout_cancel_gate_effect) ... ok
+test_gate_and_both_modalities_receive_crf_gradients (test_visual_gate.VisualGateTests.test_gate_and_both_modalities_receive_crf_gradients) ... ok
+test_gate_checkpoint_roundtrip (test_visual_gate.VisualGateTests.test_gate_checkpoint_roundtrip) ... ok
+test_gate_endpoints_preserve_null_text_branch_and_original_fusion (test_visual_gate.VisualGateTests.test_gate_endpoints_preserve_null_text_branch_and_original_fusion) ... ok
+test_gold_changes_loss_but_not_gate_or_emissions (test_visual_gate.VisualGateTests.test_gold_changes_loss_but_not_gate_or_emissions) ... ok
+test_initial_gate_interpolates_each_word_and_uses_only_crf_loss (test_visual_gate.VisualGateTests.test_initial_gate_interpolates_each_word_and_uses_only_crf_loss) ... ok
+test_invalid_gate_configuration_rejected (test_visual_gate.VisualGateTests.test_invalid_gate_configuration_rejected) ... ok
+test_all_padding_is_rejected_instead_of_producing_nan (test_word_context.WordContextTests.test_all_padding_is_rejected_instead_of_producing_nan) ... ok
+test_context_reads_other_valid_words_and_ignores_padding (test_word_context.WordContextTests.test_context_reads_other_valid_words_and_ignores_padding) ... ok
+test_crf_training_activates_zero_head_then_context_parameters (test_word_context.WordContextTests.test_crf_training_activates_zero_head_then_context_parameters) ... ok
+test_each_attention_head_uses_its_own_distance_bias (test_word_context.WordContextTests.test_each_attention_head_uses_its_own_distance_bias) ... ok
+test_force_null_masks_real_images_for_the_context_branch_too (test_word_context.WordContextTests.test_force_null_masks_real_images_for_the_context_branch_too) ... ok
+test_full_training_records_module_and_reloads_dev_without_step_logs (test_word_context.WordContextTests.test_full_training_records_module_and_reloads_dev_without_step_logs) ... ok
+test_initial_residual_preserves_shared_parameters_rng_and_training_scores (test_word_context.WordContextTests.test_initial_residual_preserves_shared_parameters_rng_and_training_scores) ... ok
+test_invalid_sizes_and_unstudied_combinations_are_rejected (test_word_context.WordContextTests.test_invalid_sizes_and_unstudied_combinations_are_rejected) ... ok
+test_learned_residual_survives_reload_and_predictions_do_not_read_gold (test_word_context.WordContextTests.test_learned_residual_survives_reload_and_predictions_do_not_read_gold) ... ok
+test_old_checkpoint_without_context_fields_keeps_baseline_predictions (test_word_context.WordContextTests.test_old_checkpoint_without_context_fields_keeps_baseline_predictions) ... ok
+test_relative_key_minus_query_distance_is_signed_and_clipped (test_word_context.WordContextTests.test_relative_key_minus_query_distance_is_signed_and_clipped) ... ok
+
+----------------------------------------------------------------------
+Ran 195 tests in 29.556s
+
+OK

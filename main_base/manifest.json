@@ -1,0 +1,85 @@
+{
+  "format": "mact_main_base_backup_v1",
+  "date": "2026-10-31",
+  "model": "MACT + DeBERTa-v3-base target-marker classifier",
+  "parameters": {
+    "temperature_base": 1.0,
+    "temperature_target": 1.0,
+    "alpha": 0.5
+  },
+  "source_commit_before_backup": "10b2c525c079625df5ade48c643ed297c9e3213e",
+  "selection": "Original MACT Dev selection; historical marker selected by classifier-only predicted-boundary Dev Joint F1. Fusion-Dev-selected controls are distinct.",
+  "selected_checkpoint_pairs": [
+    {
+      "dataset": "twitter2015",
+      "seed": 26,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed26",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed26/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed26/best.pt",
+      "baseline_sha256": "45c4007c0152655b132f488745d3321dfee9e62a9fad7096362e9cdb031a0a7d",
+      "target_sha256": "4e290df38bfe0e11d3cc1217b27c4e8b2c7769d8aa54f483c48f255533c132e2",
+      "config_sha256": "5231383b62a4665f3899ab06b73f954c759f6862192c132db72d929f74768deb",
+      "target_epoch": 29,
+      "test_joint": {
+        "precision": 0.6990566037735849,
+        "recall": 0.7145612343297975,
+        "f1": 0.7067238912732474,
+        "tp": 741,
+        "predicted": 1060,
+        "gold": 1037
+      },
+      "weight_bytes": {
+        "baseline_checkpoint": 739083142,
+        "target_checkpoint": 735093502
+      }
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 44,
+      "run": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2017/seed44",
+      "baseline_checkpoint": "/home/whj/reproject/mact/outputs/llrd_ema_s42_43_44_20261016/uniform/twitter2017/seed44/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2017/seed44/best.pt",
+      "baseline_sha256": "d33e2664a24d1fa5687eb13b5486191cf69615471c480e5bcd3129c7223f469c",
+      "target_sha256": "7cec5301f424f3fc360364e5885055e4b9aec167e2936544bc32528e52c4d47f",
+      "config_sha256": "72528c44ec622d9848d05d0b8e2fa53c5585960758c97b35ff71fc42ac763af1",
+      "target_epoch": 13,
+      "test_joint": {
+        "precision": 0.7058823529411765,
+        "recall": 0.7196110210696921,
+        "f1": 0.7126805778491172,
+        "tp": 888,
+        "predicted": 1258,
+        "gold": 1234
+      },
+      "weight_bytes": {
+        "baseline_checkpoint": 739083718,
+        "target_checkpoint": 735093566
+      }
+    }
+  ],
+  "cohort": {
+    "datasets": [
+      "twitter2015",
+      "twitter2017"
+    ],
+    "seeds": [
+      42,
+      43,
+      44,
+      24,
+      25,
+      17,
+      16,
+      31,
+      22,
+      27,
+      26,
+      30,
+      28,
+      23,
+      19
+    ]
+  },
+  "weights_in_git": false,
+  "remote_backup_verified": false
+}

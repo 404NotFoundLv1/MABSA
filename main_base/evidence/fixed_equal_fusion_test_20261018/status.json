@@ -1,0 +1,9 @@
+{
+  "state": "completed",
+  "verified_pairs": 30,
+  "test_evaluated": true,
+  "parameters_unchanged": true,
+  "test_used_for_selection": false,
+  "report": "SUMMARY.txt",
+  "audit": "postrun-audit.json"
+}

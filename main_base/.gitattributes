@@ -1,0 +1,4 @@
+# Preserve archived evidence byte-for-byte, including its original CSV CRLF.
+evidence/** -text -diff -whitespace
+# unittest output contains separator lines resembling conflict markers.
+verification-tests.log -text -diff

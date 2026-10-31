@@ -1,0 +1,336 @@
+{
+  "format": "mact_fixed_equal_test_v1",
+  "parameters": {
+    "temperature_base": 1.0,
+    "temperature_target": 1.0,
+    "alpha": 0.5
+  },
+  "datasets": [
+    "twitter2015",
+    "twitter2017"
+  ],
+  "seeds": [
+    42,
+    43,
+    44,
+    24,
+    25,
+    17,
+    16,
+    31,
+    22,
+    27,
+    26,
+    30,
+    28,
+    23,
+    19
+  ],
+  "models": [
+    {
+      "dataset": "twitter2015",
+      "seed": 42,
+      "run": "/home/whj/reproject/mact/outputs/target_context_s42_20261017/twitter2015/seed42",
+      "baseline_checkpoint": "/home/whj/reproject/mact/outputs/llrd_ema_s42_43_44_20261016/uniform/twitter2015/seed42/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_s42_20261017/twitter2015/seed42/best.pt",
+      "baseline_sha256": "88547009ffa9225b216bbb44497f0ea0289b59e23a1ae5b040c4f86aeade2725",
+      "target_sha256": "aadd41d208d840f819b41b6d729db1c887fe910455e9f2d8b89a4ec9a20dc6c5",
+      "config_sha256": "9b79d323e119bc369dd36b229534757587419fd424068dbe1e8d37b0dbc1b5d2"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 43,
+      "run": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2015/seed43",
+      "baseline_checkpoint": "/home/whj/reproject/mact/outputs/llrd_ema_s42_43_44_20261016/uniform/twitter2015/seed43/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2015/seed43/best.pt",
+      "baseline_sha256": "4cb8df1355842797f3c03cebb55fb5bb1c3ead5c82c2302b2e694b9ef73f2c58",
+      "target_sha256": "e007beb2a206110bd55a3c392a3abab4e52288406ef2cd22bf76ae6bce7a1602",
+      "config_sha256": "8d1154d7cc42250252018a3bcdcace6ad2086b0a901f6ca8e8ebe102b05006dc"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 44,
+      "run": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2015/seed44",
+      "baseline_checkpoint": "/home/whj/reproject/mact/outputs/llrd_ema_s42_43_44_20261016/uniform/twitter2015/seed44/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2015/seed44/best.pt",
+      "baseline_sha256": "84ebef0f43bbcca3433329e61ee7751e2fd14703504672d70870631f4d542e24",
+      "target_sha256": "fb895db6fe1cd7b8698efd6176b05a506a58a576e357132c37885e9bfc76a2d7",
+      "config_sha256": "0ab535fb2f91561a8f9230c9a3fa79045f07c9a0a0283b520ec8a39fc75fc2c7"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 24,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed24",
+      "baseline_checkpoint": "/home/whj/reproject/mact/reference/runs/twitter2015/seed24/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed24/best.pt",
+      "baseline_sha256": "950af6aff05a190e1d8c36dcf0fac3f7046d06529abd4f300f7eeae611644099",
+      "target_sha256": "29ba035a09bd7b5af7ddbe090813e7f2b8d065cb3c1f90abaf8b3618a08279e4",
+      "config_sha256": "e5501add22cc892e56fdbf0d5474f0aae4da5642fd4ea61cea91d5e548e7224a"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 25,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed25",
+      "baseline_checkpoint": "/home/whj/reproject/mact/reference/runs/twitter2015/seed25/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed25/best.pt",
+      "baseline_sha256": "0b826c63175e1baca7638962160a648ca967f7b31eee0db467b4a148e2a95961",
+      "target_sha256": "8db0ac8a22fe64584ea5562825f070766a85faee0527474f6ffda554e5bb9526",
+      "config_sha256": "1ce414ad142a66155a640f55663fd108b4687d41499c0c3ad1fd69f2c2e41070"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 17,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed17",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed17/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed17/best.pt",
+      "baseline_sha256": "602024cfad1d14f6297df0b349eb2f7ddfe698346ab44e98ccff37236bc9006b",
+      "target_sha256": "cdc57ce6aafb1c6402eae3fc30864e75589faae917b210d9cf7ce5208b14a55c",
+      "config_sha256": "fa0a7cf34c7ac282a925de6cf12c7a98fdece744258205b47be554a2b16dfa81"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 16,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed16",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed16/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed16/best.pt",
+      "baseline_sha256": "050dc5fff85e9a8301f69f1e3d68c2a8bffd4f57bd4b623ffa98beeabff8548f",
+      "target_sha256": "65c6dcec1e21608f6e1b38db05c8897bf6c4142114bb94b992eebbca93bd709d",
+      "config_sha256": "29dd51e1f9d10ece29cda9420f33cdde376c60626dd3731899b11bf9f32e80d0"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 31,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed31",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed31/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed31/best.pt",
+      "baseline_sha256": "48f65877c9ec805ddc8e94ad69fa7e423992351324dc83bb94c29072d81c14f8",
+      "target_sha256": "497c6149f69539fd423246dd6d9cfac1797091d3c266bc21253cb4fe49c195ec",
+      "config_sha256": "dca250045488ce0dee0ac3d38a118fa911f78089b526bf7bff1d1cdf95c5da9c"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 22,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed22",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed22/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed22/best.pt",
+      "baseline_sha256": "a8f8a419415af7701ff8c25df47afbf874580fd3585fd6fe134e0e53e83fa0cc",
+      "target_sha256": "2b15827cc08cf4438601eec048e763e62e880897deadf94f804907bca56343aa",
+      "config_sha256": "3a325299414dfe5e698796bf2b0dce6ece8a92ccd576d391e73d036c0b3a440b"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 27,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed27",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed27/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed27/best.pt",
+      "baseline_sha256": "0872af34b1d50e78db57c215f9d1a00e6d4d329bf22d1096d6a7d347643c6784",
+      "target_sha256": "ee3bc4dd9231f854b68ff6963dae849f4726b0ee99fdc15e49f29cd6b12adfb3",
+      "config_sha256": "d996d4bc170a6b6cce555627df2e948776be8439fbba37d45a7c0ac26108a60e"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 26,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed26",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed26/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed26/best.pt",
+      "baseline_sha256": "45c4007c0152655b132f488745d3321dfee9e62a9fad7096362e9cdb031a0a7d",
+      "target_sha256": "4e290df38bfe0e11d3cc1217b27c4e8b2c7769d8aa54f483c48f255533c132e2",
+      "config_sha256": "5231383b62a4665f3899ab06b73f954c759f6862192c132db72d929f74768deb"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 30,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed30",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed30/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed30/best.pt",
+      "baseline_sha256": "a1dc5b13e335fcaa2a6970a4f582e345b5763e4ce73bcc980d933a6dae6b64fb",
+      "target_sha256": "890491eb3ae1aa9965e38a8e3d67f3f7b5851d2c65efda1191062a7b47c5fd53",
+      "config_sha256": "6db8e210c9d021109fc91c7fa217c877d57c68b5282684426b6e11657809ac0e"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 28,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed28",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed28/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed28/best.pt",
+      "baseline_sha256": "4ec7f72d26021560a6ad2218995293bd755fd59bbc689e868870d92fbe8d7942",
+      "target_sha256": "9ebc3337b6fbef5506b1dd5fd324745881894b4f420d8e1e0ca6b57f224ec420",
+      "config_sha256": "96c08ed3e135c19bb5ea4f4597741a65e9286fe8c834d324a18f6c6d2e01ac08"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 23,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed23",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed23/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed23/best.pt",
+      "baseline_sha256": "660e4ecc1846c5cf6cf48b615968c924e8f30ac0e56a5efdb53e08ed4596785d",
+      "target_sha256": "c4eec385dd9a2074b5d9074e6d741ebc6dfb04d247134a778a514a732dd9c32a",
+      "config_sha256": "1f0213c27e2190254986e60d04223e43c7d19c3909a999ce53ff086ad5e9b361"
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 19,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed19",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2015/seed19/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2015/seed19/best.pt",
+      "baseline_sha256": "50afd7e43e3f98893f18bd9eacf5277767b8c6a3b7b7fe1849143f418302af34",
+      "target_sha256": "caaf0b4dea05f5a132df1d635fc4e26b1b21fad9f0cec42e19c0adde12d0a8aa",
+      "config_sha256": "87cebc3e93ab246fe9f6b5d0425e363af69729419d30dc9f19a81c2cb7ee04b9"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 42,
+      "run": "/home/whj/reproject/mact/outputs/target_context_s42_20261017/twitter2017/seed42",
+      "baseline_checkpoint": "/home/whj/reproject/mact/outputs/llrd_ema_s42_43_44_20261016/uniform/twitter2017/seed42/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_s42_20261017/twitter2017/seed42/best.pt",
+      "baseline_sha256": "9b9163c28bd4d45fe3b4f2ddfba4a1edb064f1b7f48eefd61832f566db0d9446",
+      "target_sha256": "86f6d3bf323dd3da4f2c4f7b57bfa1ff04f3f899b8dee29de6c79c8cdaf0ba7f",
+      "config_sha256": "75bbff9fcb6d310e6cf3025f4891ea0e42dde335ac1d21176d8ad7d0df968599"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 43,
+      "run": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2017/seed43",
+      "baseline_checkpoint": "/home/whj/reproject/mact/outputs/llrd_ema_s42_43_44_20261016/uniform/twitter2017/seed43/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2017/seed43/best.pt",
+      "baseline_sha256": "64ff1a739cb1384d0043f55339cc1afb85b0bfc64d6f27675e5208acdf3ad9fb",
+      "target_sha256": "03c76fb263426232d9ec5da434973ff22902e86dad2fb8cfae02be55913a38e2",
+      "config_sha256": "33c38f8f84ba13a4d2216ec81c6bd07b72aaa65d716fbaf76f31a36add97e1ea"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 44,
+      "run": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2017/seed44",
+      "baseline_checkpoint": "/home/whj/reproject/mact/outputs/llrd_ema_s42_43_44_20261016/uniform/twitter2017/seed44/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_s43_44_20261017/twitter2017/seed44/best.pt",
+      "baseline_sha256": "d33e2664a24d1fa5687eb13b5486191cf69615471c480e5bcd3129c7223f469c",
+      "target_sha256": "7cec5301f424f3fc360364e5885055e4b9aec167e2936544bc32528e52c4d47f",
+      "config_sha256": "72528c44ec622d9848d05d0b8e2fa53c5585960758c97b35ff71fc42ac763af1"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 24,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed24",
+      "baseline_checkpoint": "/home/whj/reproject/mact/reference/runs/twitter2017/seed24/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed24/best.pt",
+      "baseline_sha256": "fe34f1d0642acd5ac650f5657213515dee22089c203433ca4c02544a06b3d83a",
+      "target_sha256": "85675f692768f0c4c1df69c26076ed74ee58ddb57564234073c2a514dd0fbaf8",
+      "config_sha256": "5771643a558bb673c391133e0c015217ece32e99971da02c26ed2795c15fc4b2"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 25,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed25",
+      "baseline_checkpoint": "/home/whj/reproject/mact/reference/runs/twitter2017/seed25/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed25/best.pt",
+      "baseline_sha256": "32ecc3b044ec97f949265340ad2553611bf840a9188fa393a5910bfd58dfc627",
+      "target_sha256": "6b8356fc87fec7dcf43f8b540fb2b43eb485cd602ea5bf2567915afdad89b62c",
+      "config_sha256": "385205c4f9bd283dd20985910895f6e31a6a2b2342c2830a36e8e08d120e9753"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 17,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed17",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed17/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed17/best.pt",
+      "baseline_sha256": "ff89201f941d3b225561785311f380a9bce014b0724df603c548adc960a7073d",
+      "target_sha256": "ab1c663880532cc94fc3747d44474fffe6c2d60a308c632f4544e3b18fac5d22",
+      "config_sha256": "9619256ef4e19357723895cf7b47bac6a0023722f9276bbf1fbffdb0dae005b3"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 16,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed16",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed16/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed16/best.pt",
+      "baseline_sha256": "cbfc591d973955f6e12de8500f3fde7c4b9f1b1b62ac088954c18930de30220f",
+      "target_sha256": "54d7cae2a365a4ed8c792f95bf3f9c410a40f2a7320a8de5571cbcb5a89f1cbf",
+      "config_sha256": "da667c0956e773a7c7c97c45cc4a4823a4c6e2d9fa77df7682e8c7c4cacf09e8"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 31,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed31",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed31/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed31/best.pt",
+      "baseline_sha256": "332d61b6835bc4f1b9a01da08b423cce8629c61fb0cbadae9d28d48588f8d524",
+      "target_sha256": "0c8c8dc89a6e3f49fae6490e0f33181ba5e2af65c35a88f81e174416c307244c",
+      "config_sha256": "62404b21cc2578cb6a8f18293525196a6d61390fa6bc3733d29cae83f2b15401"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 22,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed22",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed22/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed22/best.pt",
+      "baseline_sha256": "b7459dae82272fdf95af57bcfc0335858433cfc342d77825e1930b1c3ca010b4",
+      "target_sha256": "abf1bbccb37c518dc143106c7c7d85097de4fdfdb38c23c08ba9e0c9f87212ae",
+      "config_sha256": "cf6c963f6dac25e103e1b426a6f7d7e2bf05c0d49805ce9ae1322acac8f5270e"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 27,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed27",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed27/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed27/best.pt",
+      "baseline_sha256": "0479488504c82036d6020cee89d38b0242560a2ca10a5d5e768bfa6d7f772fb2",
+      "target_sha256": "822976fb0aa4c3b7c6106692239b9a4d7b9e325f6cdad690c096e9387aaa7a94",
+      "config_sha256": "43ea4d5e70934c4e57cbf1c693439727da45a0da085ada516599f3a7f536add5"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 26,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed26",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed26/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed26/best.pt",
+      "baseline_sha256": "4b0dd20b34b74e8efe04afc72d1d1a27582690e28e4d1b194f74a038a6a8cbd7",
+      "target_sha256": "30b2e2c2dc57a2108a7cd61581e8ee2d7fd0a849a6f4667bbb1d7214da4ebed8",
+      "config_sha256": "3e52090eecddb207d74526b22abff11ff7fa5c90c8c8e395995261d39c14db74"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 30,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed30",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed30/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed30/best.pt",
+      "baseline_sha256": "7558705eb67f445a9a070884c8e03cff11ad7fa990763dc8a47716602ac0b012",
+      "target_sha256": "5e64cb0d96b1cdc2d775f92180520865a6c3f8f2e29a0c569b52b5e6cd93f837",
+      "config_sha256": "96ff566e6a31d03b31128a4060877ee3169509971b31d3211df5dcb42ed9b426"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 28,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed28",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed28/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed28/best.pt",
+      "baseline_sha256": "f3dc64b307f37f5ae43583970237585ad90a79e7190111386644fd71d58e095f",
+      "target_sha256": "e1f645c4335a9dcd68780db868faa6a9f5dd1d6361f4fda222f42cebe359067b",
+      "config_sha256": "c989987f5f04b7f36a6df05f5cc18f3fff6a24a0bcfcef37bb75b8c0890c2ce3"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 23,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed23",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed23/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed23/best.pt",
+      "baseline_sha256": "0a077a14166199d483649bbf54c350ccd4a3ecf7d29b95ce0a5d6b8c16588e27",
+      "target_sha256": "a0be693cd2b9d05c1d28df7d24106c601e8799ab72008e5cdb343e562976deb8",
+      "config_sha256": "a51e7c16071c889488f838ddf5b6c286ecf5425f0735d1a57df978151129b6e1"
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 19,
+      "run": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed19",
+      "baseline_checkpoint": "/home/whj/reproject/mact/assets/checkpoints/target_context_historical12/twitter2017/seed19/best.pt",
+      "target_checkpoint": "/home/whj/reproject/mact/outputs/target_context_historical12_20261017/runs/twitter2017/seed19/best.pt",
+      "baseline_sha256": "537d9b16e3704cf140d7f6d90cd95463282ee4099abbefd13b5684633c3bb45e",
+      "target_sha256": "fff4ad0b41fe33db3294f002e018bb30e3e7d8f5cca89bda48898e4b2fa785e2",
+      "config_sha256": "1b303cb26adea0ccaa52f120f01505507f63fb205e71ebec031e70423029ab01"
+    }
+  ],
+  "selected_using": "2026-10-18 Dev fixed raw-half control; user authorized next Test evaluation",
+  "dev_report_sha256": "3e43a1ff465dd9caeda41d7f9fc9a3bdd66a605999c8ff15d760cc96ff628a2b",
+  "fusion_source_sha256": "77b82efe38a204a4152e1116dbed30f76668ead1138395a06cfc26ac34909456",
+  "selection_uses_test": false,
+  "limitations": "Historical seeds and previous Test results are already known; not an untouched benchmark."
+}

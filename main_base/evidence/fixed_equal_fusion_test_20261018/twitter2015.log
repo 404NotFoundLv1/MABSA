@@ -1,0 +1,15 @@
+{"dataset": "twitter2015", "seed": 42, "state": "verified", "joint_f1": {"baseline": 68.47619047619047, "target": 68.85714285714286, "fusion": 69.14285714285715}}
+{"dataset": "twitter2015", "seed": 43, "state": "verified", "joint_f1": {"baseline": 68.16443594646272, "target": 68.35564053537284, "fusion": 69.02485659655831}}
+{"dataset": "twitter2015", "seed": 44, "state": "verified", "joint_f1": {"baseline": 66.79352997145577, "target": 67.36441484300666, "fusion": 68.31588962892484}}
+{"dataset": "twitter2015", "seed": 24, "state": "verified", "joint_f1": {"baseline": 68.10138689622191, "target": 68.77092300334768, "fusion": 69.63175514108082}}
+{"dataset": "twitter2015", "seed": 25, "state": "verified", "joint_f1": {"baseline": 70.17711823839157, "target": 67.01771182383916, "fusion": 69.88989947343227}}
+{"dataset": "twitter2015", "seed": 17, "state": "verified", "joint_f1": {"baseline": 67.21153846153845, "target": 67.88461538461539, "fusion": 67.88461538461539}}
+{"dataset": "twitter2015", "seed": 16, "state": "verified", "joint_f1": {"baseline": 68.80689985625298, "target": 68.51940584571155, "fusion": 69.5735505510302}}
+{"dataset": "twitter2015", "seed": 31, "state": "verified", "joint_f1": {"baseline": 69.32309169467115, "target": 68.74699951992318, "fusion": 69.80316850696111}}
+{"dataset": "twitter2015", "seed": 22, "state": "verified", "joint_f1": {"baseline": 68.8773093320701, "target": 67.36144007579347, "fusion": 68.78256750355281}}
+{"dataset": "twitter2015", "seed": 27, "state": "verified", "joint_f1": {"baseline": 68.35081029551954, "target": 67.68350810295519, "fusion": 68.73212583412774}}
+{"dataset": "twitter2015", "seed": 26, "state": "verified", "joint_f1": {"baseline": 68.38340486409156, "target": 69.14639961850261, "fusion": 70.67238912732475}}
+{"dataset": "twitter2015", "seed": 30, "state": "verified", "joint_f1": {"baseline": 68.6695278969957, "target": 70.48164043872198, "fusion": 70.10014306151645}}
+{"dataset": "twitter2015", "seed": 28, "state": "verified", "joint_f1": {"baseline": 67.79497098646034, "target": 66.53771760154739, "fusion": 67.79497098646034}}
+{"dataset": "twitter2015", "seed": 23, "state": "verified", "joint_f1": {"baseline": 67.6470588235294, "target": 68.97533206831119, "fusion": 68.3111954459203}}
+{"dataset": "twitter2015", "seed": 19, "state": "verified", "joint_f1": {"baseline": 68.3937823834197, "target": 68.01695713612813, "fusion": 68.77060763071125}}

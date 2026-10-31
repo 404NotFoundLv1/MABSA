@@ -1,0 +1,456 @@
+{
+  "parameters": {
+    "temperature_base": 1.0,
+    "temperature_target": 1.0,
+    "alpha": 0.5
+  },
+  "completed_pairs": 30,
+  "datasets": {
+    "twitter2015": {
+      "all": {
+        "seeds": [
+          42,
+          43,
+          44,
+          24,
+          25,
+          17,
+          16,
+          31,
+          22,
+          27,
+          26,
+          30,
+          28,
+          23,
+          19
+        ],
+        "baseline": {
+          "mean": 68.34473707488476,
+          "sample_std": 0.8241810138763684
+        },
+        "target": {
+          "mean": 68.24798992366128,
+          "sample_std": 0.9933170059363825
+        },
+        "fusion": {
+          "mean": 69.09537280100491,
+          "sample_std": 0.839521671077537
+        },
+        "delta_vs_baseline": {
+          "mean": 0.7506357261201572,
+          "wins": 12,
+          "ties": 1,
+          "losses": 2
+        },
+        "delta_vs_target": {
+          "mean": 0.8473828773436309,
+          "wins": 12,
+          "ties": 1,
+          "losses": 2
+        }
+      },
+      "initial3": {
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "baseline": {
+          "mean": 67.81138546470298,
+          "sample_std": 0.8951648314984187
+        },
+        "target": {
+          "mean": 68.19239941184078,
+          "sample_std": 0.7596347670793907
+        },
+        "fusion": {
+          "mean": 68.82786778944677,
+          "sample_std": 0.44729437719500853
+        },
+        "delta_vs_baseline": {
+          "mean": 1.0164823247437813,
+          "wins": 3,
+          "ties": 0,
+          "losses": 0
+        },
+        "delta_vs_target": {
+          "mean": 0.6354683776059792,
+          "wins": 3,
+          "ties": 0,
+          "losses": 0
+        }
+      },
+      "historical12": {
+        "seeds": [
+          24,
+          25,
+          17,
+          16,
+          31,
+          22,
+          27,
+          26,
+          30,
+          28,
+          23,
+          19
+        ],
+        "baseline": {
+          "mean": 68.4780749774302,
+          "sample_std": 0.7885810550639574
+        },
+        "target": {
+          "mean": 68.26188755161641,
+          "sample_std": 1.0722882430271004
+        },
+        "fusion": {
+          "mean": 69.16224905389446,
+          "sample_std": 0.9144627034071686
+        },
+        "delta_vs_baseline": {
+          "mean": 0.6841740764642511,
+          "wins": 9,
+          "ties": 1,
+          "losses": 2
+        },
+        "delta_vs_target": {
+          "mean": 0.9003615022780439,
+          "wins": 9,
+          "ties": 1,
+          "losses": 2
+        }
+      }
+    },
+    "twitter2017": {
+      "all": {
+        "seeds": [
+          42,
+          43,
+          44,
+          24,
+          25,
+          17,
+          16,
+          31,
+          22,
+          27,
+          26,
+          30,
+          28,
+          23,
+          19
+        ],
+        "baseline": {
+          "mean": 68.59232052952639,
+          "sample_std": 0.8768272811300813
+        },
+        "target": {
+          "mean": 68.74112831213667,
+          "sample_std": 0.9751782113493288
+        },
+        "fusion": {
+          "mean": 69.44425194745175,
+          "sample_std": 0.8458682948162612
+        },
+        "delta_vs_baseline": {
+          "mean": 0.8519314179253618,
+          "wins": 13,
+          "ties": 1,
+          "losses": 1
+        },
+        "delta_vs_target": {
+          "mean": 0.7031236353150755,
+          "wins": 14,
+          "ties": 0,
+          "losses": 1
+        }
+      },
+      "initial3": {
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "baseline": {
+          "mean": 67.90984665621056,
+          "sample_std": 0.31743987826138587
+        },
+        "target": {
+          "mean": 69.51414259713556,
+          "sample_std": 1.3891602082583576
+        },
+        "fusion": {
+          "mean": 70.0527376458215,
+          "sample_std": 1.1024282833738515
+        },
+        "delta_vs_baseline": {
+          "mean": 2.142890989610938,
+          "wins": 3,
+          "ties": 0,
+          "losses": 0
+        },
+        "delta_vs_target": {
+          "mean": 0.5385950486859391,
+          "wins": 3,
+          "ties": 0,
+          "losses": 0
+        }
+      },
+      "historical12": {
+        "seeds": [
+          24,
+          25,
+          17,
+          16,
+          31,
+          22,
+          27,
+          26,
+          30,
+          28,
+          23,
+          19
+        ],
+        "baseline": {
+          "mean": 68.76293899785534,
+          "sample_std": 0.8952089281969692
+        },
+        "target": {
+          "mean": 68.54787474088695,
+          "sample_std": 0.8097848691868497
+        },
+        "fusion": {
+          "mean": 69.29213052285931,
+          "sample_std": 0.750621106532207
+        },
+        "delta_vs_baseline": {
+          "mean": 0.5291915250039677,
+          "wins": 10,
+          "ties": 1,
+          "losses": 1
+        },
+        "delta_vs_target": {
+          "mean": 0.7442557819723596,
+          "wins": 11,
+          "ties": 0,
+          "losses": 1
+        }
+      }
+    }
+  },
+  "rows": [
+    {
+      "dataset": "twitter2015",
+      "seed": 42,
+      "baseline": 68.47619047619047,
+      "target": 68.85714285714286,
+      "fusion": 69.14285714285715
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 43,
+      "baseline": 68.16443594646272,
+      "target": 68.35564053537284,
+      "fusion": 69.02485659655831
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 44,
+      "baseline": 66.79352997145577,
+      "target": 67.36441484300666,
+      "fusion": 68.31588962892484
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 24,
+      "baseline": 68.10138689622191,
+      "target": 68.77092300334768,
+      "fusion": 69.63175514108082
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 25,
+      "baseline": 70.17711823839157,
+      "target": 67.01771182383916,
+      "fusion": 69.88989947343227
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 17,
+      "baseline": 67.21153846153845,
+      "target": 67.88461538461539,
+      "fusion": 67.88461538461539
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 16,
+      "baseline": 68.80689985625298,
+      "target": 68.51940584571155,
+      "fusion": 69.5735505510302
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 31,
+      "baseline": 69.32309169467115,
+      "target": 68.74699951992318,
+      "fusion": 69.80316850696111
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 22,
+      "baseline": 68.8773093320701,
+      "target": 67.36144007579347,
+      "fusion": 68.78256750355281
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 27,
+      "baseline": 68.35081029551954,
+      "target": 67.68350810295519,
+      "fusion": 68.73212583412774
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 26,
+      "baseline": 68.38340486409156,
+      "target": 69.14639961850261,
+      "fusion": 70.67238912732475
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 30,
+      "baseline": 68.6695278969957,
+      "target": 70.48164043872198,
+      "fusion": 70.10014306151645
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 28,
+      "baseline": 67.79497098646034,
+      "target": 66.53771760154739,
+      "fusion": 67.79497098646034
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 23,
+      "baseline": 67.6470588235294,
+      "target": 68.97533206831119,
+      "fusion": 68.3111954459203
+    },
+    {
+      "dataset": "twitter2015",
+      "seed": 19,
+      "baseline": 68.3937823834197,
+      "target": 68.01695713612813,
+      "fusion": 68.77060763071125
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 42,
+      "baseline": 68.23338735818476,
+      "target": 68.55753646677472,
+      "fusion": 69.77309562398703
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 43,
+      "baseline": 67.59888134238913,
+      "target": 68.87734718337994,
+      "fusion": 69.11705952856573
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 44,
+      "baseline": 67.89727126805778,
+      "target": 71.107544141252,
+      "fusion": 71.26805778491172
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 24,
+      "baseline": 70.3838383838384,
+      "target": 68.68686868686868,
+      "fusion": 70.06060606060606
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 25,
+      "baseline": 68.77249100359856,
+      "target": 68.69252299080367,
+      "fusion": 69.09236305477809
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 17,
+      "baseline": 69.99597261377366,
+      "target": 69.67378171566652,
+      "fusion": 70.64035440998792
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 16,
+      "baseline": 69.56872228939943,
+      "target": 68.52075775896816,
+      "fusion": 69.72994760177347
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 31,
+      "baseline": 68.56913183279742,
+      "target": 68.2475884244373,
+      "fusion": 69.21221864951768
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 22,
+      "baseline": 68.48655158570855,
+      "target": 68.24568446407066,
+      "fusion": 69.04857486953033
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 27,
+      "baseline": 68.20388349514563,
+      "target": 69.25566343042071,
+      "fusion": 68.85113268608414
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 26,
+      "baseline": 68.95993524888709,
+      "target": 69.12181303116147,
+      "fusion": 69.44556859571024
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 30,
+      "baseline": 68.86564762670957,
+      "target": 69.50925181013676,
+      "fusion": 69.99195494770716
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 28,
+      "baseline": 68.06620912394024,
+      "target": 67.09729511505854,
+      "fusion": 68.06620912394024
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 23,
+      "baseline": 67.12109061748195,
+      "target": 67.20128307939054,
+      "fusion": 68.1635926222935
+    },
+    {
+      "dataset": "twitter2017",
+      "seed": 19,
+      "baseline": 68.16179415298357,
+      "target": 68.32198638366039,
+      "fusion": 69.20304365238286
+    }
+  ],
+  "decision_sha256": "ef6d90acf0abc1bafc0dfbb4cb48d8b875add0a3332d20d9312562c880bd64ba",
+  "test_used_for_selection": false
+}
